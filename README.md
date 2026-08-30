@@ -188,6 +188,7 @@ Imnandi_NovaCare_Hospital_System/
 After configuring the connection string, open the Visual Studio Package Manager Console and run:
 
 Add-Migration Migration_Name
+
 Update-Database
 
 ### 6. Run the Application
