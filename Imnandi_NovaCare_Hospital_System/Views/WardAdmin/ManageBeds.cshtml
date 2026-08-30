@@ -1,0 +1,165 @@
+﻿@model IEnumerable<Bed>
+
+@{
+    ViewData["Title"] = "Manage Beds";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - Ward Management System</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .container-fluid {
+            max-width: 950px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+
+        .card {
+            border-radius: 0.75rem;
+            box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,.1);
+            border: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            background-color: #e9ecef;
+            border-bottom: 1px solid #dee2e6;
+            font-weight: 600;
+            padding: 1rem 1.5rem;
+        }
+
+        .table {
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+            .table thead {
+                background-color: #f1f3f5;
+            }
+
+            .table th {
+                font-weight: 600;
+                text-align: center;
+            }
+
+            .table td {
+                text-align: center;
+            }
+
+        .status-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+        }
+
+        .status-occupied {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .status-available {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: #0d6efd;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            padding: 0.35rem 1rem;
+            border-radius: 80px;
+            background-color: #f8f9fa;
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+        }
+
+            .back-btn i {
+                margin-right: 0.5rem;
+            }
+    </style>
+</head>
+<body>
+    <div class="d-flex align-items-center bg-light border border-primary rounded-5 shadow-sm px-4 py-2 mb-4">
+        <i class="bi bi-house-door-fill me-3 text-primary fs-5"></i>
+        <a asp-action="WardAdminDashboard" asp-controller="WardAdmin"
+           class="text-decoration-none text-primary fw-semibold fs-6 btn-sm px-3 d-flex align-items-center shadow-sm"
+           style="border-radius: 80px;">Back to Dashboard</a>
+    </div>
+
+    <div class="container-fluid">
+        <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0"><i class="bi bi-hospital-bed me-2 text-primary"></i>Manage Beds</h4>
+               
+            </div>
+
+            <div class="card-body">
+                @if (!Model.Any())
+                {
+                    <div class="alert alert-info text-center">
+                        <i class="bi bi-info-circle me-2"></i>No beds found.
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Bed Number</th>
+                                    <th>Type</th>
+                                    <th>Room</th>
+                                    <th>Ward</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    int count = 1;
+                                    foreach (var bed in Model)
+                                    {
+                                        <tr>
+                                            <td>@count</td>
+                                            <td>@bed.BedNumber</td>
+                                            <td>@bed.BedType</td>
+                                            <td>@bed.Room.RoomNumber</td>
+                                            <td>@bed.Room.Ward.WardName</td>
+                                            <td>
+                                                @if (bed.IsOccupied)
+                                                {
+                                                    <span class="status-badge status-occupied">Occupied</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="status-badge status-available">Available</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                        count++;
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

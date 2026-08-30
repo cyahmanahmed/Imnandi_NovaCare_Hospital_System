@@ -1,0 +1,325 @@
+﻿@using Imnandi_NovaCare_Hospital_System.Models
+@model ScriptManagerDashboardViewModel
+@{
+    ViewData["Title"] = "Script Manager Dashboard";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            overflow: scroll;
+        }
+
+        .sm-sidebar {
+            background-color: #2c3e50;
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding-top: 1rem;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+            .sm-sidebar a {
+                display: block;
+                padding: 0.9rem 1.25rem;
+                color: white;
+                text-decoration: none;
+                font-size: 0.95rem;
+            }
+
+                .sm-sidebar a:hover {
+                    background-color: #34495e;
+                }
+
+            .sm-sidebar .section-title {
+                padding: 0.75rem 1.25rem;
+                text-transform: uppercase;
+                font-size: 0.8rem;
+                color: #adb5bd;
+            }
+
+        .sm-dashboard-content {
+            margin-left: 250px;
+            height: 100vh;
+            overflow-y: visible;
+            padding: 2rem;
+        }
+
+        .card {
+            border-radius: 10px;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,.08);
+        }
+
+        .stats-card h2 {
+            font-size: 2rem;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .btn-action {
+            background-color: #0d6efd;
+            color: white;
+            border-radius: 6px;
+            padding: 4px 12px;
+        }
+
+            .btn-action:hover {
+                background-color: #0a58ca;
+            }
+
+        .search-box input {
+            height: 45px;
+            border-radius: 6px;
+        }
+
+        .alert-box {
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .alert-low-stock {
+            background-color: #fff3cd;
+            border-left: 5px solid #ffc107;
+        }
+
+        .alert-expiring {
+            background-color: #f8d7da;
+            border-left: 5px solid #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="sm-sidebar">
+        <h3 class="text-center mb-4 fw-bold">Script Manager Panel</h3>
+        <a asp-controller="ScriptManager" asp-action="ManagePrescriptions"><i class="bi bi-file-medical me-2"></i> Manage Prescriptions</a>
+        <a asp-controller="ScriptManager" asp-action="ManageMedication"><i class="bi bi-capsule me-2"></i> Manage Medication</a>
+        <a asp-controller="ScriptManager" asp-action="ViewAlerts"><i class="bi bi-calendar-event me-2"></i> View Alerts</a>
+
+        <h6 class="section-title">Settings</h6>
+        <a asp-controller="ScriptManager" asp-action="Profile"><i class="bi bi-gear me-2"></i> Profile</a>
+        <a href="/Identity/Account/Logout"><i class="bi bi-box-arrow-right me-2"></i> Log Out</a>
+    </div>
+
+    <div class="sm-dashboard-content">
+        <h1 class="mb-4 fw-bold">Welcome, @Model.FirstName @Model.LastName</h1>
+
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card p-3 text-center bg-primary text-white stats-card">
+                    <h2>@Model.TotalPrescriptions</h2>
+                    <p class="m-0">Total Prescriptions</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card p-3 text-center bg-warning text-dark stats-card">
+                    <h2>@Model.PendingPrescriptionCount</h2>
+                    <p class="m-0">Pending Scripts</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card p-3 text-center bg-success text-white stats-card">
+                    <h2>@Model.CompletedPrescriptionCount</h2>
+                    <p class="m-0">Completed Scripts</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card p-3 text-center bg-info text-dark stats-card">
+                    <h2>@Model.TotalMedicinesInStock</h2>
+                    <p class="m-0">Medicines in Stock</p>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="card p-4 mb-4">
+
+            <div class="d-flex align-items-center mb-3">
+                <div class="me-3">
+                    <i class="bi bi-person-badge fs-2 text-primary"></i>
+                </div>
+
+                <div>
+                    <h5 class="fw-bold mb-1">
+                    </h5>
+
+                    <span class="text-muted">
+                        @Model.Department Department
+                    </span>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-4">
+                    <strong>Name</strong>
+                    <p class="text-muted mb-0">
+                        @Model.FirstName @Model.LastName
+                    </p>
+                </div>
+
+                <div class="col-md-4">
+                    <strong>Job Title</strong>
+                    <p class="text-muted mb-0">
+                        @Model.JobTitle
+                    </p>
+                </div>
+
+                <div class="col-md-4">
+                    <strong>Email</strong>
+                    <p class="text-muted mb-0">
+                        @Model.Email
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="row mb-4">
+            @if (Model.LowStockCount > 0)
+            {
+                <div class="col-md-6">
+                    <div class="alert-box alert-low-stock">
+                        <h5 class="text-warning mb-2"><i class="bi bi-exclamation-triangle-fill me-2"></i>Low Stock Alert!</h5>
+                        <p class="mb-0">There are medication(s) running low. Please check the stock.</p>
+                        <a asp-controller="ScriptManager" asp-action="ManageMedication" class="btn btn-sm btn-outline-warning mt-2">View Stock</a>
+                    </div>
+                </div>
+            }
+            @if (Model.ExpiringCount > 0)
+            {
+                <div class="col-md-6">
+                    <div class="alert-box alert-expiring">
+                        <h5 class="text-danger mb-2"><i class="bi bi-exclamation-triangle-fill me-2"></i>Expiring Medications!</h5>
+                        <p class="mb-0">There are prescription(s) containing medication expiring soon.</p>
+                        <a asp-controller="ScriptManager" asp-action="ManageMedication" asp-route-status="Processed" class="btn btn-sm btn-outline-danger mt-2">View Medicine</a>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <form method="get" class="search-box mb-4">
+            <div class="input-group">
+                <input name="search" value="@(ViewData["Search"] ?? "")"
+                       type="text" placeholder="Search prescriptions or medicine"
+                       class="form-control" />
+                <button class="btn btn-primary">Search</button>
+                <a href="@Url.Action("ScriptManagerDashboard", "ScriptManager")" class="btn btn-secondary">Clear</a>
+            </div>
+        </form>
+
+        <div class="card p-3 mb-4">
+            <h4 class="mb-3 fw-bold">Pending Scripts</h4>
+
+            @if (Model.PendingScripts.Any())
+            {
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Patient</th>
+                            <th>Medications</th>
+                            <th>Doctor</th>
+                            <th>Issue Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in Model.PendingScripts)
+                        {
+                            <tr>
+                                <td>@p.Prescription?.Patient?.FirstName @p.Prescription?.Patient?.LastName</td>
+                                <td>
+                                    @if (p.Medications != null && p.Medications.Any())
+                                    {
+                                        foreach (var med in p.Medications)
+                                        {
+                                            <span class="badge bg-secondary me-1">@med.Medication?.MedicationName</span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">No medications assigned</span>
+                                    }
+                                </td>
+                                <td>@p.Prescription?.Doctor?.FirstName @p.Prescription?.Doctor?.LastName</td>
+                                <td>@p.Prescription?.IssueDate.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    @if (p.ScriptPrescriptionId != 0)
+                                    {
+                                        <a asp-controller="ScriptManager" asp-action="ProcessPrescription" asp-route-id="@p.ScriptPrescriptionId" class="btn btn-sm btn-outline-primary me-1">Process</a>
+                                        <a asp-controller="ScriptManager" asp-action="VerifyPrescription" asp-route-id="@p.ScriptPrescriptionId" class="btn btn-sm btn-outline-warning me-1">Verify</a>
+                                        <a asp-controller="ScriptManager" asp-action="PrescriptionDetails" asp-route-id="@p.ScriptPrescriptionId" class="btn btn-sm btn-outline-info">Details</a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Pending Assignment</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="text-muted text-center py-4">No pending scripts.</p>
+            }
+        </div>
+
+        <div class="card p-3 mb-4">
+            <h4 class="mb-3 fw-bold">Completed Scripts</h4>
+
+            @if (Model.CompletedScripts.Any())
+            {
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Patient</th>
+                            <th>Medications</th>
+                            <th>Doctor</th>
+                            <th>Issue Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in Model.CompletedScripts)
+                        {
+                            <tr>
+                                <td>@p.Prescription.Patient.FirstName @p.Prescription.Patient.LastName</td>
+                                <td>
+                                    @foreach (var med in p.Medications)
+                                    {
+                                        <span class="badge bg-secondary me-1">@med.Medication.MedicationName</span>
+                                    }
+                                </td>
+                                <td>@p.Prescription.Doctor.FirstName @p.Prescription.Doctor.LastName</td>
+                                <td>@p.Prescription.IssueDate.ToString("dd/MM/yyyy")</td>
+                                <td><span class="badge bg-success">Completed</span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="text-muted text-center py-4">No completed scripts yet.</p>
+            }
+        </div>
+    </div>
+
+</body>
+</html>

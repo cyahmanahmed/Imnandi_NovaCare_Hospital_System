@@ -1,0 +1,174 @@
+﻿@model IEnumerable<StockTake>
+
+@{
+    ViewData["Title"] = "Manage Stock";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm rounded-3 mb-4"
+             role="alert">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-exclamation-triangle-fill fs-5 me-2"></i>
+
+                <div>
+                    <strong>No Report Available</strong>
+                    <div class="small">
+                        @TempData["Error"]
+                    </div>
+                </div>
+            </div>
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Close">
+            </button>
+        </div>
+    }
+    <div class="col-12 mb-3">
+        <a asp-controller="StockManager" asp-action="StockManagerDashboard"
+           class="btn btn-outline-primary btn-sm px-3 d-flex align-items-center shadow-sm"
+           style="border-radius: 80px;">
+            <i class="bi bi-house-door-fill me-2"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <h2>Manage Stock</h2>
+        <div class="d-flex flex-wrap gap-2 align-items-end">
+            <a asp-action="CreateStockTake" class="btn btn-primary d-flex align-items-center">
+                <i class="bi bi-pencil-square me-1"></i> Perform Stock Take
+            </a>
+
+            <form asp-controller="Reports" asp-action="StockTakeMonthlyReport" method="post" class="d-flex gap-2 align-items-end m-0 p-0">
+                @Html.AntiForgeryToken()
+                <div>
+                    <label for="month" class="form-label visually-hidden">Month</label>
+                    <select id="month" name="month" class="form-select form-select-sm" required>
+                        @for (int m = 1; m <= 12; m++)
+                        {
+                            <option value="@m">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label for="year" class="form-label visually-hidden">Year</label>
+                    <input type="number" id="year" name="year" class="form-control form-control-sm" value="@DateTime.Now.Year" min="2000" required />
+                </div>
+                <button type="submit" class="btn btn-outline-primary btn-sm px-3 d-flex align-items-center shadow-sm" style="border-radius: 80px;">
+                    <i class="bi bi-file-earmark-pdf-fill me-1"></i> Generate Report
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+
+    <form method="get" asp-action="ManageStock" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="search" class="form-control" placeholder="Search by Ward..." value="@Context.Request.Query["search"]" />
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">No stock records found.</div>
+    }
+    else
+    {
+        <div class="table-responsive shadow-sm rounded">
+            <table class="table table-hover table-bordered align-middle">
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th>Date</th>
+                        <th>Ward</th>
+                        <th>Total Consumables Counted</th>
+                        <th>Discrepancies</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var stockTake in Model)
+                    {
+                        var discrepancyCount = stockTake.Consumables?.Count(c => c.QuantityOnHand != c.StockTake.QuantityCountered) ?? 0;
+                        <tr class="@(stockTake.IsDeleted ? "table-secondary" : "")">
+                            <td class="text-center">@stockTake.Date.ToString("dd/MM/yyyy")</td>
+                            <td>@(stockTake.Ward?.WardName ?? "N/A")</td>
+                            <td class="text-center">@(stockTake.Consumables?.Count() ?? 0)</td>
+                            <td class="text-center">
+                                @if (discrepancyCount > 0)
+                                {
+                                    <span class="badge bg-danger">@discrepancyCount discrepancies</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success">No discrepancies</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                           
+                                <a asp-action="ViewStockTake" asp-route-id="@stockTake.StockTakeId" class="btn btn-sm btn-primary me-1 mb-1">
+                                    <i class="bi bi-eye"></i> View
+                                </a>
+                                <a asp-action="EditStockTake" asp-route-id="@stockTake.StockTakeId" class="btn btn-sm btn-warning me-1 mb-1">
+                                    <i class="bi bi-arrow-repeat"></i> Adjust
+                                </a>
+
+                                @if (!stockTake.IsDeleted)
+                                {
+                                    <form asp-action="DeleteStockTake" asp-route-id="@stockTake.StockTakeId" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-danger mb-1">
+                                            <i class="bi bi-trash me-1"></i> Delete
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form asp-action="RestoreStockTake" asp-route-id="@stockTake.StockTakeId" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-success mb-1">
+                                            <i class="bi bi-arrow-counterclockwise me-1"></i> Restore
+                                        </button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<style>
+    .table-responsive {
+        overflow: hidden;
+    }
+
+    .btn-outline-primary {
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .table-secondary {
+        opacity: 0.7;
+    }
+
+    .btn-sm {
+        font-size: 0.8rem;
+    }
+
+    form[asp-action="StockTakeMonthlyReport"] select,
+    form[asp-action="StockTakeMonthlyReport"] input {
+        height: calc(1.5em + 0.75rem + 2px);
+        min-width: 80px;
+    }
+
+    form[asp-action="StockTakeMonthlyReport"] button {
+        white-space: nowrap;
+    }
+</style>

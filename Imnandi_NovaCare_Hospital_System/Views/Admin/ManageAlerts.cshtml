@@ -1,0 +1,115 @@
+﻿@model List<ManageAlertViewModel>
+@{
+    ViewData["Title"] = "Manage Alerts";
+}
+
+<div class="container mt-4">
+    <h2>Manage Alerts</h2>
+
+    <div class="mb-3 text-end">
+        <a asp-action="CreateAlert" class="btn btn-success shadow-sm">
+            <i class="bi bi-plus-circle me-1"></i> Create New Alert
+        </a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i> No alerts created yet.
+        </div>
+    }
+    else
+    {
+        <table class="table table-bordered table-striped shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>Message</th>
+                    <th>Recipient</th>
+                    <th>Type</th>
+                    <th>Sent Count</th>
+                    <th>Read Status</th>
+                    <th>Created By</th>
+                    <th>Created At</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var alert in Model)
+                {
+                    <tr>
+                        <td>@alert.Message</td>
+                        <td>
+                            @if (alert.RecipientType == "User")
+                            {
+                                @alert.TargetUserName
+                            }
+                            else if (alert.RecipientType == "Role")
+                            {
+                                @alert.TargetRole
+                            }
+                            else
+                            {
+                                <span>All Users</span>
+                            }
+                        </td>
+                        <td>@alert.RecipientType</td>
+                        <td>@alert.ReceivedCount</td>
+                        <td>
+                            @if (alert.RecipientType == "User")
+                            {
+                                @(alert.IsRead == true ? "Read" : "Unread")
+                            }
+                            else
+                            {
+                                <span>N/A</span>
+                            }
+                        </td>
+                        <td>@alert.CreatedBy</td>
+                        <td>@alert.CreatedAt.ToString("dd MMM yyyy HH:mm")</td>
+                        <td>
+                            @if (alert.IsActive)
+                            {
+                                <form asp-action="MarkAlertInactive" method="post">
+                                    <input type="hidden" name="alertId" value="@alert.AlertId" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Deactivate</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Inactive</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <a asp-action="AdminDashboard" class="btn btn-primary mt-3">Back to Dashboard</a>
+</div>
+
+<style>
+    .table {
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+
+    .btn-success {
+        border-radius: 50px;
+        padding: 0.5rem 1.2rem;
+        font-weight: 500;
+    }
+
+        .btn-success i {
+            margin-right: 0.3rem;
+        }
+
+    .shadow-sm {
+        box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+    }
+
+    .mb-3.text-end {
+        display: flex;
+        justify-content: flex-end;
+    }
+</style>

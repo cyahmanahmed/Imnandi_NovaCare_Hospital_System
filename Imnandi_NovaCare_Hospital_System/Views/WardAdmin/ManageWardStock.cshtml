@@ -1,0 +1,878 @@
+﻿@using Imnandi_NovaCare_Hospital_System.Models
+@using Imnandi_NovaCare_Hospital_System.Models
+@model (List<WardStock> Consumables, List<WardMedicationStock> Medications)
+
+@{
+    ViewData["Title"] = "Manage Ward Stock";
+
+    var wards = ViewBag.Wards as List<Ward>
+                 ?? new List<Ward>();
+
+    int? selectedWardId = ViewBag.SelectedWardId as int?;
+    string selectedWardName = ViewBag.SelectedWardName as string ?? "";
+
+    var consumableTransactions =
+        ViewBag.WardStockTransactions as List<WardStockTransaction>
+        ?? new List<WardStockTransaction>();
+
+    var medicationTransactions =
+        ViewBag.WardMedicationTransactions as List<WardMedicationTransaction>
+        ?? new List<WardMedicationTransaction>();
+
+    int totalConsumables = Model.Consumables.Count;
+    int totalMedicines = Model.Medications.Count;
+
+    int totalConsumableUnits = Model.Consumables.Sum(x => x.QuantityInWard);
+    int totalMedicineUnits = Model.Medications.Sum(x => x.QuantityInWard);
+
+    int lowConsumables = Model.Consumables.Count(x =>
+        x.Consumable != null &&
+        x.QuantityInWard <= x.Consumable.MinimumConsumables);
+
+    int lowMedicines = Model.Medications.Count(x =>
+        x.Medication != null &&
+        (x.Medication.QuantityOnHand ?? 0) <= 5);
+}
+
+<style>
+    body {
+        background-color: #f5f7fb;
+    }
+
+    .page-wrapper {
+        padding: 30px;
+    }
+
+    .page-header {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 24px 28px;
+        margin-bottom: 24px;
+        border: 1px solid #e8ebf0;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+    }
+
+    .page-title {
+        font-size: 26px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 6px;
+    }
+
+    .page-subtitle {
+        color: #6b7280;
+        margin-bottom: 0;
+        font-size: 14px;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-report {
+        border-radius: 10px;
+        padding: 10px 16px;
+        font-weight: 600;
+    }
+
+    .selection-card {
+        background: #ffffff;
+        border: 1px solid #e8ebf0;
+        border-radius: 16px;
+        padding: 22px;
+        margin-bottom: 24px;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+    }
+
+    .selection-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: #374151;
+        margin-bottom: 8px;
+    }
+
+    .ward-select {
+        height: 46px;
+        border-radius: 10px;
+        border: 1px solid #d9dee7;
+        font-size: 14px;
+    }
+
+        .ward-select:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.12);
+        }
+
+    .btn-view {
+        height: 46px;
+        border-radius: 10px;
+        padding: 0 20px;
+        font-weight: 600;
+    }
+
+    .selected-ward {
+        margin-top: 18px;
+        padding: 16px 18px;
+        background: #f8fafc;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+    }
+
+    .selected-ward-label {
+        font-size: 12px;
+        color: #6b7280;
+        margin-bottom: 3px;
+    }
+
+    .selected-ward-name {
+        font-size: 20px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .stat-card {
+        background: #ffffff;
+        border: 1px solid #e8ebf0;
+        border-radius: 16px;
+        padding: 20px;
+        height: 100%;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+    }
+
+    .stat-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        margin-bottom: 15px;
+    }
+
+    .stat-title {
+        color: #6b7280;
+        font-size: 13px;
+        margin-bottom: 5px;
+    }
+
+    .stat-value {
+        color: #1f2937;
+        font-size: 25px;
+        font-weight: 700;
+    }
+
+    .section-card {
+        background: #ffffff;
+        border: 1px solid #e8ebf0;
+        border-radius: 16px;
+        margin-top: 24px;
+        overflow: hidden;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+    }
+
+    .section-header {
+        padding: 20px 22px;
+        border-bottom: 1px solid #edf0f4;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0;
+    }
+
+    .section-description {
+        color: #6b7280;
+        font-size: 13px;
+        margin: 4px 0 0;
+    }
+
+    .section-count {
+        background: #f1f5f9;
+        color: #475569;
+        border-radius: 50px;
+        padding: 6px 12px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .table-container {
+        overflow-x: auto;
+    }
+
+    .stock-table {
+        width: 100%;
+        margin: 0;
+        border-collapse: collapse;
+    }
+
+        .stock-table thead th {
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            font-weight: 700;
+            padding: 14px 18px;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+        .stock-table tbody td {
+            padding: 16px 18px;
+            border-bottom: 1px solid #f0f2f5;
+            color: #374151;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        .stock-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .stock-table tbody tr:hover {
+            background: #fafbfc;
+        }
+
+    .item-name {
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .item-description {
+        font-size: 12px;
+        color: #94a3b8;
+        margin-top: 3px;
+    }
+
+    .quantity {
+        font-size: 16px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        border-radius: 50px;
+        padding: 6px 11px;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .status-good {
+        background: #ecfdf3;
+        color: #15803d;
+    }
+
+    .status-low {
+        background: #fff7ed;
+        color: #c2410c;
+    }
+
+    .status-out {
+        background: #fef2f2;
+        color: #b91c1c;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 55px 20px;
+    }
+
+    .empty-icon {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 15px;
+        border-radius: 50%;
+        background: #f1f5f9;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 25px;
+    }
+
+    .empty-title {
+        font-weight: 700;
+        color: #374151;
+        margin-bottom: 5px;
+    }
+
+    .empty-text {
+        color: #94a3b8;
+        font-size: 13px;
+        margin: 0;
+    }
+
+    .history-table td {
+        font-size: 13px;
+    }
+
+    .transaction-type {
+        display: inline-block;
+        padding: 5px 9px;
+        border-radius: 50px;
+        background: #eff6ff;
+        color: #2563eb;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .date-text {
+        color: #64748b;
+        white-space: nowrap;
+    }
+
+    .alert-box {
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin-bottom: 20px;
+    }
+
+    .summary-row {
+        padding: 18px 22px;
+        border-top: 1px solid #edf0f4;
+        background: #fafbfc;
+    }
+
+    .summary-label {
+        font-size: 12px;
+        color: #64748b;
+    }
+
+    .summary-value {
+        font-weight: 700;
+        color: #1f2937;
+    }
+</style>
+
+<div class="page-wrapper">
+
+    <div class="page-header">
+        <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
+
+            <div>
+                <div class="page-title">
+                    <i class="bi bi-boxes me-2"></i>
+                    Manage Ward Stock
+                </div>
+
+                <p class="page-subtitle">
+                    Monitor medicines and consumables currently available in each ward.
+                </p>
+            </div>
+
+            <div class="header-actions">
+                @if (selectedWardId.HasValue)
+                {
+                    <a asp-controller="Reports"
+                       asp-action="WardMedicationFullReport"
+                       asp-route-wardId="@selectedWardId"
+                       class="btn btn-outline-success btn-report"
+                       title="Download medication stock report">
+
+                        <i class="bi bi-file-earmark-arrow-down"></i>
+                        Download Medication Report
+
+                    </a>
+                }
+                else
+                {
+                    <button type="button"
+                            class="btn btn-outline-secondary btn-report"
+                            disabled
+                            title="Select a ward first">
+
+                        <i class="bi bi-file-earmark-arrow-down"></i>
+                        Download Report
+
+                    </button>
+                }
+                <a asp-action="WardAdminDashboard"
+                   asp-controller="WardAdmin"
+                   class="btn btn-outline-primary">
+
+                    <i class="bi bi-arrow-left-circle me-1"></i>
+
+                    Back To Dashboard
+
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-box">
+            <i class="bi bi-check-circle me-2"></i>
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-box">
+            <i class="bi bi-exclamation-circle me-2"></i>
+            @TempData["Error"]
+        </div>
+    }
+
+    <div class="selection-card">
+
+        <form asp-controller="WardAdmin"
+              asp-action="ManageWardStock"
+              method="get">
+
+            <div class="row align-items-end g-3">
+
+                <div class="col-md-9">
+                    <label class="selection-label">
+                        Select Ward
+                    </label>
+
+                    <select name="wardId"
+                            class="form-select ward-select">
+
+                        <option value="">
+                            -- Select a ward --
+                        </option>
+
+                        @foreach (var ward in wards)
+                        {
+                            if (selectedWardId == ward.WardId)
+                            {
+                                <option value="@ward.WardId" selected>
+                                    @ward.WardName
+                                </option>
+                            }
+                            else
+                            {
+                                <option value="@ward.WardId">
+                                    @ward.WardName
+                                </option>
+                            }
+                        }
+
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <button type="submit"
+                            class="btn btn-primary btn-view w-100">
+                        <i class="bi bi-search me-2"></i>
+                        View Ward Stock
+                    </button>
+                </div>
+
+            </div>
+
+        </form>
+
+        @if (selectedWardId.HasValue)
+        {
+            <div class="selected-ward">
+                <div class="selected-ward-label">
+                    CURRENTLY VIEWING
+                </div>
+
+                <div class="selected-ward-name">
+                    <i class="bi bi-building me-2"></i>
+                    @selectedWardName
+                </div>
+            </div>
+        }
+
+    </div>
+
+    @if (selectedWardId.HasValue)
+    {
+        <div class="row g-4">
+
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="stat-icon bg-primary-subtle text-primary">
+                        <i class="bi bi-box-seam"></i>
+                    </div>
+
+                    <div class="stat-title">
+                        Consumable Types
+                    </div>
+
+                    <div class="stat-value">
+                        @totalConsumables
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="stat-icon bg-success-subtle text-success">
+                        <i class="bi bi-capsule"></i>
+                    </div>
+
+                    <div class="stat-title">
+                        Medicine Types
+                    </div>
+
+                    <div class="stat-value">
+                        @totalMedicines
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="stat-icon bg-warning-subtle text-warning">
+                        <i class="bi bi-exclamation-triangle"></i>
+                    </div>
+
+                    <div class="stat-title">
+                        Low Consumables
+                    </div>
+
+                    <div class="stat-value">
+                        @lowConsumables
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="stat-icon bg-danger-subtle text-danger">
+                        <i class="bi bi-exclamation-circle"></i>
+                    </div>
+
+                    <div class="stat-title">
+                        Low Medicines
+                    </div>
+
+                    <div class="stat-value">
+                        @lowMedicines
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="section-card">
+
+            <div class="section-header">
+
+                <div>
+                    <h2 class="section-title">
+                        <i class="bi bi-box-seam me-2"></i>
+                        Consumables
+                    </h2>
+
+                    <p class="section-description">
+                        Consumable items currently available in @selectedWardName.
+                    </p>
+                </div>
+
+                <span class="section-count">
+                    @totalConsumables item types
+                </span>
+
+            </div>
+
+            @if (Model.Consumables.Any())
+            {
+                <div class="table-container">
+
+                    <table class="stock-table">
+
+                        <thead>
+                            <tr>
+                                <th>Consumable</th>
+                                <th>Description</th>
+                                <th>Unit</th>
+                                <th>Quantity</th>
+                                <th>Minimum Level</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var stock in Model.Consumables)
+                            {
+                                var consumable = stock.Consumable;
+
+                                var isOut = stock.QuantityInWard <= 0;
+                                var isLow = !isOut &&
+                                consumable != null &&
+                                stock.QuantityInWard <= consumable.MinimumConsumables;
+
+                                <tr>
+
+                                    <td>
+                                        <div class="item-name">
+                                            @(consumable?.ConsumableName ?? "Unknown")
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <div class="item-description">
+                                            @(consumable?.Description ?? "No description")
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        @(consumable?.Unit ?? "N/A")
+                                    </td>
+
+                                    <td>
+                                        <span class="quantity">
+                                            @stock.QuantityInWard.ToString("N0")
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        @(consumable?.MinimumConsumables.ToString("N0") ?? "N/A")
+                                    </td>
+
+                                    <td>
+                                        @if (isOut)
+                                        {
+                                            <span class="status-badge status-out">
+                                                <i class="bi bi-x-circle"></i>
+                                                Out of Stock
+                                            </span>
+                                        }
+                                        else if (isLow)
+                                        {
+                                            <span class="status-badge status-low">
+                                                <i class="bi bi-exclamation-triangle"></i>
+                                                Low Stock
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="status-badge status-good">
+                                                <i class="bi bi-check-circle"></i>
+                                                Good
+                                            </span>
+                                        }
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                <div class="summary-row">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <span class="summary-label">
+                                Total Consumable Units
+                            </span>
+
+                            <div class="summary-value">
+                                @totalConsumableUnits.ToString("N0")
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <span class="summary-label">
+                                Low Stock Items
+                            </span>
+
+                            <div class="summary-value">
+                                @lowConsumables
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+
+                    <div class="empty-icon">
+                        <i class="bi bi-box-seam"></i>
+                    </div>
+
+                    <div class="empty-title">
+                        No Consumables Recorded
+                    </div>
+
+                    <p class="empty-text">
+                        There are currently no consumables recorded for this ward.
+                    </p>
+
+                </div>
+            }
+
+        </div>
+
+        <div class="section-card">
+
+            <div class="section-header">
+
+                <div>
+                    <h2 class="section-title">
+                        <i class="bi bi-capsule me-2"></i>
+                        Medicines
+                    </h2>
+
+                    <p class="section-description">
+                        Medicines currently assigned to @selectedWardName.
+                    </p>
+                </div>
+
+                <span class="section-count">
+                    @totalMedicines medicine types
+                </span>
+
+            </div>
+
+            @if (Model.Medications.Any())
+            {
+                <div class="table-container">
+
+                    <table class="stock-table">
+
+                        <thead>
+                            <tr>
+                                <th>Medicine</th>
+                                <th>Dosage Form</th>
+                                <th>Manufacturer</th>
+                                <th>Quantity in Ward</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var stock in Model.Medications)
+                            {
+                                var medication = stock.Medication;
+
+                                var isOut = stock.QuantityInWard <= 0;
+                                var isLow = !isOut &&
+                                stock.QuantityInWard <= 5;
+
+                                <tr>
+
+                                    <td>
+                                        <div class="item-name">
+                                            @(medication?.MedicationName ?? "Unknown")
+                                        </div>
+
+                                        @if (!string.IsNullOrWhiteSpace(medication?.Description))
+                                        {
+                                            <div class="item-description">
+                                                @medication.Description
+                                            </div>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        @(medication?.DosageForm ?? "N/A")
+                                    </td>
+
+                                    <td>
+                                        @(medication?.Manufacturer ?? "N/A")
+                                    </td>
+
+                                    <td>
+                                        <span class="quantity">
+                                            @stock.QuantityInWard.ToString("N0")
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        @if (isOut)
+                                        {
+                                            <span class="status-badge status-out">
+                                                <i class="bi bi-x-circle"></i>
+                                                Out of Stock
+                                            </span>
+                                        }
+                                        else if (isLow)
+                                        {
+                                            <span class="status-badge status-low">
+                                                <i class="bi bi-exclamation-triangle"></i>
+                                                Low Stock
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="status-badge status-good">
+                                                <i class="bi bi-check-circle"></i>
+                                                Good
+                                            </span>
+                                        }
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                <div class="summary-row">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <span class="summary-label">
+                                Total Medicine Units
+                            </span>
+
+                            <div class="summary-value">
+                                @totalMedicineUnits.ToString("N0")
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <span class="summary-label">
+                                Low Stock Medicines
+                            </span>
+
+                            <div class="summary-value">
+                                @lowMedicines
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+
+                    <div class="empty-icon">
+                        <i class="bi bi-capsule"></i>
+                    </div>
+
+                    <div class="empty-title">
+                        No Medicines Recorded
+                    </div>
+
+                    <p class="empty-text">
+                        There are currently no medicines recorded for this ward.
+                    </p>
+
+                </div>
+            }
+
+        </div>
+  }
+</div>

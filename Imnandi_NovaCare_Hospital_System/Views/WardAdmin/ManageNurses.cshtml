@@ -1,0 +1,1458 @@
+﻿@using Imnandi_NovaCare_Hospital_System.Models
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model AssignNurseViewModel
+
+@{
+    ViewData["Title"] = "Manage Nurse Assignments";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] - Ward Management System</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <style>
+        body {
+            background: #f4f7fb;
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: #212529;
+        }
+
+        .page-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px 50px;
+        }
+
+        .page-header {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e9edf3;
+        }
+
+        .page-header h2 {
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .page-header p {
+            margin: 0;
+            color: #6c757d;
+        }
+
+        .assignment-card {
+            background: #ffffff;
+            border: none;
+            border-radius: 18px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .card-title-bar {
+            padding: 18px 22px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title-bar h5 {
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .assignment-body {
+            padding: 25px;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 25px;
+        }
+
+        .step-number {
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            border-radius: 50%;
+            background: #0d6efd;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .step-content {
+            width: 100%;
+        }
+
+        .step-label {
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-select {
+            min-height: 48px;
+            border-radius: 10px;
+            border: 1px solid #ced4da;
+        }
+
+        .form-select:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, .12);
+        }
+
+        .patient-panel {
+            display: none;
+            margin-top: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #fafbfd;
+        }
+
+        .patient-panel-header {
+            padding: 15px 18px;
+            background: #f1f5f9;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .patient-search {
+            border-radius: 9px;
+            min-height: 42px;
+        }
+
+        .patient-list {
+            max-height: 380px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .patient-item {
+            background: #ffffff;
+            border: 1px solid #e6e9ee;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            padding: 13px 15px;
+            transition: all .15s ease;
+        }
+
+        .patient-item:hover {
+            border-color: #0d6efd;
+            background: #f8fbff;
+        }
+
+        .patient-item.selected {
+            border-color: #0d6efd;
+            background: #eef6ff;
+        }
+
+        .patient-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .patient-name {
+            font-weight: 600;
+        }
+
+        .patient-details {
+            font-size: 13px;
+            color: #6c757d;
+            margin-top: 2px;
+        }
+
+        .selection-bar {
+            display: none;
+            background: #e8f3ff;
+            border: 1px solid #b9dcff;
+            border-radius: 10px;
+            padding: 12px 15px;
+            margin-top: 12px;
+        }
+
+        .selection-count {
+            font-weight: 700;
+            color: #0d6efd;
+        }
+
+        .assignment-summary {
+            display: none;
+            margin-top: 20px;
+            padding: 18px;
+            border-radius: 12px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 7px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            color: #6c757d;
+        }
+
+        .summary-value {
+            font-weight: 600;
+        }
+
+        .assign-button {
+            min-height: 50px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .reset-button {
+            min-height: 50px;
+            border-radius: 10px;
+        }
+
+        .back-button {
+            min-height: 50px;
+            border-radius: 10px;
+        }
+
+        .current-header {
+            background: #ffffff;
+        }
+
+        .nurse-card {
+            border: 1px solid #e5e9ef;
+            border-radius: 14px;
+            margin-bottom: 14px;
+            background: white;
+            overflow: hidden;
+        }
+
+        .nurse-header {
+            padding: 15px 18px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .nurse-name {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .nurse-ward {
+            color: #6c757d;
+            font-size: 13px;
+            margin-top: 3px;
+        }
+
+        .patient-count {
+            background: #e7f1ff;
+            color: #0d6efd;
+            border-radius: 20px;
+            padding: 5px 11px;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .assigned-patients {
+            padding: 15px 18px;
+        }
+
+        .assigned-patient {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #edf0f3;
+        }
+
+        .assigned-patient:last-child {
+            border-bottom: none;
+        }
+
+        .assigned-patient-name {
+            font-weight: 600;
+        }
+
+        .unassign-btn {
+            border-radius: 8px;
+            white-space: nowrap;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 35px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state i {
+            font-size: 40px;
+            display: block;
+            margin-bottom: 10px;
+            color: #adb5bd;
+        }
+
+        .alert {
+            border-radius: 12px;
+            border: none;
+        }
+
+        .modal-content {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, .15);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid #edf0f3;
+        }
+
+        .modal-footer {
+            border-top: 1px solid #edf0f3;
+        }
+
+        .required {
+            color: #dc3545;
+        }
+
+        .disabled-message {
+            color: #6c757d;
+            font-size: 13px;
+            margin-top: 7px;
+        }
+
+        @@media (max-width: 991px) {
+            .page-wrapper {
+                padding: 20px 12px 40px;
+            }
+
+            .assignment-body {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="page-wrapper">
+
+        <div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-3">
+
+            <div>
+                <h2>
+                    <i class="bi bi-people-fill text-primary me-2"></i>
+                    Manage Nurse Assignments
+                </h2>
+
+                <p>
+                    Assign nurses to wards and multiple patients in one operation.
+                </p>
+            </div>
+
+            <a asp-action="WardAdminDashBoard"
+               class="btn btn-outline-secondary back-button px-4">
+                <i class="bi bi-arrow-left me-2"></i>
+                Back to Dashboard
+            </a>
+
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success d-flex align-items-center mb-4">
+                <i class="bi bi-check-circle-fill fs-5 me-2"></i>
+                <span>@TempData["Success"]</span>
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger d-flex align-items-center mb-4">
+                <i class="bi bi-exclamation-triangle-fill fs-5 me-2"></i>
+                <span>@TempData["Error"]</span>
+            </div>
+        }
+
+        <div class="row g-4">
+
+            <div class="col-lg-5">
+
+                <div class="assignment-card">
+
+                    <div class="card-title-bar">
+                        <div>
+                            <h5>
+                                <i class="bi bi-person-plus-fill text-primary me-2"></i>
+                                New Assignment
+                            </h5>
+
+                            <small class="text-muted">
+                                Complete the steps below
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="assignment-body">
+
+                        <form asp-action="ManageNurses"
+                              method="post"
+                              id="assignNurseForm">
+
+                            @Html.AntiForgeryToken()
+
+                            <div class="step">
+
+                                <div class="step-number">1</div>
+
+                                <div class="step-content">
+
+                                    <label class="step-label">
+                                        Select Nurse
+                                        <span class="required">*</span>
+                                    </label>
+
+                                    <select asp-for="SelectedNurseId"
+                                            class="form-select"
+                                            id="nurseSelect"
+                                            required>
+
+                                        <option value="">
+                                            -- Select Nurse --
+                                        </option>
+
+                                        @foreach (var nurse in Model.Nurses)
+                                        {
+                                            <option value="@nurse.NurseId">
+                                                @nurse.FirstName @nurse.LastName
+                                            </option>
+                                        }
+
+                                    </select>
+
+                                    <div class="disabled-message">
+                                        Choose the nurse who will receive the patient assignments.
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="step">
+
+                                <div class="step-number">2</div>
+
+                                <div class="step-content">
+
+                                    <label class="step-label">
+                                        Select Ward
+                                        <span class="required">*</span>
+                                    </label>
+
+                                    <select asp-for="SelectedWardId"
+                                            class="form-select"
+                                            id="wardSelect"
+                                            required>
+
+                                        <option value="">
+                                            -- Select Ward --
+                                        </option>
+
+                                        @foreach (var ward in Model.Wards)
+                                        {
+                                            <option value="@ward.WardId">
+                                                @ward.WardName
+                                            </option>
+                                        }
+
+                                    </select>
+
+                                    <div class="disabled-message">
+                                        Patients will be loaded from this ward.
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="step">
+
+                                <div class="step-number">3</div>
+
+                                <div class="step-content">
+
+                                    <label class="step-label">
+                                        Select Patients
+                                        <span class="required">*</span>
+                                    </label>
+
+                                    <div id="patientInstruction"
+                                         class="disabled-message mb-2">
+
+                                        Select a ward first to view its patients.
+                                    </div>
+
+                                    <div class="patient-panel"
+                                         id="patientPanel">
+
+                                        <div class="patient-panel-header">
+
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+
+                                                <strong>
+                                                    Patients in selected ward
+                                                </strong>
+
+                                                <span class="badge text-bg-primary"
+                                                      id="patientTotal">
+                                                    0
+                                                </span>
+
+                                            </div>
+
+                                            <input type="text"
+                                                   class="form-control patient-search"
+                                                   id="patientSearch"
+                                                   placeholder="Search patients..." />
+
+                                            <div class="mt-2 d-flex justify-content-between">
+
+                                                <button type="button"
+                                                        class="btn btn-sm btn-outline-primary"
+                                                        id="selectAllBtn">
+                                                    <i class="bi bi-check2-square me-1"></i>
+                                                    Select All
+                                                </button>
+
+                                                <button type="button"
+                                                        class="btn btn-sm btn-outline-secondary"
+                                                        id="clearAllBtn">
+                                                    Clear
+                                                </button>
+
+                                            </div>
+
+                                        </div>
+
+                                        <div class="patient-list"
+                                             id="patientList">
+
+                                            @foreach (var patient in Model.Patients)
+                                            {
+                                                var wardId = patient.Room?.Ward?.WardId;
+                                                var wardName = patient.Room?.Ward?.WardName ?? "No ward";
+                                                var alreadyAssigned = patient.NurseId.HasValue;
+
+                                                <div class="patient-item"
+                                                     data-ward-id="@wardId"
+                                                     data-patient-name="@patient.FirstName @patient.LastName"
+                                                     data-already-assigned="@alreadyAssigned.ToString().ToLower()">
+
+                                                    <div class="d-flex align-items-center">
+
+                                                        <input type="checkbox"
+                                                               class="form-check-input patient-checkbox me-3"
+                                                               name="SelectedPatientIds"
+                                                               value="@patient.Id"
+                                                               id="patient_@patient.Id"
+                                                               @(alreadyAssigned ? "disabled" : "") />
+
+                                                        <label for="patient_@patient.Id"
+                                                               class="flex-grow-1 mb-0"
+                                                               style="cursor:pointer;">
+
+                                                            <div class="patient-name">
+                                                                @patient.FirstName @patient.LastName
+                                                            </div>
+
+                                                            <div class="patient-details">
+
+                                                                <span>
+                                                                    <i class="bi bi-person-vcard me-1"></i>
+                                                                    ID: @patient.Id
+                                                                </span>
+
+                                                                <span class="ms-3">
+                                                                    <i class="bi bi-hospital me-1"></i>
+                                                                    @wardName
+                                                                </span>
+
+                                                                @if (alreadyAssigned)
+                                                                {
+                                                                    <span class="badge text-bg-warning ms-2">
+                                                                        Already Assigned
+                                                                    </span>
+                                                                }
+
+                                                            </div>
+
+                                                        </label>
+
+                                                    </div>
+
+                                                </div>
+                                            }
+
+                                        </div>
+
+                                    </div>
+
+                                    <div class="selection-bar"
+                                         id="selectionBar">
+
+                                        <div class="d-flex justify-content-between align-items-center">
+
+                                            <div>
+                                                <i class="bi bi-check-circle-fill text-primary me-2"></i>
+                                                <span class="selection-count"
+                                                      id="selectionCount">
+                                                    0
+                                                </span>
+                                                patient(s) selected
+                                            </div>
+
+                                            <button type="button"
+                                                    class="btn btn-sm btn-outline-primary"
+                                                    id="reviewBtn">
+                                                Review
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="assignment-summary"
+                                 id="assignmentSummary">
+
+                                <h6 class="fw-bold mb-3">
+                                    <i class="bi bi-clipboard-check me-2 text-primary"></i>
+                                    Assignment Summary
+                                </h6>
+
+                                <div class="summary-row">
+
+                                    <span class="summary-label">
+                                        Nurse
+                                    </span>
+
+                                    <span class="summary-value"
+                                          id="summaryNurse">
+                                        -
+                                    </span>
+
+                                </div>
+
+                                <div class="summary-row">
+
+                                    <span class="summary-label">
+                                        Ward
+                                    </span>
+
+                                    <span class="summary-value"
+                                          id="summaryWard">
+                                        -
+                                    </span>
+
+                                </div>
+
+                                <div class="summary-row">
+
+                                    <span class="summary-label">
+                                        Patients
+                                    </span>
+
+                                    <span class="summary-value"
+                                          id="summaryPatients">
+                                        0
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="row g-2 mt-4">
+
+                                <div class="col-md-4">
+
+                                    <button type="button"
+                                            class="btn btn-success w-100 assign-button"
+                                            id="assignButton">
+
+                                        <i class="bi bi-check-circle me-2"></i>
+                                        Assign
+
+                                    </button>
+
+                                </div>
+
+                                <div class="col-md-4">
+
+                                    <button type="button"
+                                            class="btn btn-outline-secondary w-100 reset-button"
+                                            id="resetBtn">
+
+                                        <i class="bi bi-arrow-repeat me-2"></i>
+                                        Reset
+
+                                    </button>
+
+                                </div>
+
+                                <div class="col-md-4">
+
+                                    <a asp-action="WardAdminDashBoard"
+                                       class="btn btn-outline-danger w-100 back-button">
+
+                                        Back
+
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-lg-7">
+
+                <div class="assignment-card">
+
+                    <div class="card-title-bar current-header">
+
+                        <div>
+                            <h5>
+                                <i class="bi bi-clipboard2-data text-primary me-2"></i>
+                                Current Nurse Assignments
+                            </h5>
+
+                            <small class="text-muted">
+                                View nurses, wards and their assigned patients
+                            </small>
+                        </div>
+
+                        <span class="badge text-bg-primary">
+                            @Model.AllNursesWithPatients.Count Nurse(s)
+                        </span>
+
+                    </div>
+
+
+                    <div class="assignment-body">
+
+                        @if (Model.AllNursesWithPatients.Any())
+                        {
+                            <div id="currentAssignments">
+
+                                @foreach (var nurse in Model.AllNursesWithPatients)
+                                {
+                                    <div class="nurse-card">
+
+                                        <div class="nurse-header">
+
+                                            <div>
+
+                                                <div class="nurse-name">
+
+                                                    <i class="bi bi-person-badge-fill text-primary me-2"></i>
+
+                                                    @nurse.FirstName @nurse.LastName
+
+                                                </div>
+
+                                                <div class="nurse-ward">
+
+                                                    @if (nurse.WardId.HasValue)
+                                                    {
+                                                        <span>
+                                                            <i class="bi bi-hospital me-1"></i>
+                                                            @nurse.WardName
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted">
+                                                            <i class="bi bi-hospital me-1"></i>
+                                                            No ward assigned
+                                                        </span>
+                                                    }
+
+                                                </div>
+
+                                            </div>
+
+                                            <span class="patient-count">
+
+                                                @nurse.Patients.Count Patient(s)
+
+                                            </span>
+
+                                        </div>
+
+
+                                        <div class="assigned-patients">
+
+                                            @if (nurse.Patients.Any())
+                                            {
+                                                @foreach (var patient in nurse.Patients)
+                                                {
+                                                    <div class="assigned-patient">
+
+                                                        <div>
+
+                                                            <div class="assigned-patient-name">
+
+                                                                <i class="bi bi-person-fill text-secondary me-2"></i>
+
+                                                                @patient.FirstName @patient.LastName
+
+                                                            </div>
+
+                                                            <small class="text-muted">
+                                                                Patient ID: @patient.Id
+                                                            </small>
+
+                                                        </div>
+
+                                                        <button type="button"
+                                                                class="btn btn-sm btn-outline-danger unassign-btn"
+                                                                data-nurse-id="@nurse.NurseId"
+                                                                data-patient-id="@patient.Id"
+                                                                data-patient-name="@patient.FirstName @patient.LastName">
+
+                                                            <i class="bi bi-person-dash me-1"></i>
+                                                            Unassign
+
+                                                        </button>
+
+                                                    </div>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <div class="empty-state py-3">
+
+                                                    <i class="bi bi-person-x"></i>
+
+                                                    <div>
+                                                        No patients currently assigned.
+                                                    </div>
+
+                                                </div>
+                                            }
+
+                                        </div>
+
+                                    </div>
+                                }
+
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="empty-state">
+
+                                <i class="bi bi-people"></i>
+
+                                <h6 class="fw-bold">
+                                    No nurse assignments
+                                </h6>
+
+                                <p class="mb-0">
+                                    Assigned nurses and patients will appear here.
+                                </p>
+
+                            </div>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="modal fade"
+         id="confirmationModal"
+         tabindex="-1"
+         aria-hidden="true">
+
+        <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi bi-check-circle text-primary me-2"></i>
+                        Confirm Assignment
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal">
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <p>
+                        You are about to assign:
+                    </p>
+
+                    <div class="bg-light rounded p-3">
+
+                        <div class="mb-2">
+                            <strong>Nurse:</strong>
+                            <span id="modalNurse"></span>
+                        </div>
+
+                        <div class="mb-2">
+                            <strong>Ward:</strong>
+                            <span id="modalWard"></span>
+                        </div>
+
+                        <div>
+                            <strong>Patients:</strong>
+                            <span id="modalPatientCount"></span>
+                        </div>
+
+                    </div>
+
+                    <p class="text-muted small mt-3 mb-0">
+                        All selected patients will be assigned to this nurse.
+                    </p>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-success"
+                            id="confirmAssignment">
+                        <i class="bi bi-check-circle me-1"></i>
+                        Confirm Assignment
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="modal fade"
+         id="unassignModal"
+         tabindex="-1"
+         aria-hidden="true">
+
+        <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi bi-person-dash text-danger me-2"></i>
+                        Unassign Patient
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal">
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <p>
+                        Are you sure you want to unassign
+                        <strong id="unassignPatientName"></strong>?
+                    </p>
+
+                    <p class="text-muted small mb-0">
+                        The patient will no longer be assigned to this nurse.
+                    </p>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <form asp-action="UnassignPatient"
+                          method="post"
+                          id="unassignForm">
+
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden"
+                               name="nurseId"
+                               id="unassignNurseId" />
+
+                        <input type="hidden"
+                               name="patientId"
+                               id="unassignPatientId" />
+
+                        <button type="button"
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal">
+                            Cancel
+                        </button>
+
+                        <button type="submit"
+                                class="btn btn-danger">
+                            <i class="bi bi-person-dash me-1"></i>
+                            Unassign
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    @section Scripts {
+
+        <partial name="_ValidationScriptsPartial" />
+
+        <script>
+
+            document.addEventListener("DOMContentLoaded", function () {
+
+                const form = document.getElementById("assignNurseForm");
+
+                const nurseSelect = document.getElementById("nurseSelect");
+
+                const wardSelect = document.getElementById("wardSelect");
+
+                const patientPanel = document.getElementById("patientPanel");
+
+                const patientInstruction = document.getElementById("patientInstruction");
+
+                const patientSearch = document.getElementById("patientSearch");
+
+                const patientItems = document.querySelectorAll(".patient-item");
+
+                const patientCheckboxes = document.querySelectorAll(".patient-checkbox");
+
+                const selectionBar = document.getElementById("selectionBar");
+
+                const selectionCount = document.getElementById("selectionCount");
+
+                const patientTotal = document.getElementById("patientTotal");
+
+                const selectAllBtn = document.getElementById("selectAllBtn");
+
+                const clearAllBtn = document.getElementById("clearAllBtn");
+
+                const resetBtn = document.getElementById("resetBtn");
+
+                const assignButton = document.getElementById("assignButton");
+
+                const reviewBtn = document.getElementById("reviewBtn");
+
+                const assignmentSummary = document.getElementById("assignmentSummary");
+
+                const confirmationModalElement = document.getElementById("confirmationModal");
+
+                const confirmationModal = new bootstrap.Modal(confirmationModalElement);
+
+                const confirmAssignment = document.getElementById("confirmAssignment");
+
+                const unassignModalElement = document.getElementById("unassignModal");
+
+                const unassignModal = new bootstrap.Modal(unassignModalElement);
+
+
+                function getVisiblePatients() {
+
+                    return Array.from(patientItems).filter(item => {
+
+                        return item.style.display !== "none" &&
+                               item.dataset.alreadyAssigned !== "true";
+
+                    });
+
+                }
+
+
+                function updateSelection() {
+
+                    const checked = Array.from(patientCheckboxes)
+                        .filter(cb => cb.checked);
+
+                    const count = checked.length;
+
+                    selectionCount.textContent = count;
+
+                    if (count > 0) {
+
+                        selectionBar.style.display = "block";
+
+                        assignmentSummary.style.display = "block";
+
+                        document.getElementById("summaryNurse").textContent =
+                            nurseSelect.options[nurseSelect.selectedIndex]?.text || "-";
+
+                        document.getElementById("summaryWard").textContent =
+                            wardSelect.options[wardSelect.selectedIndex]?.text || "-";
+
+                        document.getElementById("summaryPatients").textContent =
+                            count;
+
+                    } else {
+
+                        selectionBar.style.display = "none";
+
+                        assignmentSummary.style.display = "none";
+
+                    }
+
+                    patientCheckboxes.forEach(function (checkbox) {
+
+                        const item = checkbox.closest(".patient-item");
+
+                        if (checkbox.checked) {
+                            item.classList.add("selected");
+                        } else {
+                            item.classList.remove("selected");
+                        }
+
+                    });
+
+                }
+
+
+                function updatePatientList() {
+
+                    const selectedWard = wardSelect.value;
+
+                    patientSearch.value = "";
+
+                    patientCheckboxes.forEach(function (checkbox) {
+                        checkbox.checked = false;
+                    });
+
+                    if (!selectedWard) {
+
+                        patientPanel.style.display = "none";
+
+                        patientInstruction.textContent =
+                            "Select a ward first to view its patients.";
+
+                        updateSelection();
+
+                        return;
+                    }
+
+                    let count = 0;
+
+                    patientItems.forEach(function (item) {
+
+                        const wardId = item.dataset.wardId;
+
+                        if (wardId === selectedWard) {
+
+                            item.style.display = "block";
+
+                            if (item.dataset.alreadyAssigned !== "true") {
+                                count++;
+                            }
+
+                        } else {
+
+                            item.style.display = "none";
+
+                        }
+
+                    });
+
+                    patientTotal.textContent = count;
+
+                    patientPanel.style.display = "block";
+
+                    if (count === 0) {
+
+                        patientInstruction.textContent =
+                            "There are no available patients in this ward.";
+
+                    } else {
+
+                        patientInstruction.textContent =
+                            "Select one or more patients to assign to the nurse.";
+
+                    }
+
+                    updateSelection();
+
+                }
+
+
+                wardSelect.addEventListener("change", function () {
+
+                    updatePatientList();
+
+                });
+
+
+                nurseSelect.addEventListener("change", function () {
+
+                    updateSelection();
+
+                });
+
+
+                patientCheckboxes.forEach(function (checkbox) {
+
+                    checkbox.addEventListener("change", function () {
+
+                        updateSelection();
+
+                    });
+
+                });
+
+
+                patientSearch.addEventListener("input", function () {
+
+                    const search = this.value.toLowerCase().trim();
+
+                    patientItems.forEach(function (item) {
+
+                        const wardMatches =
+                            item.dataset.wardId === wardSelect.value;
+
+                        const name =
+                            item.dataset.patientName.toLowerCase();
+
+                        const searchMatches =
+                            name.includes(search);
+
+                        item.style.display =
+                            wardMatches && searchMatches
+                                ? "block"
+                                : "none";
+
+                    });
+
+                });
+
+
+                selectAllBtn.addEventListener("click", function () {
+
+                    getVisiblePatients().forEach(function (item) {
+
+                        const checkbox =
+                            item.querySelector(".patient-checkbox");
+
+                        if (!checkbox.disabled) {
+                            checkbox.checked = true;
+                        }
+
+                    });
+
+                    updateSelection();
+
+                });
+
+
+                clearAllBtn.addEventListener("click", function () {
+
+                    patientCheckboxes.forEach(function (checkbox) {
+
+                        checkbox.checked = false;
+
+                    });
+
+                    updateSelection();
+
+                });
+
+
+                reviewBtn.addEventListener("click", function () {
+
+                    updateSelection();
+
+                    assignmentSummary.scrollIntoView({
+                        behavior: "smooth",
+                        block: "center"
+                    });
+
+                });
+
+
+                assignButton.addEventListener("click", function () {
+
+                    const nurseId = nurseSelect.value;
+
+                    const wardId = wardSelect.value;
+
+                    const selectedPatients =
+                        Array.from(patientCheckboxes)
+                            .filter(cb => cb.checked);
+
+                    if (!nurseId) {
+
+                        alert("Please select a nurse.");
+
+                        nurseSelect.focus();
+
+                        return;
+
+                    }
+
+                    if (!wardId) {
+
+                        alert("Please select a ward.");
+
+                        wardSelect.focus();
+
+                        return;
+
+                    }
+
+                    if (selectedPatients.length === 0) {
+
+                        alert("Please select at least one patient.");
+
+                        return;
+
+                    }
+
+                    document.getElementById("modalNurse").textContent =
+                        nurseSelect.options[nurseSelect.selectedIndex].text;
+
+                    document.getElementById("modalWard").textContent =
+                        wardSelect.options[wardSelect.selectedIndex].text;
+
+                    document.getElementById("modalPatientCount").textContent =
+                        selectedPatients.length + " patient(s)";
+
+                    confirmationModal.show();
+
+                });
+
+
+                confirmAssignment.addEventListener("click", function () {
+
+                    form.submit();
+
+                });
+
+
+                resetBtn.addEventListener("click", function () {
+
+                    nurseSelect.value = "";
+
+                    wardSelect.value = "";
+
+                    patientSearch.value = "";
+
+                    patientCheckboxes.forEach(function (checkbox) {
+                        checkbox.checked = false;
+                    });
+
+                    patientItems.forEach(function (item) {
+                        item.style.display = "none";
+                        item.classList.remove("selected");
+                    });
+
+                    patientPanel.style.display = "none";
+
+                    patientInstruction.textContent =
+                        "Select a ward first to view its patients.";
+
+                    assignmentSummary.style.display = "none";
+
+                    selectionBar.style.display = "none";
+
+                    selectionCount.textContent = "0";
+
+                });
+
+
+                document.querySelectorAll(".unassign-btn").forEach(function (button) {
+
+                    button.addEventListener("click", function () {
+
+                        document.getElementById("unassignNurseId").value =
+                            this.dataset.nurseId;
+
+                        document.getElementById("unassignPatientId").value =
+                            this.dataset.patientId;
+
+                        document.getElementById("unassignPatientName").textContent =
+                            this.dataset.patientName;
+
+                        unassignModal.show();
+
+                    });
+
+                });
+
+            });
+
+        </script>
+
+    }
+
+</body>
+</html>

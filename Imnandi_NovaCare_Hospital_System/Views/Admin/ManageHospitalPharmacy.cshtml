@@ -1,0 +1,92 @@
+﻿@model IEnumerable<HospitalPharmarcy>
+@{
+    ViewData["Title"] = "Manage Hospital Pharmacy";
+}
+
+<div class="container mt-4">
+
+    <div class="col-12 mb-3">
+        <a asp-controller="Admin" asp-action="AdminDashboard"
+           class="btn btn-outline-primary btn-sm px-3 d-flex align-items-center shadow-sm"
+           style="border-radius: 80px;">
+            <i class="bi bi-house-door-fill me-2"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Manage Hospital Pharmacy</h2>
+        <div>
+            <a asp-action="CreateHospitalPharmacy" class="btn btn-success me-2">
+                <i class="bi bi-plus-circle"></i> Add New Pharmacy
+            </a>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">No pharmacies found.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered align-middle">
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th>Name</th>
+                        <th>Location</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var pharmacy in Model)
+                    {
+                        <tr>
+                            <td>@pharmacy.HospitalPharmarcyName</td>
+                            <td>@pharmacy.Location</td>
+                            <td class="text-center">
+                                <a asp-action="EditHospitalPharmacy" asp-route-id="@pharmacy.HospitalPharmacyId" class="btn btn-sm btn-primary me-1">
+                                    <i class="bi bi-pencil-square"></i> Edit
+                                </a>
+
+                                @if (!pharmacy.IsDeleted)
+                                {
+                                    <form asp-action="DeleteHospitalPharmacy" asp-route-id="@pharmacy.HospitalPharmacyId" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-danger me-1">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form asp-action="RestoreHospitalPharmacy" asp-route-id="@pharmacy.HospitalPharmacyId" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-success">
+                                            <i class="bi bi-arrow-counterclockwise"></i> Restore
+                                        </button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<style>
+    .btn-outline-primary {
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .table th, .table td {
+        vertical-align: middle !important;
+    }
+
+    .btn {
+        border-radius: 50px;
+        padding: 0.35rem 0.75rem;
+        font-size: 0.85rem;
+    }
+</style>

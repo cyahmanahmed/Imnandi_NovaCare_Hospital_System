@@ -1,0 +1,103 @@
+﻿@model ScriptPrescription
+
+@{
+    ViewData["Title"] = "Receive Prescription";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Receive Prescription</h4>
+                </div>
+
+                <div class="card-body">
+                    <div class="mb-4 p-3 bg-light rounded">
+                        <h5 class="fw-bold text-primary">Patient Information</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Patient Name:</strong> @Model.Prescription.Patient.FirstName @Model.Prescription.Patient.LastName</p>
+                                <p><strong>Ward:</strong> @Model.Prescription.Patient.Room?.Ward?.WardName</p>
+                                <p><strong>Room:</strong> @Model.Prescription.Patient.Room?.RoomNumber</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Prescription Date:</strong> @Model.Prescription.IssueDate.ToString("dd MMMM yyyy")</p>
+                                <p><strong>Prescription Time:</strong> @Model.Prescription.IssueTime.ToString("HH:mm")</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4 p-3 bg-light rounded">
+                        <h5 class="fw-bold text-primary">Prescribed By</h5>
+                        <p><strong>Doctor:</strong> @Model.Prescription.Doctor.FirstName @Model.Prescription.Doctor.LastName</p>
+                    </div>
+
+                    <div class="mb-4 p-3 bg-light rounded">
+                        <h5 class="fw-bold text-primary">Medication to Receive</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Medication Name:</strong> @Model.Prescription.Medication.MedicationName</p>
+                                <p><strong>Dosage Form:</strong> @Model.Prescription.Medication.DosageForm</p>
+                                <p><strong>Manufacturer:</strong> @Model.Prescription.Medication.Manufacturer</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Dosage Instructions:</strong> @Model.Prescription.DosageInstructions</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Notes))
+                    {
+                        <div class="mb-4 p-3 bg-warning bg-opacity-10 border border-warning rounded">
+                            <h5 class="fw-bold text-warning">Previous Notes</h5>
+                            <p class="mb-0">@Model.Notes</p>
+                        </div>
+                    }
+
+                    <form asp-action="ReceivePrescription" method="post" class="mt-4">
+                        <input type="hidden" name="id" value="@Model.ScriptPrescriptionId" />
+
+                        <div class="mb-4">
+                            <label for="notes" class="form-label fw-bold">Add Notes</label>
+                            <textarea name="notes" id="notes" class="form-control" rows="4" placeholder="Record any observations — e.g., damaged packaging, partial delivery, expiry concerns..."></textarea>
+                        </div>
+
+                        <div class="d-flex gap-3">
+                            @if (!Model.IsVerified)
+                            {
+                                <button type="submit" name="action" value="verify" class="btn btn-outline-warning btn-lg">
+                                    Verify Medication Details
+                                </button>
+                            }
+                            @if (Model.IsVerified)
+                            {
+                                <button type="submit" name="action" value="receive" class="btn btn-success btn-lg">
+                                    Receive and Complete Process
+                                </button>
+                            }
+                            <a asp-action="ManagePrescriptions" class="btn btn-outline-secondary btn-lg">
+                                Back to Prescriptions
+                            </a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('button[type="submit"]').forEach(button => {
+            button.addEventListener('click', function () {
+                const action = this.getAttribute('name') === 'action' ? this.value : '';
+                if (action === 'receive') {
+                    return confirm('Are you sure you want to mark this prescription as received and completed? This action cannot be undone.');
+                }
+            });
+        });
+    </script>
+}

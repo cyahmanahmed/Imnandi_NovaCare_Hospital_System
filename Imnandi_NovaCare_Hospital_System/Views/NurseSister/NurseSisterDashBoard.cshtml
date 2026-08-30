@@ -1,0 +1,851 @@
+﻿@model NurseSisterDashBoardViewModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"]</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="~/css/Nurse.css" rel="stylesheet" />
+
+    <style>
+        .admin-sidebar {
+            background-color: #2c3e50;
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding-top: 1rem;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .admin-sidebar a {
+            display: block;
+            padding: 0.9rem 1.25rem;
+            color: white;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .admin-sidebar a:hover {
+            background-color: #34495e;
+        }
+
+        .admin-sidebar .section-title {
+            padding: 0.75rem 1.25rem;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            color: #adb5bd;
+        }
+
+
+        body {
+            background: #f4f7fb;
+            color: #263238;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .main {
+            margin-left: 250px;
+            padding: 35px 40px 50px;
+            min-height: 100vh;
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+            border: 1px solid #e5eaf0;
+            border-radius: 16px;
+            padding: 28px 30px;
+            margin-bottom: 28px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 18px rgba(31, 45, 61, 0.05);
+        }
+
+        .dashboard-header::after {
+            content: "";
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            right: -70px;
+            top: -80px;
+            background: rgba(13, 110, 253, 0.06);
+        }
+
+        .dashboard-header h2 {
+            margin: 0 0 7px;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .dashboard-header p {
+            color: #6b7280;
+            font-size: 0.95rem;
+        }
+
+
+        .stat-card {
+            border: 1px solid #e5eaf0 !important;
+            border-radius: 16px !important;
+            background: #ffffff !important;
+            box-shadow: 0 4px 16px rgba(31, 45, 61, 0.05);
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+            min-height: 145px;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(31, 45, 61, 0.10);
+        }
+
+        .stat-card::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: #0d6efd;
+        }
+
+        .stat-card.stat-green::before {
+            background: #198754;
+        }
+
+        .stat-card.stat-purple::before {
+            background: #6f42c1;
+        }
+
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            margin: 0 auto 12px;
+        }
+
+        .icon-blue {
+            background: #e8f1ff;
+            color: #0d6efd;
+        }
+
+        .icon-green {
+            background: #e7f7ef;
+            color: #198754;
+        }
+
+        .icon-purple {
+            background: #f1eaff;
+            color: #6f42c1;
+        }
+
+        .stat-card h6 {
+            color: #6b7280;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .stat-number {
+            color: #1f2937;
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #1f2937;
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 32px 0 14px;
+        }
+
+        .section-heading::before {
+            content: "";
+            width: 4px;
+            height: 22px;
+            background: #0d6efd;
+            border-radius: 5px;
+        }
+
+        .dashboard-card {
+            background: #ffffff;
+            border: 1px solid #e5eaf0;
+            border-radius: 15px;
+            box-shadow: 0 4px 16px rgba(31, 45, 61, 0.05);
+            overflow: hidden;
+        }
+
+        .card-header-custom {
+            padding: 17px 20px;
+            background: #ffffff;
+            border-bottom: 1px solid #edf0f4;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+            .card-header-custom .header-title {
+                font-size: 0.92rem;
+                font-weight: 700;
+                color: #374151;
+            }
+
+        .header-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 9px;
+        }
+
+        .header-icon-blue {
+            background: #eaf2ff;
+            color: #0d6efd;
+        }
+
+        .header-icon-green {
+            background: #e8f7ef;
+            color: #198754;
+        }
+
+        .header-icon-red {
+            background: #fdecec;
+            color: #dc3545;
+        }
+
+        .dashboard-table {
+            margin: 0;
+        }
+
+        .dashboard-table thead th {
+            background: #f8fafc;
+            color: #6b7280;
+            border-bottom: 1px solid #e5eaf0;
+            border-top: none;
+            font-size: 0.76rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.35px;
+            padding: 14px 18px;
+            white-space: nowrap;
+        }
+
+        .dashboard-table tbody td {
+            padding: 15px 18px;
+            border-color: #edf0f4;
+            color: #374151;
+            font-size: 0.88rem;
+            vertical-align: middle;
+        }
+
+        .dashboard-table tbody tr {
+            transition: background-color 0.2s ease;
+        }
+
+        .dashboard-table tbody tr:hover {
+            background-color: #f8fbff;
+        }
+
+        .person-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .person-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #edf4ff;
+            color: #0d6efd;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .ward-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: #fff0f0;
+            color: #dc3545;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+        }
+
+        .count-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #eef7f2;
+            color: #198754;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 11px;
+            border-radius: 20px;
+            font-size: 0.76rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fff5d9;
+            color: #996c00;
+        }
+
+        .status-done {
+            background: #e7f7ef;
+            color: #198754;
+        }
+
+
+        .scrollable-table {
+            max-height: 310px;
+            overflow-y: auto;
+        }
+
+        .scrollable-table::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .scrollable-table::-webkit-scrollbar-track {
+            background: #f8f9fa;
+        }
+
+        .scrollable-table::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .scrollable-table::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+
+        .empty-state {
+            text-align: center;
+            padding: 35px 20px !important;
+            color: #9ca3af !important;
+        }
+
+        .empty-state i {
+            display: block;
+            font-size: 2rem;
+            margin-bottom: 8px;
+            color: #cbd5e1;
+        }
+
+        @@media (max-width: 992px) {
+            .main {
+                margin-left: 250px;
+                padding: 25px 20px;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .main {
+                margin-left: 0;
+                padding: 20px 15px;
+            }
+
+            .admin-sidebar {
+                display: none;
+            }
+
+            .dashboard-header h2 {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="admin-sidebar">
+
+        <h3 class="text-center mb-4 fw-bold">
+            Nurse Sister Panel
+        </h3>
+
+        <a asp-action="ManageNurses" asp-controller="NurseSister">
+            <i class="bi bi-people-fill me-2"></i>
+            Manage Nurses
+        </a>
+
+        <a asp-action="ViewMedicationAdmistration">
+            <i class="bi bi-capsule-pill me-2"></i>
+            View Medication Schedule
+        </a>
+
+        <a asp-controller="NurseSister" asp-action="ViewAlerts">
+            <i class="bi bi-bell-fill me-2"></i>
+            View Alerts
+        </a>
+
+        <h6 class="section-title">
+            Settings
+        </h6>
+
+        <a asp-controller="NurseSister" asp-action="Profile">
+            <i class="bi bi-gear me-2"></i>
+            Profile
+        </a>
+
+        <a href="/Identity/Account/Logout">
+            <i class="bi bi-box-arrow-right me-2"></i>
+            Log Out
+        </a>
+
+    </div>
+
+    <div class="main">
+        <div class="dashboard-header">
+
+            <h2>
+                Welcome, @Model.FirstName @Model.LastName
+            </h2>
+
+            <p class="mb-0">
+                Overview of your assigned wards, nursing staff and medication schedules.
+            </p>
+
+        </div>
+
+        <div class="row g-4 mb-2">
+
+            <div class="col-lg-4 col-md-6">
+
+                <div class="stat-card p-4 text-center">
+
+                    <div class="stat-icon icon-blue">
+                        <i class="bi bi-hospital"></i>
+                    </div>
+
+                    <h6>
+                        Responsible Wards
+                    </h6>
+
+                    <div class="stat-number">
+                        @Model.TotalWards
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+
+                <div class="stat-card stat-green p-4 text-center">
+
+                    <div class="stat-icon icon-green">
+                        <i class="bi bi-people"></i>
+                    </div>
+
+                    <h6>
+                        Responsible Nurses
+                    </h6>
+
+                    <div class="stat-number">
+                        @Model.TotalNurses
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+
+                <div class="stat-card stat-purple p-4 text-center">
+
+                    <div class="stat-icon icon-purple">
+                        <i class="bi bi-capsule-pill"></i>
+                    </div>
+
+                    <h6>
+                        Upcoming Medications
+                    </h6>
+
+                    <div class="stat-number">
+                        @Model.UpcomingSchedule.Count()
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="card p-4 mb-4">
+
+            <div class="d-flex align-items-center mb-3">
+                <div class="me-3">
+                    <i class="bi bi-person-badge fs-2 text-primary"></i>
+                </div>
+
+                <div>
+                    <h5 class="fw-bold mb-1"> 
+                    </h5>
+
+                    <span class="text-muted">
+                        Nursing Management Department
+                    </span>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-4">
+                    <strong>Name</strong>
+                    <p class="text-muted mb-0">
+                        @Model.FirstName @Model.LastName
+                    </p>
+                </div>
+
+                <div class="col-md-4">
+                    <strong></strong>
+                    <p class="text-muted mb-0">
+                    </p>
+                </div>
+
+                <div class="col-md-4">
+                    <strong>Email</strong>
+                    <p class="text-muted mb-0">
+                        @Model.Email
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+        <h4 class="section-heading">
+            Assigned Wards
+        </h4>
+
+        <div class="dashboard-card">
+
+            <div class="card-header-custom">
+
+                <div class="header-title">
+
+                    <span class="header-icon header-icon-red">
+                        <i class="bi bi-hospital-fill"></i>
+                    </span>
+
+                    Ward Overview
+
+                </div>
+
+                <span class="badge rounded-pill text-bg-light">
+                    @Model.Wards.Count() wards
+                </span>
+
+            </div>
+
+
+            <div class="table-responsive scrollable-table">
+
+                <table class="table dashboard-table align-middle">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Ward Name
+                            </th>
+
+                            <th>
+                                Total Rooms
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @if (Model.Wards.Any())
+                        {
+                            foreach (var ward in Model.Wards)
+                            {
+                                <tr>
+
+                                    <td>
+
+                                        <div class="d-flex align-items-center">
+
+                                            <span class="ward-icon">
+                                                <i class="bi bi-building"></i>
+                                            </span>
+
+                                            <strong>
+                                                @ward.WardName
+                                            </strong>
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <span class="count-badge">
+
+                                            <i class="bi bi-door-open"></i>
+
+                                            @ward.Rooms.Count()
+
+                                            @(ward.Rooms.Count() == 1 ? "Room" : "Rooms")
+
+                                        </span>
+
+                                    </td>
+
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+
+                                <td colspan="2" class="empty-state">
+
+                                    <i class="bi bi-hospital"></i>
+
+                                    No wards are currently assigned.
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <h4 class="section-heading">
+            Manage Nurses
+        </h4>
+
+        <div class="dashboard-card">
+
+            <div class="card-header-custom">
+
+                <div class="header-title">
+
+                    <span class="header-icon header-icon-green">
+                        <i class="bi bi-people-fill"></i>
+                    </span>
+
+                    Nursing Staff
+
+                </div>
+
+                <span class="badge rounded-pill text-bg-light">
+                    @Model.Nurses.Count() nurses
+                </span>
+
+            </div>
+
+
+            <div class="table-responsive scrollable-table">
+
+                <table class="table dashboard-table align-middle">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Nurse Full Name
+                            </th>
+
+                            <th>
+                                Patients Assigned
+                            </th>
+
+                            <th>
+                                Responsible Ward
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @if (Model.Nurses.Any())
+                        {
+                            foreach (var item in Model.Nurses)
+                            {
+                                <tr>
+
+                                    <td>
+
+                                        <div class="person-cell">
+
+                                            <span class="person-icon">
+                                                <i class="bi bi-person-badge-fill"></i>
+                                            </span>
+
+                                            <span>
+                                                @item.FirstName @item.LastName
+                                            </span>
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <span class="count-badge">
+
+                                            <i class="bi bi-person-hearts"></i>
+
+                                            @item.Patients.Count()
+
+                                            @(item.Patients.Count() == 1 ? "Patient" : "Patients")
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <div class="d-flex align-items-center">
+
+                                            <span class="ward-icon">
+                                                <i class="bi bi-building"></i>
+                                            </span>
+
+                                            <span>
+                                                @item.ward?.WardName
+                                            </span>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+
+                                <td colspan="3" class="empty-state">
+
+                                    <i class="bi bi-people"></i>
+
+                                    No nurses are currently assigned to your wards.
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const rows = document.querySelectorAll(".dashboard-table tbody tr");
+
+            rows.forEach(row => {
+
+                row.addEventListener("mouseenter", function () {
+                    this.style.transition = "background-color 0.2s ease";
+                });
+
+            });
+
+            const statNumbers = document.querySelectorAll(".stat-number");
+
+            statNumbers.forEach(number => {
+
+                const target = parseInt(number.textContent.trim());
+
+                if (isNaN(target)) {
+                    return;
+                }
+
+                let current = 0;
+                const duration = 500;
+                const increment = Math.max(1, Math.ceil(target / 25));
+
+                const timer = setInterval(function () {
+
+                    current += increment;
+
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+
+                    number.textContent = current;
+
+                }, duration / 25);
+
+            });
+
+        });
+
+    </script>
+
+</body>
+</html>

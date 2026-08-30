@@ -1,0 +1,97 @@
+﻿@model List<Alert>
+
+@{
+    ViewData["Title"] = "My Alerts";
+}
+
+<div class="container mt-4">
+    <h2>My Alerts</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>
+            You have no alerts at this time.
+        </div>
+    }
+    else
+    {
+        <div class="list-group">
+            @foreach (var alert in Model)
+            {
+                <div class="list-group-item list-group-item-action mb-2 shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <p class="mb-1">@alert.Message</p>
+                            <small class="text-muted">
+                                Created by: @alert.CreatedBy |
+                                @alert.CreatedAt.ToString("dd MMM yyyy HH:mm")
+                            </small>
+                        </div>
+
+                        <div class="d-flex align-items-center">
+
+                            <span class="badge bg-success rounded-pill me-2">
+                                Active
+                            </span>
+
+                            <form asp-action="MarkAlertRead"
+                                  asp-controller="NurseSister"
+                                  method="post">
+
+                                @Html.AntiForgeryToken()
+
+                                <input type="hidden"
+                                       name="alertId"
+                                       value="@alert.AlertId" />
+
+                                <button type="submit"
+                                        class="btn btn-sm btn-outline-primary">
+                                    Mark as Read
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <div class="d-flex align-items-center bg-light border border-primary rounded-5 shadow-sm px-4 py-2 mt-4">
+        <i class="bi bi-house-door-fill me-3 text-primary fs-5"></i>
+
+        <a asp-action="NurseSisterDashboard"
+           asp-controller="NurseSister"
+           class="text-decoration-none text-primary fw-semibold fs-6 btn-sm px-3 d-flex align-items-center shadow-sm"
+           style="border-radius:80px;">
+            Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<style>
+    .list-group-item {
+        border-radius: 0.5rem;
+    }
+
+    .back-btn {
+        text-decoration: none;
+        color: #0d6efd;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        padding: 0.35rem 1rem;
+        border-radius: 80px;
+        background-color: #f8f9fa;
+        box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+        margin-bottom: 1rem;
+    }
+
+        .back-btn i {
+            margin-right: 0.5rem;
+        }
+</style>

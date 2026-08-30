@@ -1,0 +1,260 @@
+﻿@model IEnumerable<ScriptPrescription>
+
+@{
+    ViewData["Title"] = "Manage Prescriptions";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid mt-4">
+    <div class="col-12 mb-3">
+        <a asp-controller="ScriptManager" asp-action="ScriptManagerDashboard"
+           class="btn btn-outline-primary btn-sm px-3 d-flex align-items-center shadow-sm"
+           style="border-radius: 80px;">
+            <i class="bi bi-house-door-fill me-2"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Manage Prescriptions</h4>
+        </div>
+
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-3 mb-2">
+                    <label for="wardFilter" class="form-label fw-bold">Filter by Ward</label>
+                    <select id="wardFilter" class="form-select" onchange="applyFilters()">
+                        <option value="">All Wards</option>
+                        @if (ViewBag.Wards != null)
+                        {
+                            @foreach (var ward in (List<string>)ViewBag.Wards)
+                            {
+                                <option value="@ward" selected="@(ViewBag.SelectedWard == ward)">@ward</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3 mb-2">
+                    <label for="statusFilter" class="form-label fw-bold">Filter by Status</label>
+                    <select id="statusFilter" class="form-select" onchange="applyFilters()">
+                        <option value="">All Statuses</option>
+                        <option value="Pending" selected="@(ViewBag.Status == "Pending")">Pending</option>
+                        <option value="Processed" selected="@(ViewBag.Status == "Processed")">Processed</option>
+                        <option value="Completed" selected="@(ViewBag.Status == "Completed")">Completed</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4 mb-2">
+                    <label for="searchInput" class="form-label fw-bold">Search</label>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search by medication, patient name, or notes..."
+                           value="@(ViewBag.Search ?? "")" onkeypress="if(event.key === 'Enter') applyFilters()">
+                </div>
+
+                <div class="col-md-2 mb-2 d-flex align-items-end">
+                    <button type="button" class="btn btn-primary w-100" onclick="applyFilters()">Apply Filters</button>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-12">
+                    <p class="text-muted">
+                        Showing <strong>@Model.Count()</strong> prescription@(Model.Count() != 1 ? "s" : "")
+                        @if (!string.IsNullOrEmpty(ViewBag.SelectedWard as string))
+                        {
+                            <span>for <strong>@ViewBag.SelectedWard</strong> ward</span>
+                        }
+                        @if (!string.IsNullOrEmpty(ViewBag.Status as string))
+                        {
+                            <span>with status <strong>@ViewBag.Status</strong></span>
+                        }
+                        @if (!string.IsNullOrEmpty(ViewBag.Search as string))
+                        {
+                            <span>matching "<strong>@ViewBag.Search</strong>"</span>
+                        }
+                    </p>
+                </div>
+            </div>
+
+            <div class="table-responsive shadow-sm rounded">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light text-center">
+                        <tr>
+                            <th>Patient</th>
+                            <th>Ward</th>
+                            <th>Medication</th>
+                            <th>Dosage Form</th>
+                            <th>Doctor</th>
+                            <th>Issue Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            @foreach (var scriptPrescription in Model)
+                            {
+                                var prescription = scriptPrescription.Prescription;
+                                <tr>
+                                    <td>
+                                        <strong>@prescription.Patient.FirstName @prescription.Patient.LastName</strong><br>
+                                        <small class="text-muted">ID: @prescription.Patient.Id</small>
+                                    </td>
+                                    <td>
+                                        @prescription.Patient.Room?.Ward?.WardName<br>
+                                        <small class="text-muted">@prescription.Patient.Room?.RoomNumber</small>
+                                    </td>
+                                    <td>
+                                        @prescription.Medication.MedicationName<br>
+                                        <small class="text-muted">@prescription.Medication.Description</small>
+                                    </td>
+                                    <td><strong>@prescription.Medication.DosageForm</strong></td>
+                                    <td>@prescription.Doctor.FirstName @prescription.Doctor.LastName</td>
+                                    <td>
+                                        @prescription.IssueDate.ToString("dd/MM/yyyy")<br>
+                                        @prescription.IssueTime.ToString("HH:mm")
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge
+                                                      @(scriptPrescription.Status == "Pending" ? "bg-warning" :
+                                                                                              scriptPrescription.Status == "Processed" ? "bg-info" :
+                                                                                              scriptPrescription.Status == "Completed" ? "bg-success" : "bg-secondary")">
+                                    @scriptPrescription.Status
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    @if (scriptPrescription.Status == "Pending")
+                                            {
+                                                <form asp-action="ProcessPrescription" method="post" style="display:inline;">
+                                                    <input type="hidden" name="id" value="@scriptPrescription.PrescriptionId" />
+                                                    <button type="submit" class="btn btn-outline-success"
+                                                            onclick="return confirm('Are you sure you want to process this prescription?');">
+                                                        Process
+                                                    </button>
+                                                </form>
+                                            }
+                                            else if (scriptPrescription.Status == "Processed")
+                                            {
+                                                <a href="@Url.Action("PrescriptionDetails", new { id = scriptPrescription.ScriptPrescriptionId })"
+                                                   class="btn btn-outline-primary">View</a>
+                                                <a href="@Url.Action("ReceivePrescription", new { id = scriptPrescription.ScriptPrescriptionId })"
+                                                   class="btn btn-outline-warning">Receive</a>
+                                            }
+
+                                            @if (!string.IsNullOrEmpty(scriptPrescription.Notes))
+                                            {
+                                                <button type="button" class="btn btn-outline-info"
+                                                        onclick="showNotes('@Html.Raw(scriptPrescription.Notes.Replace("'", "\\'").Replace("\"", "&quot;"))')">
+                                                    Notes
+                                                </button>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center py-4">
+                                    <div class="alert alert-info mb-0">
+                                        No prescriptions found matching your criteria.
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="notesModal" tabindex="-1" aria-labelledby="notesModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="notesModalLabel">Prescription Notes</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="notesContent"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function applyFilters() {
+            const ward = document.getElementById('wardFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            const search = document.getElementById('searchInput').value;
+
+            let url = '@Url.Action("ManagePrescriptions")';
+            const params = new URLSearchParams();
+
+            if (ward) params.append('ward', ward);
+            if (status) params.append('status', status);
+            if (search) params.append('search', search);
+
+            window.location.href = url + '?' + params.toString();
+        }
+
+        function clearAllFilters() {
+            document.getElementById('wardFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('searchInput').value = '';
+            applyFilters();
+        }
+
+        function showNotes(notes) {
+            document.getElementById('notesContent').innerHTML = '<p class="mb-0">' + notes.replace(/\n/g, '<br>') + '</p>';
+            new bootstrap.Modal(document.getElementById('notesModal')).show();
+        }
+    </script>
+}
+
+<style>
+    .table th {
+        border-top: none;
+        font-weight: 600;
+        color: #495057;
+    }
+
+    .table td {
+        vertical-align: middle;
+    }
+
+    .badge {
+        font-size: 0.8em;
+        padding: 0.5em 0.75em;
+    }
+
+    .btn-group-sm .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+
+    .card {
+        border: none;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+
+    .card-header {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.03);
+    }
+
+    .btn-group {
+        gap: 0.25rem;
+    }
+</style>

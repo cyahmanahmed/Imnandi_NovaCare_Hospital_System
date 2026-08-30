@@ -1,0 +1,590 @@
+﻿@model MedicineOrder
+
+@{
+    ViewData["Title"] = "Create Medicine Order";
+
+    var medications = ViewBag.Medications
+        as List<Medication>
+        ?? new List<Medication>();
+
+    var suppliers = ViewBag.Suppliers
+        as List<Supplier>
+        ?? new List<Supplier>();
+
+    var hospitalStores = ViewBag.HospitalStores
+        as List<HospitalStore>
+        ?? new List<HospitalStore>();
+}
+
+<div class="container-fluid py-4">
+
+    <div class="row mb-4">
+
+        <div class="col-12">
+
+            <a asp-controller="StockManager"
+               asp-action="ManageMedicineOrders"
+               class="btn btn-outline-primary btn-sm px-3 d-inline-flex align-items-center shadow-sm mb-3"
+               style="border-radius: 50px;">
+
+                <i class="bi bi-arrow-left me-2"></i>
+                Back to Medicine Orders
+
+            </a>
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <div>
+
+                    <h2 class="fw-bold mb-1">
+                        <i class="bi bi-capsule-pill text-primary me-2"></i>
+                        Create Medicine Order
+                    </h2>
+
+                    <p class="text-muted mb-0">
+                        Create a new order for medicines required by the hospital.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm"
+             role="alert">
+
+            <i class="bi bi-check-circle-fill me-2"></i>
+
+            @TempData["Success"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm"
+             role="alert">
+
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
+            @TempData["Error"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+    }
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger shadow-sm">
+
+            <div class="fw-semibold mb-2">
+                <i class="bi bi-exclamation-circle-fill me-2"></i>
+                Please correct the following:
+            </div>
+
+            <div asp-validation-summary="All"
+                 class="mb-0">
+            </div>
+
+        </div>
+    }
+
+
+    <form asp-controller="StockManager"
+          asp-action="CreateMedicineOrder"
+          method="post">
+
+        @Html.AntiForgeryToken()
+
+        <div class="card border-0 shadow-sm mb-4"
+             style="border-radius: 16px;">
+
+            <div class="card-header bg-white border-0 px-4 pt-4">
+
+                <h5 class="fw-bold mb-1">
+                    <i class="bi bi-file-earmark-text text-primary me-2"></i>
+                    Order Information
+                </h5>
+
+                <p class="text-muted small mb-0">
+                    Enter the basic information for this medicine order.
+                </p>
+
+            </div>
+
+            <div class="card-body p-4">
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+
+                        <label asp-for="OrderName"
+                               class="form-label fw-semibold">
+
+                            Order Name
+                            <span class="text-danger">*</span>
+
+                        </label>
+
+                        <input asp-for="OrderName"
+                               class="form-control"
+                               placeholder="e.g. Monthly Medicine Supply"
+                               required />
+
+                        <span asp-validation-for="OrderName"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label asp-for="SupplierId"
+                               class="form-label fw-semibold">
+
+                            Supplier
+                            <span class="text-danger">*</span>
+
+                        </label>
+
+                        <select asp-for="SupplierId"
+                                class="form-select"
+                                required>
+
+                            <option value="">
+                                -- Select Supplier --
+                            </option>
+
+                            @foreach (var supplier in suppliers)
+                            {
+                                <option value="@supplier.SupplierId">
+                                    @supplier.SupplierName
+                                </option>
+                            }
+
+                        </select>
+
+                        <span asp-validation-for="SupplierId"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label asp-for="HospitalStoreId"
+                               class="form-label fw-semibold">
+
+                            Hospital Store
+                            <span class="text-danger">*</span>
+
+                        </label>
+
+                        <select asp-for="HospitalStoreId"
+                                class="form-select"
+                                required>
+
+                            <option value="">
+                                -- Select Hospital Store --
+                            </option>
+
+                            @foreach (var store in hospitalStores)
+                            {
+                                <option value="@store.HospitalStoreId">
+                                    @store.HospitalStoreName
+                                </option>
+                            }
+
+                        </select>
+
+                        <span asp-validation-for="HospitalStoreId"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <label asp-for="Description"
+                               class="form-label fw-semibold">
+
+                            Description
+
+                        </label>
+
+                        <textarea asp-for="Description"
+                                  class="form-control"
+                                  rows="3"
+                                  placeholder="Add any additional information about this order...">
+                        </textarea>
+
+                        <span asp-validation-for="Description"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="card border-0 shadow-sm mb-4"
+             style="border-radius: 16px;">
+
+            <div class="card-header bg-white border-0 px-4 pt-4">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <h5 class="fw-bold mb-1">
+
+                            <i class="bi bi-capsule text-primary me-2"></i>
+                            Select Medicines
+
+                        </h5>
+
+                        <p class="text-muted small mb-0">
+
+                            Enter the quantity required for each medicine.
+                            Leave medicines at 0 if they are not being ordered.
+
+                        </p>
+
+                    </div>
+
+                    <span class="badge bg-primary-subtle text-primary px-3 py-2">
+                        @medications.Count medicine@(medications.Count == 1 ? "" : "s")
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="card-body p-4">
+
+                @if (medications.Any())
+                {
+                    <div class="table-responsive">
+
+                        <table class="table table-hover align-middle mb-0">
+
+                            <thead class="table-light">
+
+                                <tr>
+
+                                    <th style="width: 45px;">
+                                        #
+                                    </th>
+
+                                    <th>
+                                        Medicine
+                                    </th>
+
+                                    <th>
+                                        Dosage Form
+                                    </th>
+
+                                    <th>
+                                        Manufacturer
+                                    </th>
+
+                                    <th>
+                                        Current Stock
+                                    </th>
+
+                                    <th style="width: 180px;">
+                                        Quantity to Order
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                @for (int i = 0; i < medications.Count; i++)
+                                {
+                                    var medication = medications[i];
+
+                                    <tr>
+
+                                        <td class="text-muted">
+                                            @(i + 1)
+                                        </td>
+
+                                        <input type="hidden"
+                                               name="medicationIds"
+                                               value="@medication.MedicationId" />
+
+                                        <td>
+
+                                            <div class="fw-semibold">
+
+                                                <i class="bi bi-capsule-pill text-primary me-2"></i>
+
+                                                @medication.MedicationName
+
+                                            </div>
+
+                                            @if (!string.IsNullOrWhiteSpace(medication.Description))
+                                            {
+                                                <small class="text-muted">
+                                                    @medication.Description
+                                                </small>
+                                            }
+
+                                        </td>
+
+                                        <td>
+
+                                            @if (!string.IsNullOrWhiteSpace(medication.DosageForm))
+                                            {
+                                                <span class="badge bg-light text-dark border">
+                                                    @medication.DosageForm
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">
+                                                    Not specified
+                                                </span>
+                                            }
+
+                                        </td>
+
+                                        <td>
+
+                                            @if (!string.IsNullOrWhiteSpace(medication.Manufacturer))
+                                            {
+                                                @medication.Manufacturer
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">
+                                                    Not specified
+                                                </span>
+                                            }
+
+                                        </td>
+
+                                        <td>
+
+                                            @if (medication.QuantityOnHand.HasValue)
+                                            {
+                                                var currentStock = medication.QuantityOnHand.Value;
+
+                                                if (currentStock <= 0)
+                                                {
+                                                    <span class="badge bg-danger-subtle text-danger px-3 py-2">
+                                                        <i class="bi bi-exclamation-circle me-1"></i>
+                                                        Out of Stock
+                                                    </span>
+                                                }
+                                                else if (currentStock <= 5)
+                                                {
+                                                    <span class="badge bg-warning-subtle text-warning-emphasis px-3 py-2">
+                                                        <i class="bi bi-exclamation-triangle me-1"></i>
+                                                        @currentStock.ToString("N0")
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-success-subtle text-success px-3 py-2">
+                                                        @currentStock.ToString("N0")
+                                                    </span>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary-subtle text-secondary px-3 py-2">
+                                                    0
+                                                </span>
+                                            }
+
+                                        </td>
+
+                                        <td>
+
+                                            <input type="number"
+                                                   name="quantities"
+                                                   value="0"
+                                                   min="0"
+                                                   class="form-control form-control-sm text-center rounded-pill medicine-quantity"
+                                                   data-medication-id="@medication.MedicationId" />
+
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+
+                        <i class="bi bi-capsule text-muted"
+                           style="font-size: 4rem;">
+                        </i>
+
+                        <h5 class="fw-bold mt-3">
+                            No Medicines Available
+                        </h5>
+
+                        <p class="text-muted mb-0">
+                            There are currently no active medicines available to order.
+                        </p>
+
+                    </div>
+                }
+
+            </div>
+
+        </div>
+
+        <div class="card border-0 shadow-sm mb-4"
+             style="border-radius: 16px;">
+
+            <div class="card-body p-4">
+
+                <div class="row align-items-center">
+
+                    <div class="col-md-8">
+
+                        <h5 class="fw-bold mb-1">
+                            <i class="bi bi-clipboard-check text-primary me-2"></i>
+                            Order Summary
+                        </h5>
+
+                        <p class="text-muted small mb-0">
+                            Only medicines with a quantity greater than 0 will be included in the order.
+                        </p>
+
+                    </div>
+
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+
+                        <div class="small text-muted">
+                            Total Units
+                        </div>
+
+                        <div class="fw-bold fs-4 text-primary"
+                             id="totalQuantity">
+
+                            0
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+
+            <a asp-controller="StockManager"
+               asp-action="ManageMedicineOrders"
+               class="btn btn-outline-secondary px-4"
+               style="border-radius: 50px;">
+
+                <i class="bi bi-x-circle me-2"></i>
+                Cancel
+
+            </a>
+
+            @if (medications.Any())
+            {
+                <button type="submit"
+                        class="btn btn-primary px-4 shadow-sm"
+                        style="border-radius: 50px;">
+
+                    <i class="bi bi-cart-plus-fill me-2"></i>
+                    Create Medicine Order
+
+                </button>
+            }
+
+        </div>
+
+    </form>
+
+</div>
+
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const quantityInputs =
+                document.querySelectorAll(".medicine-quantity");
+
+            const totalQuantity =
+                document.getElementById("totalQuantity");
+
+
+            function updateTotal() {
+
+                let total = 0;
+
+                quantityInputs.forEach(function (input) {
+
+                    let value = parseInt(input.value) || 0;
+
+                    if (value < 0) {
+                        value = 0;
+                        input.value = 0;
+                    }
+
+                    total += value;
+
+                });
+
+                totalQuantity.textContent =
+                    total.toLocaleString();
+
+            }
+
+
+            quantityInputs.forEach(function (input) {
+
+                input.addEventListener("input", updateTotal);
+
+            });
+
+
+            updateTotal();
+
+        });
+
+    </script>
+}

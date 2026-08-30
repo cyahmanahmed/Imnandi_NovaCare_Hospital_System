@@ -1,0 +1,119 @@
+﻿@model CreateReadmissionViewModel
+
+@{
+    ViewData["Title"] = "Readmit Patient";
+
+    var rooms = Model.Rooms ?? new List<Room>();
+    var beds = Model.Beds ?? new List<Bed>();
+    var doctors = Model.Doctors ?? new List<Doctor>();
+    var nurses = Model.Nurses ?? new List<Nurse>();
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Readmit Patient</h4>
+        </div>
+        <div class="card-body">
+            @using (Html.BeginForm("ReadmitPatient", "WardAdmin", FormMethod.Post, new { @class = "needs-validation", novalidate = "novalidate" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.PatientId)
+                @Html.HiddenFor(m => m.PreviousAdmissionFolderId)
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Patient Name</label>
+                        <input type="text" class="form-control" value="@Model.PatientName" disabled />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Last Discharge Date</label>
+                        <input type="text" class="form-control" value="@Model.LastDischargeDate?.ToString("dd/MM/yyyy")" disabled />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Reason for Readmission</label>
+                    @Html.TextAreaFor(m => m.ReasonForReadmission, new { @class = "form-control", rows = 3 })
+                    @Html.ValidationMessageFor(m => m.ReasonForReadmission, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Select Room</label>
+                        @Html.DropDownListFor(m => m.RoomId,
+                            new SelectList(rooms, "RoomId", "RoomNumber"),
+                            "-- Select Room --",
+                            new { @class = "form-select" })
+                        @Html.ValidationMessageFor(m => m.RoomId, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Select Bed</label>
+                        @Html.DropDownListFor(m => m.BedId,
+                            new SelectList(beds, "BedId", "BedNumber"),
+                            "-- Select Bed --",
+                            new { @class = "form-select" })
+                        @Html.ValidationMessageFor(m => m.BedId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Assign Doctor</label>
+                        <select asp-for="DoctorId" class="form-select" required>
+                            <option value="">-- Select Doctor --</option>
+                            @foreach (var doctor in doctors)
+                            {
+                                <option value="@doctor.DoctorId">
+                                    @(doctor.Employee?.FirstName ?? "") @(doctor.Employee?.LastName ?? "")
+                                </option>
+                            }
+                        </select>
+                        <span asp-validation-for="DoctorId" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Assign Nurse</label>
+                        <select asp-for="NurseId" class="form-select" required>
+                            <option value="">-- Select Nurse --</option>
+                            @foreach (var nurse in nurses)
+                            {
+                                <option value="@nurse.NurseId">
+                                    @(nurse.Employee?.FirstName ?? "") @(nurse.Employee?.LastName ?? "")
+                                </option>
+                            }
+                        </select>
+                        <span asp-validation-for="NurseId" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Visit Type (Optional)</label>
+                    <select asp-for="VisitType" class="form-select">
+                        <option value="">-- Select Visit Type --</option>
+                        <option value="Consultation">Consultation</option>
+                        <option value="Follow-up">Follow-up</option>
+                        <option value="Emergency Review">Emergency Review</option>
+                    </select>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="ManagePatients" class="btn btn-outline-secondary btn-sm px-4">
+                        <i class="bi bi-arrow-left me-1"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary btn-sm px-4">
+                        <i class="bi bi-folder-plus"></i> Readmit Patient
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+}

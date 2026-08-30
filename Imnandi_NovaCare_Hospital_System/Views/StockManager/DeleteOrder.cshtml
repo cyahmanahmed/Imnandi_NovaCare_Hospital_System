@@ -1,0 +1,122 @@
+﻿@model Order
+@{
+    ViewData["Title"] = "Delete Order";
+}
+
+<div class="container-fluid p-0">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+
+                <div class="bg-danger text-white py-4 px-5 d-flex align-items-center justify-content-between">
+                    <div>
+                        <h3 class="mb-0">
+                            <i class="bi bi-trash-fill me-2"></i> Delete Order
+                        </h3>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <div class="alert alert-warning shadow-sm mb-4" role="alert">
+                        <h5 class="alert-heading">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i> Warning!
+                        </h5>
+                        <p class="mb-0">
+                            This action will <strong>permanently delete</strong> the order and its associated details.
+                        </p>
+                    </div>
+
+                    <dl class="row mb-4">
+                        <dt class="col-sm-4 fw-semibold text-secondary">Order Number</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(o => o.OrderNumber)</dd>
+
+                        <dt class="col-sm-4 fw-semibold text-secondary">Order Name</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(o => o.OrderName)</dd>
+
+                        <dt class="col-sm-4 fw-semibold text-secondary">Description</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(o => o.Description)</dd>
+
+                        <dt class="col-sm-4 fw-semibold text-secondary">Date</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(o => o.Date)</dd>
+
+                        <dt class="col-sm-4 fw-semibold text-secondary">Received?</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.IsReceived)
+                            {
+                                <span class="badge bg-success">Yes</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">No</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4 fw-semibold text-secondary">Status</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.IsDeleted)
+                            {
+                                <span class="badge bg-secondary">Deleted</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                        </dd>
+
+                        @if (Model.Ward != null)
+                        {
+                            <dt class="col-sm-4 fw-semibold text-secondary">Ward</dt>
+                            <dd class="col-sm-8">@Model.Ward.WardName</dd>
+                        }
+                    </dl>
+
+                    <div class="d-flex gap-3 pt-3">
+                        <form asp-action="DeleteOrder" asp-controller="StockManager" asp-route-id="@Model.OrderId" method="post" class="d-inline">
+                            <input type="hidden" asp-for="OrderId" />
+                            <button type="submit" class="btn btn-danger btn-sm px-4">
+                                <i class="bi bi-trash-fill me-1"></i> Confirm Delete
+                            </button>
+                        </form>
+
+                        <a asp-action="ManageOrders" asp-controller="StockManager" class="btn btn-secondary btn-sm px-4">
+                            <i class="bi bi-arrow-left-circle-fill me-1"></i> Cancel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .alert-heading i {
+        color: #856404;
+    }
+
+    dt {
+        font-size: 0.95rem;
+    }
+
+    dd {
+        font-size: 0.95rem;
+    }
+
+    .btn-sm {
+        border-radius: 50px;
+    }
+
+    .badge {
+        font-size: 0.85rem;
+    }
+</style>

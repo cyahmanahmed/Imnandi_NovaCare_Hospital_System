@@ -1,0 +1,364 @@
+﻿@using Imnandi_NovaCare_Hospital_System.Models
+@model IEnumerable<Supplier>
+
+@{
+    ViewData["Title"] = "Manage Suppliers";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Manage Suppliers</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          rel="stylesheet" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+          rel="stylesheet" />
+
+    <style>
+        body {
+            background-color: #f5f7fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .page-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        .page-header {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 24px 28px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+        }
+
+            .page-header h2 {
+                margin: 0;
+                font-weight: 700;
+                color: #263238;
+            }
+
+            .page-header p {
+                margin: 6px 0 0;
+                color: #6c757d;
+            }
+
+        .supplier-card {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+
+        .supplier-card-header {
+            padding: 18px 22px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+            .supplier-card-header h5 {
+                margin: 0;
+                font-weight: 600;
+                color: #263238;
+            }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+            .table thead th {
+                background-color: #f8f9fa;
+                color: #495057;
+                font-size: 0.85rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.3px;
+                padding: 15px;
+                border-bottom: 1px solid #dee2e6;
+            }
+
+            .table tbody td {
+                padding: 15px;
+                vertical-align: middle;
+            }
+
+            .table tbody tr:hover {
+                background-color: #f8fafc;
+            }
+
+        .supplier-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background-color: #e9f2ff;
+            color: #0d6efd;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+
+        .supplier-name {
+            font-weight: 600;
+            color: #343a40;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            border-radius: 7px;
+            font-size: 0.85rem;
+            padding: 7px 12px;
+        }
+
+        .empty-state {
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+            .empty-state i {
+                font-size: 45px;
+                color: #adb5bd;
+                margin-bottom: 15px;
+            }
+
+            .empty-state h5 {
+                font-weight: 600;
+                color: #495057;
+            }
+
+            .empty-state p {
+                color: #6c757d;
+                margin-bottom: 20px;
+            }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+            .header-actions .btn {
+                border-radius: 7px;
+            }
+    </style>
+</head>
+
+<body>
+
+    <div class="page-container">
+
+        <div class="page-header">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+
+                <div>
+                    <h2>
+                        <i class="bi bi-truck text-primary me-2"></i>
+                        Manage Suppliers
+                    </h2>
+
+                    <p>
+                        Create, update and manage registered suppliers.
+                    </p>
+                </div>
+
+                <div class="header-actions">
+
+                    <a asp-controller="StockManager"
+                       asp-action="CreateSupplier"
+                       class="btn btn-primary">
+
+                        <i class="bi bi-plus-lg me-1"></i>
+                        Create Supplier
+
+                    </a>
+
+                    <a asp-controller="StockManager"
+                       asp-action="StockManagerDashboard"
+                       class="btn btn-outline-primary btn-sm px-3 d-inline-flex align-items-center shadow-sm"
+                       style="border-radius: 80px;">
+
+                        <i class="bi bi-house-door-fill me-2"></i>
+                        Back to Dashboard
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="supplier-card">
+
+            <div class="supplier-card-header">
+
+                <h5>
+                    <i class="bi bi-buildings me-2 text-primary"></i>
+                    Registered Suppliers
+                </h5>
+
+                <span class="badge bg-light text-dark border">
+                    @Model.Count() Supplier(s)
+                </span>
+
+            </div>
+
+
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead>
+
+                            <tr>
+                                <th>Supplier</th>
+                                <th> </th>
+                                <th> </th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var supplier in Model)
+                            {
+                                <tr>
+
+                                    <td>
+                                        <div class="d-flex align-items-center">
+
+                                            <div class="supplier-icon">
+                                                <i class="bi bi-building"></i>
+                                            </div>
+
+                                            <span class="supplier-name">
+                                                @supplier.SupplierName
+                                            </span>
+
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <span class="text-muted">
+                                        </span>
+                                    </td>
+
+                                    <td>
+
+                                        <div class="action-buttons">
+
+                                            <a asp-controller="StockManager"
+                                               asp-action="EditSupplier"
+                                               asp-route-id="@supplier.SupplierId"
+                                               class="btn btn-outline-primary btn-action">
+
+                                                <i class="bi bi-pencil-square me-1"></i>
+                                                Edit
+
+                                            </a>
+
+                                            <form asp-controller="StockManager"
+                                                  asp-action="DeleteSupplier"
+                                                  asp-route-id="@supplier.SupplierId"
+                                                  method="post"
+                                                  class="d-inline"
+                                                  onsubmit="return confirmDelete('@supplier.SupplierName');">
+
+                                                @Html.AntiForgeryToken()
+
+                                                <button type="submit"
+                                                        class="btn btn-outline-danger btn-action">
+
+                                                    <i class="bi bi-trash3 me-1"></i>
+                                                    Delete
+
+                                                </button>
+
+                                            </form>
+
+                                            <a asp-controller="Reports"
+                                               asp-action="SupplierReport"
+                                               asp-route-supplierId="@supplier.SupplierId"
+                                               class="btn btn-outline-secondary btn-action">
+
+                                                <i class="bi bi-file-earmark-text me-1"></i>
+                                                Report
+
+                                            </a>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+
+                    <i class="bi bi-truck"></i>
+
+                    <h5>No suppliers found</h5>
+
+                    <p>
+                        There are currently no active suppliers registered.
+                    </p>
+
+                    <a asp-controller="StockManager"
+                       asp-action="CreateSupplier"
+                       class="btn btn-primary">
+
+                        <i class="bi bi-plus-lg me-1"></i>
+                        Create First Supplier
+
+                    </a>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+    <script>
+
+        function confirmDelete(supplierName) {
+
+            return confirm(
+                "Are you sure you want to delete " +
+                supplierName +
+                "?\n\nThe supplier will be removed from the active supplier list."
+            );
+
+        }
+
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

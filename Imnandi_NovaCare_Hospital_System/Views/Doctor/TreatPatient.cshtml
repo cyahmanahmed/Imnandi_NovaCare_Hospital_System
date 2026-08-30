@@ -1,0 +1,197 @@
+﻿@model Patient
+
+@{
+    ViewData["Title"] = "Treat Patient";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - Ward Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .container-fluid {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+
+        .card {
+            border-radius: 0.75rem;
+            box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,.1);
+            border: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            background-color: #e9ecef;
+            border-bottom: 1px solid #dee2e6;
+            font-weight: 600;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #212529;
+        }
+
+        .form-control, .form-select, textarea {
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+
+        .alert {
+            border-radius: 0.5rem;
+        }
+
+        .patient-info {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: #0d6efd;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            padding: 0.35rem 1rem;
+            border-radius: 80px;
+            background-color: #f8f9fa;
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+            margin-bottom: 1rem;
+        }
+
+            .back-btn i {
+                margin-right: 0.5rem;
+            }
+
+        .timeline-item {
+            border-radius: 0.5rem;
+            border: 1px solid #dee2e6;
+            padding: 1rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="d-flex align-items-center bg-light border border-primary rounded-5 shadow-sm px-4 py-2 mb-4">
+        <i class="bi bi-house-door-fill me-3 text-primary fs-5"></i>
+        <a asp-action="PatientsFolder" asp-controller="Doctor" asp-route-id="@Model.Id"
+           class="text-decoration-none text-primary fw-semibold fs-6 btn-sm px-3 d-flex align-items-center shadow-sm"
+           style="border-radius: 80px;">Back to Patient Folder</a>
+    </div>
+
+    <div class="container-fluid">
+
+        <div class="patient-info">
+            <h5>Patient Information</h5>
+            <hr />
+            <p><strong>Patient Name:</strong> @Model.FirstName @Model.LastName</p>
+            <p><strong>Admitted On:</strong> @Model.DateAdmitted.ToShortDateString()</p>
+            <p><strong>Reason for Admission:</strong>@(Model.AdmissionFolder != null? Model.AdmissionFolder.ReasonForAdmission: "Not Recorded")</p>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <i class="bi bi-heart-pulse"></i> Treat Patient
+            </div>
+            <div class="card-body">
+                <form asp-action="TreatPatient" method="post">
+                    <input type="hidden" name="patientId" value="@Model.Id" />
+
+                    <div class="mb-3">
+                        <label for="treatmentType" class="form-label">Treatment Type</label>
+                        <select class="form-select" name="treatmentType" required>
+                            <option value="">-- Select Treatment --</option>
+                            <option>Change IV drip</option>
+                            <option>Catheter</option>
+                            <option>Dress wound</option>
+                            <option>Oxygen Therapy</option>
+                            <option>Medication Administration</option>
+                            <option>Physical Therapy</option>
+                            <option>Blood Transfusion</option>
+                            <option>Vital Signs Monitoring</option>
+                            <option>Other</option>
+                        </select>
+                        <span class="text-danger">@Html.ValidationMessage("TreatmentType")</span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" name="description" rows="4" placeholder="Additional notes about treatment..."></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Save Treatment
+                        </button>
+                        <a asp-action="PatientsFolder" asp-controller="Doctor" asp-route-id="@Model.Id" class="btn btn-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <i class="bi bi-journal-medical"></i> Past Treatments
+            </div>
+            <div class="card-body">
+                @if (Model.Treatments != null && Model.Treatments.Any())
+                {
+                    <div class="timeline">
+                        @foreach (var t in Model.Treatments.OrderByDescending(x => x.TreatmentDate))
+                        {
+                            <div class="timeline-item mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <strong>@t.TreatmentType</strong>
+                                    <small class="text-muted">@t.TreatmentDate.ToString("yyyy-MM-dd")</small>
+                                </div>
+                                <p class="mb-1">@t.Description</p>
+                                <small class="text-secondary">
+                                    By Dr. @(t.Doctor != null ? t.Doctor.FirstName + " " + t.Doctor.LastName : "N/A")
+                                </small>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted">No past treatments recorded.</p>
+                }
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
+</body>
+</html>

@@ -1,0 +1,1225 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Imnandi NovaCare Medical Center</title>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100vh;
+            background: linear-gradient(180deg, #0b3d62 0%, #082c47 100%);
+            padding: 35px 22px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-title {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 23px;
+            font-weight: 700;
+            margin-bottom: 45px;
+            padding-left: 10px;
+        }
+
+            .sidebar-title:hover {
+                color: #ffffff;
+            }
+
+        .nav {
+            gap: 8px;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,.78);
+            padding: 13px 15px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all .25s ease;
+        }
+
+            .nav-link:hover {
+                color: #ffffff;
+                background: rgba(255,255,255,.12);
+                transform: translateX(4px);
+            }
+
+        .social-icons {
+            margin-top: auto;
+            display: flex;
+            gap: 15px;
+            padding-left: 10px;
+        }
+
+            .social-icons a {
+                width: 38px;
+                height: 38px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #ffffff;
+                background: rgba(255,255,255,.1);
+                border-radius: 50%;
+                text-decoration: none;
+                transition: .25s ease;
+            }
+
+                .social-icons a:hover {
+                    background: #0d6efd;
+                    transform: translateY(-3px);
+                }
+
+        .main-content {
+            margin-left: 250px;
+        }
+
+        section {
+            position: relative;
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .home-bg-wrapper {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+        }
+
+        .home-bg {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            filter: brightness(.55);
+            transition: transform 1s ease;
+        }
+
+        section:hover .home-bg {
+            transform: scale(1.03);
+        }
+
+        .home-card,
+        .text-card {
+            position: relative;
+            z-index: 2;
+            width: min(850px, 90%);
+            padding: 55px;
+            border-radius: 24px;
+            background: rgba(255,255,255,.94);
+            box-shadow: 0 20px 60px rgba(0,0,0,.2);
+            backdrop-filter: blur(8px);
+        }
+
+        .home-card {
+            text-align: center;
+        }
+
+            .home-card h1 {
+                font-size: clamp(35px, 5vw, 60px);
+                font-weight: 800;
+                color: #0b3d62;
+                margin-bottom: 20px;
+            }
+
+            .home-card p {
+                font-size: 19px;
+                color: #5b6470;
+                line-height: 1.7;
+                margin-bottom: 30px;
+            }
+
+        .home-card-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+            .home-card-buttons .btn {
+                padding: 12px 25px;
+                border-radius: 10px;
+                font-weight: 600;
+            }
+
+        .text-card h2 {
+            color: #0b3d62;
+            font-size: 34px;
+            font-weight: 750;
+            margin-bottom: 20px;
+        }
+
+        .text-card p {
+            color: #4b5563;
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .chatbot-button {
+            position: fixed;
+            right: 28px;
+            bottom: 28px;
+            width: 62px;
+            height: 62px;
+            border: none;
+            border-radius: 50%;
+            background: #0d6efd;
+            color: #ffffff;
+            font-size: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(13,110,253,.35);
+            cursor: pointer;
+            z-index: 2000;
+            transition: .25s ease;
+        }
+
+            .chatbot-button:hover {
+                transform: translateY(-4px) scale(1.04);
+                background: #0b5ed7;
+            }
+
+        .chatbot-window {
+            position: fixed;
+            right: 28px;
+            bottom: 105px;
+            width: 370px;
+            max-width: calc(100vw - 35px);
+            height: 560px;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,.2);
+            z-index: 1999;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+        }
+
+            .chatbot-window.active {
+                display: flex;
+            }
+
+        .chatbot-header {
+            background: linear-gradient(135deg, #0b3d62, #0d6efd);
+            color: #ffffff;
+            padding: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chatbot-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chatbot-avatar {
+            width: 42px;
+            height: 42px;
+            background: rgba(255,255,255,.18);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .chatbot-header h5 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .chatbot-header small {
+            opacity: .8;
+        }
+
+        .chatbot-close {
+            border: none;
+            background: transparent;
+            color: #ffffff;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            padding: 18px;
+            overflow-y: auto;
+            background: #f8fafc;
+        }
+
+        .chat-message {
+            display: flex;
+            margin-bottom: 13px;
+        }
+
+            .chat-message.bot {
+                justify-content: flex-start;
+            }
+
+            .chat-message.user {
+                justify-content: flex-end;
+            }
+
+        .message-bubble {
+            max-width: 82%;
+            padding: 11px 14px;
+            border-radius: 15px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .bot .message-bubble {
+            background: #ffffff;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+            border-bottom-left-radius: 4px;
+        }
+
+        .user .message-bubble {
+            background: #0d6efd;
+            color: #ffffff;
+            border-bottom-right-radius: 4px;
+        }
+
+        .quick-questions {
+            padding: 12px 15px;
+            background: #ffffff;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .quick-title {
+            font-size: 11px;
+            color: #6b7280;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .quick-buttons {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+        }
+
+        .quick-btn {
+            border: 1px solid #dbe3ec;
+            background: #f8fafc;
+            color: #374151;
+            border-radius: 50px;
+            padding: 6px 10px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: .2s ease;
+        }
+
+            .quick-btn:hover {
+                background: #eaf2ff;
+                border-color: #86b7fe;
+                color: #0d6efd;
+            }
+
+        .chatbot-input-area {
+            padding: 12px;
+            border-top: 1px solid #e5e7eb;
+            background: #ffffff;
+            display: flex;
+            gap: 8px;
+        }
+
+        .chatbot-input {
+            flex: 1;
+            border: 1px solid #d9dee7;
+            border-radius: 50px;
+            padding: 10px 15px;
+            outline: none;
+            font-size: 13px;
+        }
+
+            .chatbot-input:focus {
+                border-color: #86b7fe;
+                box-shadow: 0 0 0 3px rgba(13,110,253,.08);
+            }
+
+        .chatbot-send {
+            width: 42px;
+            height: 42px;
+            border: none;
+            border-radius: 50%;
+            background: #0d6efd;
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        .typing {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+            .typing span {
+                width: 6px;
+                height: 6px;
+                background: #9ca3af;
+                border-radius: 50%;
+                display: inline-block;
+                animation: typingAnimation 1.4s infinite ease-in-out;
+            }
+
+                .typing span:nth-child(2) {
+                    animation-delay: .2s;
+                }
+
+                .typing span:nth-child(3) {
+                    animation-delay: .4s;
+                }
+
+        @@keyframes typingAnimation {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: .5;
+            }
+
+            30% {
+                transform: translateY(-5px);
+                opacity: 1;
+            }
+        }
+
+        @@media (max-width: 900px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .main-content {
+                margin-left: 200px;
+            }
+
+            .sidebar-title {
+                font-size: 19px;
+            }
+
+            .home-card,
+            .text-card {
+                padding: 35px;
+            }
+        }
+
+        @@media (max-width: 700px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+                min-height: auto;
+                padding: 18px;
+            }
+
+            .sidebar-title {
+                margin-bottom: 15px;
+            }
+
+            .nav {
+                flex-direction: row !important;
+                flex-wrap: wrap;
+            }
+
+            .nav-link {
+                padding: 8px 10px;
+            }
+
+            .social-icons {
+                margin-top: 15px;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            section {
+                min-height: 700px;
+            }
+
+            .home-card,
+            .text-card {
+                padding: 28px;
+            }
+
+                .text-card h2 {
+                    font-size: 28px;
+                }
+
+                .home-card p {
+                    font-size: 16px;
+                }
+        }
+
+        @@media (max-width: 500px) {
+            .chatbot-window {
+                right: 15px;
+                bottom: 90px;
+                width: calc(100vw - 30px);
+                height: 520px;
+            }
+
+            .chatbot-button {
+                right: 18px;
+                bottom: 18px;
+            }
+
+            .home-card,
+            .text-card {
+                width: 92%;
+                padding: 24px;
+                border-radius: 18px;
+            }
+
+                .home-card h1 {
+                    font-size: 34px;
+                }
+
+            .home-card-buttons {
+                flex-direction: column;
+            }
+
+                .home-card-buttons .btn {
+                    width: 100%;
+                }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="sidebar">
+
+        <a href="#home" class="sidebar-title">
+            Imnandi NovaCare
+        </a>
+
+        <ul class="nav flex-column">
+
+            <li class="nav-item">
+                <a class="nav-link" href="#home">Home</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="#about-us">About Us</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="#careers">Careers</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="#news">News Hub</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="#investors">Investors</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="#contact">Contact</a>
+            </li>
+
+        </ul>
+
+        <div class="social-icons">
+
+            <a href="https://facebook.com" target="_blank">
+                <i class="fab fa-facebook"></i>
+            </a>
+
+            <a href="https://twitter.com" target="_blank">
+                <i class="fab fa-twitter"></i>
+            </a>
+
+        </div>
+
+    </nav>
+
+    <div class="main-content">
+
+        <section id="home">
+
+            <div class="home-bg-wrapper">
+                <img class="home-bg"
+                     src="/images/homepage_pic.jpg"
+                     alt="Hospital Image">
+            </div>
+
+            <div class="home-card">
+
+                <h1>
+                    Welcome to Imnandi NovaCare
+                </h1>
+
+                <p>
+                    Providing world-class healthcare with compassion and innovation.
+                </p>
+
+                <div class="home-card-buttons">
+
+                    <a href="#about-us"
+                       class="btn btn-primary">
+                        Read More
+                    </a>
+
+                    <a href="/Identity/Account/Login"
+                       class="btn btn-secondary">
+                        Login
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <section id="about-us" class="section">
+
+            <div class="home-bg-wrapper">
+                <img class="home-bg"
+                     src="/images/about_us.jpg"
+                     alt="About Image">
+            </div>
+
+            <div class="text-card">
+
+                <h2>About Us</h2>
+
+                <p>
+                    Imnandi NovaCare Medical Center has been serving the community
+                    for over 25 years, offering exceptional patient care,
+                    state-of-the-art facilities, and advanced medical treatments.
+                    Our mission is to ensure every patient receives top-quality
+                    healthcare with empathy and professionalism.
+                </p>
+
+                <p>
+                    We pride ourselves on our multidisciplinary teams, innovative
+                    research programs, and a patient-first approach that defines
+                    our culture and standards.
+                </p>
+
+            </div>
+
+        </section>
+
+        <section id="careers" class="section">
+
+            <div class="home-bg-wrapper">
+                <img class="home-bg"
+                     src="/images/careers.jpg"
+                     alt="Careers Image">
+            </div>
+
+            <div class="text-card">
+
+                <h2>Careers</h2>
+
+                <p>
+                    Join the Imnandi NovaCare team and help make a difference in
+                    people’s lives. We offer opportunities for doctors, nurses,
+                    medical technicians, administrative staff, and more.
+                </p>
+
+                <p>
+                    We provide professional development, mentorship programs,
+                    and a supportive work environment. Explore current openings
+                    and submit your application online.
+                </p>
+
+            </div>
+
+        </section>
+
+        <section id="news" class="section">
+
+            <div class="home-bg-wrapper">
+                <img class="home-bg"
+                     src="/images/news.jpg"
+                     alt="NewsHub Image">
+            </div>
+
+            <div class="text-card">
+
+                <h2>News Hub</h2>
+
+                <p>
+                    Stay updated with the latest medical news, breakthroughs,
+                    hospital events, and community outreach initiatives.
+                    Our News Hub covers innovations in healthcare, patient
+                    stories, and important announcements from our hospital.
+                </p>
+
+                <p>
+                    Subscribe to our newsletter to receive monthly updates
+                    and special insights from our experts.
+                </p>
+
+            </div>
+
+        </section>
+
+        <section id="investors" class="section">
+
+            <div class="home-bg-wrapper">
+                <img class="home-bg"
+                     src="/images/Investorspic.jpg"
+                     alt="Investors Image">
+            </div>
+
+            <div class="text-card">
+
+                <h2>Investors</h2>
+
+                <p>
+                    Imnandi NovaCare Medical Center values partnerships that
+                    drive healthcare innovation. We provide transparent
+                    financial reporting, investment opportunities, and
+                    sustainable growth plans for our stakeholders.
+                </p>
+
+                <p>
+                    Our investors are crucial to expanding our services,
+                    research programs, and advanced patient care technologies.
+                </p>
+
+            </div>
+
+        </section>
+
+        <section id="contact" class="section">
+
+            <div class="home-bg-wrapper">
+                <img class="home-bg"
+                     src="/images/contact_pic.jpg"
+                     alt="Contact Image">
+            </div>
+
+            <div class="text-card">
+
+                <h2>Contact Us</h2>
+
+                <p>
+                    Address: 123 Imnandi Hill, Uitenhage, South Africa
+                </p>
+
+                <p>
+                    Email: info@imnandi.co.za |
+                    Phone: +27 00 000 0000
+                </p>
+
+                <p>
+                    Follow us on our social media channels for updates,
+                    events, and community programs.
+                </p>
+
+            </div>
+
+        </section>
+
+    </div>
+
+    <button type="button"
+            class="chatbot-button"
+            id="chatbotButton"
+            aria-label="Open hospital assistant">
+
+        <i class="fa-solid fa-comments"></i>
+
+    </button>
+
+    <div class="chatbot-window" id="chatbotWindow">
+
+        <div class="chatbot-header">
+
+            <div class="chatbot-header-left">
+
+                <div class="chatbot-avatar">
+                    <i class="fa-solid fa-user-doctor"></i>
+                </div>
+
+                <div>
+                    <h5>NovaCare Assistant</h5>
+                    <small>Hospital Information Assistant</small>
+                </div>
+
+            </div>
+
+            <button type="button"
+                    class="chatbot-close"
+                    id="chatbotClose"
+                    aria-label="Close chatbot">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+        <div class="chatbot-messages"
+             id="chatbotMessages">
+
+            <div class="chat-message bot">
+
+                <div class="message-bubble">
+                    Hello! Welcome to Imnandi NovaCare Medical Center.
+                    How can I help you today?
+                </div>
+
+            </div>
+
+            <div class="chat-message bot">
+
+                <div class="message-bubble">
+                    Select a common question below or type your own question.
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="quick-questions">
+
+            <div class="quick-title">
+                HOW CAN WE HELP?
+            </div>
+
+            <div class="quick-buttons">
+
+                <button type="button"
+                        class="quick-btn"
+                        data-question="What services do you offer?">
+                    <i class="fa-solid fa-stethoscope me-1"></i>
+                    Services
+                </button>
+
+                <button type="button"
+                        class="quick-btn"
+                        data-question="What are your opening hours?">
+                    <i class="fa-regular fa-clock me-1"></i>
+                    Opening Hours
+                </button>
+
+                <button type="button"
+                        class="quick-btn"
+                        data-question="Where are you located?">
+                    <i class="fa-solid fa-location-dot me-1"></i>
+                    Location
+                </button>
+
+                <button type="button"
+                        class="quick-btn"
+                        data-question="How can I contact the hospital?">
+                    <i class="fa-solid fa-phone me-1"></i>
+                    Contact
+                </button>
+
+                <button type="button"
+                        class="quick-btn"
+                        data-question="How do I make an appointment with a doctor?">
+                    <i class="fa-solid fa-user-doctor me-1"></i>
+                    Appointments
+                </button>
+
+                <button type="button"
+                        class="quick-btn"
+                        data-question="How can I apply for a job?">
+                    <i class="fa-solid fa-briefcase me-1"></i>
+                    Careers
+                </button>
+
+                <button type="button"
+                        class="quick-btn"
+                        data-question="How do I access the hospital system?">
+                    <i class="fa-solid fa-right-to-bracket me-1"></i>
+                    System Login
+                </button>
+
+                <button type="button"
+                        class="quick-btn"
+                        data-question="What should I do in an emergency?">
+                    <i class="fa-solid fa-truck-medical me-1"></i>
+                    Emergency
+                </button>
+
+            </div>
+
+        </div>
+
+        <div class="chatbot-input-area">
+
+            <input type="text"
+                   id="chatbotInput"
+                   class="chatbot-input"
+                   placeholder="Type your question..."
+                   autocomplete="off">
+
+            <button type="button"
+                    class="chatbot-send"
+                    id="chatbotSend"
+                    aria-label="Send message">
+
+                <i class="fa-solid fa-paper-plane"></i>
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        const chatbotButton = document.getElementById("chatbotButton");
+        const chatbotWindow = document.getElementById("chatbotWindow");
+        const chatbotClose = document.getElementById("chatbotClose");
+        const chatbotInput = document.getElementById("chatbotInput");
+        const chatbotSend = document.getElementById("chatbotSend");
+        const chatbotMessages = document.getElementById("chatbotMessages");
+        const quickButtons = document.querySelectorAll(".quick-btn");
+
+        chatbotButton.addEventListener("click", function () {
+
+            chatbotWindow.classList.toggle("active");
+
+            if (chatbotWindow.classList.contains("active")) {
+                chatbotInput.focus();
+            }
+
+        });
+
+        chatbotClose.addEventListener("click", function () {
+
+            chatbotWindow.classList.remove("active");
+
+        });
+
+        function addMessage(message, sender) {
+
+            const wrapper = document.createElement("div");
+
+            wrapper.className = "chat-message " + sender;
+
+            const bubble = document.createElement("div");
+
+            bubble.className = "message-bubble";
+
+            bubble.textContent = message;
+
+            wrapper.appendChild(bubble);
+
+            chatbotMessages.appendChild(wrapper);
+
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        }
+
+        function addTypingMessage() {
+
+            const wrapper = document.createElement("div");
+
+            wrapper.className = "chat-message bot";
+            wrapper.id = "typingMessage";
+
+            const bubble = document.createElement("div");
+
+            bubble.className = "message-bubble";
+
+            bubble.innerHTML =
+                '<span class="typing">' +
+                '<span></span>' +
+                '<span></span>' +
+                '<span></span>' +
+                '</span>';
+
+            wrapper.appendChild(bubble);
+
+            chatbotMessages.appendChild(wrapper);
+
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        }
+
+        function removeTypingMessage() {
+
+            const typingMessage =
+                document.getElementById("typingMessage");
+
+            if (typingMessage) {
+                typingMessage.remove();
+            }
+        }
+
+        function getBotResponse(question) {
+
+            const text = question.toLowerCase().trim();
+
+            if (
+                text.includes("hello") ||
+                text.includes("hi") ||
+                text.includes("hey") ||
+                text.includes("good morning") ||
+                text.includes("good afternoon") ||
+                text.includes("good evening")
+            ) {
+                return "Hello! Welcome to Imnandi NovaCare Medical Center. How can I assist you today?";
+            }
+
+            if (
+                text.includes("service") ||
+                text.includes("services") ||
+                text.includes("offer") ||
+                text.includes("treatment") ||
+                text.includes("treatments") ||
+                text.includes("healthcare") ||
+                text.includes("medical care")
+            ) {
+                return "Imnandi NovaCare provides a wide range of healthcare services, including doctor consultations, nursing care, medication management, patient admissions, treatments, medical monitoring and other patient care services.";
+            }
+
+            if (
+                text.includes("location") ||
+                text.includes("located") ||
+                text.includes("where") ||
+                text.includes("address") ||
+                text.includes("place")
+            ) {
+                return "Imnandi NovaCare Medical Center is located at 123 Imnandi Hill, Uitenhage, South Africa.";
+            }
+
+            if (
+                text.includes("contact") ||
+                text.includes("phone") ||
+                text.includes("telephone") ||
+                text.includes("email") ||
+                text.includes("call") ||
+                text.includes("number")
+            ) {
+                return "You can contact Imnandi NovaCare Medical Center at info@imnandi.co.za or by phone at +27 00 000 0000.";
+            }
+
+            if (
+                text.includes("hour") ||
+                text.includes("hours") ||
+                text.includes("open") ||
+                text.includes("opening") ||
+                text.includes("close") ||
+                text.includes("closing") ||
+                text.includes("time") ||
+                text.includes("when are you")
+            ) {
+                return "Imnandi NovaCare Medical Center provides healthcare services 24 hours a day, 7 days a week. Emergency services are available at all times. General outpatient and administrative services operate Monday to Friday from 08:00 to 17:00. Some departments may have different operating hours, so please contact the hospital for specific department times.";
+            }
+
+            if (
+                text.includes("emergency") ||
+                text.includes("urgent") ||
+                text.includes("ambulance") ||
+                text.includes("accident")
+            ) {
+                return "If you are experiencing a medical emergency, please seek immediate emergency medical assistance or go directly to the nearest emergency department. This chatbot cannot provide emergency medical care.";
+            }
+
+            if (
+                text.includes("career") ||
+                text.includes("careers") ||
+                text.includes("job") ||
+                text.includes("jobs") ||
+                text.includes("work") ||
+                text.includes("vacancy") ||
+                text.includes("vacancies") ||
+                text.includes("employment")
+            ) {
+                return "Imnandi NovaCare offers opportunities for doctors, nurses, medical technicians, administrative staff and other healthcare professionals. Please visit the Careers section of our website to learn more about opportunities.";
+            }
+
+            if (
+                text.includes("apply") ||
+                text.includes("application") ||
+                text.includes("how do i apply")
+            ) {
+                return "To apply for a position, please visit our Careers section and review the available opportunities. Follow the application instructions provided for the position you are interested in.";
+            }
+
+            if (
+                text.includes("login") ||
+                text.includes("log in") ||
+                text.includes("account") ||
+                text.includes("system") ||
+                text.includes("sign in")
+            ) {
+                return "Authorized staff members can access the hospital management system using the Login button on the home page. If you are having difficulty accessing your account, please contact the hospital administrator.";
+            }
+
+            if (
+                text.includes("investor") ||
+                text.includes("investors") ||
+                text.includes("investment") ||
+                text.includes("financial")
+            ) {
+                return "Our Investors section provides information about healthcare innovation, financial reporting, investment opportunities and sustainable growth at Imnandi NovaCare Medical Center.";
+            }
+
+            if (
+                text.includes("news") ||
+                text.includes("new") ||
+                text.includes("event") ||
+                text.includes("events") ||
+                text.includes("announcement") ||
+                text.includes("announcements")
+            ) {
+                return "You can find hospital news, healthcare updates, events, announcements and community initiatives in our News Hub.";
+            }
+
+            if (
+                text.includes("doctor") ||
+                text.includes("doctors") ||
+                text.includes("appointment") ||
+                text.includes("appointments") ||
+                text.includes("consultation") ||
+                text.includes("consult")
+            ) {
+                return "For doctor appointments and availability, please contact Imnandi NovaCare Medical Center directly. Authorized users may also use the hospital management system to manage appointments and schedules.";
+            }
+
+            if (
+                text.includes("patient") ||
+                text.includes("patients") ||
+                text.includes("admission") ||
+                text.includes("admitted")
+            ) {
+                return "Our hospital provides patient admission, nursing care, medical consultations, treatments, medication management and ongoing patient monitoring. For information about a specific patient, please contact the hospital directly.";
+            }
+
+            if (
+                text.includes("pharmacy") ||
+                text.includes("medicine") ||
+                text.includes("medication") ||
+                text.includes("prescription")
+            ) {
+                return "Our healthcare services include medication and prescription management. For prescription or pharmacy-related enquiries, please contact the hospital directly or speak with the appropriate medical department.";
+            }
+
+            if (
+                text.includes("about") ||
+                text.includes("hospital") ||
+                text.includes("who are you")
+            ) {
+                return "Imnandi NovaCare Medical Center is committed to providing quality healthcare through compassionate patient care, modern medical facilities, multidisciplinary healthcare teams and innovative healthcare solutions.";
+            }
+
+            if (
+                text.includes("thank") ||
+                text.includes("thanks")
+            ) {
+                return "You're very welcome! If you have any other questions about Imnandi NovaCare, feel free to ask.";
+            }
+
+            if (
+                text.includes("bye") ||
+                text.includes("goodbye")
+            ) {
+                return "Thank you for visiting Imnandi NovaCare Medical Center. Have a wonderful day!";
+            }
+
+            return "I can help you with information about our services, location, contact details, opening hours, careers, appointments, patients, pharmacy, news, investors and system access. Please try asking me a question about one of these areas.";
+        }
+
+        function sendMessage(question) {
+
+            const message = question.trim();
+
+            if (!message) {
+                return;
+            }
+
+            addMessage(message, "user");
+
+            chatbotInput.value = "";
+
+            addTypingMessage();
+
+            setTimeout(function () {
+
+                removeTypingMessage();
+
+                const response = getBotResponse(message);
+
+                addMessage(response, "bot");
+
+            }, 700);
+        }
+
+        chatbotSend.addEventListener("click", function () {
+
+            sendMessage(chatbotInput.value);
+
+        });
+
+        chatbotInput.addEventListener("keydown", function (event) {
+
+            if (event.key === "Enter") {
+
+                event.preventDefault();
+
+                sendMessage(chatbotInput.value);
+
+            }
+
+        });
+
+        quickButtons.forEach(function (button) {
+
+            button.addEventListener("click", function () {
+
+                const question =
+                    button.getAttribute("data-question");
+
+                sendMessage(question);
+
+            });
+
+        });
+
+    </script>
+
+</body>
+</html>

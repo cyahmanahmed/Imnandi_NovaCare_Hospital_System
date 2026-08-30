@@ -1,0 +1,699 @@
+﻿@using Imnandi_NovaCare_Hospital_System.Models
+@model StockManagerDashboardViewModel
+
+@{
+    ViewData["Title"] = "Stock Manager Dashboard";
+
+    var department = Model.Department?.Trim();
+    var isSupplyChain = string.Equals(
+        department,
+        "Supply Chain",
+        StringComparison.OrdinalIgnoreCase);
+
+    var isMedicalStores = string.Equals(
+        department,
+        "Medical Stores",
+        StringComparison.OrdinalIgnoreCase);
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            overflow-y: visible;
+        }
+
+        .sm-sidebar {
+            background-color: #2c3e50;
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding-top: 1rem;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+            .sm-sidebar a {
+                display: block;
+                padding: 0.9rem 1.25rem;
+                color: white;
+                text-decoration: none;
+                font-size: 0.95rem;
+            }
+
+                .sm-sidebar a:hover {
+                    background-color: #34495e;
+                }
+
+            .sm-sidebar .section-title {
+                padding: 0.75rem 1.25rem;
+                text-transform: uppercase;
+                font-size: 0.8rem;
+                color: #adb5bd;
+            }
+
+        .sm-dashboard-content {
+            margin-left: 250px;
+            padding: 2rem;
+        }
+
+        .card {
+            border-radius: 10px;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,.08);
+        }
+
+        .stats-card h2 {
+            font-size: 2rem;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .btn-action {
+            background-color: #0d6efd;
+            color: white;
+            border-radius: 6px;
+            padding: 4px 12px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+            .btn-action:hover {
+                background-color: #0a58ca;
+                color: white;
+            }
+
+        .search-box input {
+            height: 45px;
+            border-radius: 6px;
+        }
+
+        .department-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .table th {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sm-sidebar">
+
+        <h3 class="text-center mb-4 fw-bold">
+            Stock Manager Panel
+        </h3>
+
+        @if (isSupplyChain)
+        {
+            <a asp-controller="StockManager"
+               asp-action="ManageOrders"
+               class="nav-link">
+                <i class="bi bi-card-list me-2"></i>
+                Manage Orders
+            </a>
+
+            <a asp-controller="StockManager"
+               asp-action="ManageStock"
+               class="nav-link">
+                <i class="bi bi-clipboard-data me-2"></i>
+                Manage Stock
+            </a>
+
+            <a asp-controller="StockManager"
+               asp-action="ReceiveStock"
+               class="nav-link">
+                <i class="bi bi-truck me-2"></i>
+                Receive Stock
+            </a>
+        }
+
+        @if (isMedicalStores)
+        {
+            <a asp-controller="StockManager"
+               asp-action="ManageConsumables"
+               class="nav-link">
+                <i class="bi bi-boxes me-2"></i>
+                Manage Consumables
+            </a>
+
+            <a asp-controller="StockManager"
+               asp-action="ManageStock"
+               class="nav-link">
+                <i class="bi bi-clipboard-data me-2"></i>
+                Manage Stock
+            </a>
+
+            <a asp-controller="StockManager"
+               asp-action="ReceiveStock"
+               class="nav-link">
+                <i class="bi bi-truck me-2"></i>
+                Receive Stock
+            </a>
+        }
+
+        <a asp-controller="StockManager"
+           asp-action="ViewAlerts">
+            <i class="bi bi-calendar-event me-2"></i>
+            View Alerts
+        </a>
+
+        <h6 class="section-title">
+            Settings
+        </h6>
+
+        <a asp-controller="StockManager"
+           asp-action="Profile">
+            <i class="bi bi-gear me-2"></i>
+            Profile
+        </a>
+
+        <a href="/Identity/Account/Logout">
+            <i class="bi bi-box-arrow-right me-2"></i>
+            Log Out
+        </a>
+
+    </div>
+
+    <div class="sm-dashboard-content">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <div>
+                <h1 class="mb-1 fw-bold">
+                    Welcome, @Model.FirstName @Model.LastName
+                </h1>
+
+                <p class="text-muted mb-0">
+                    Stock Management Dashboard
+                </p>
+            </div>
+
+            <div>
+                @if (isSupplyChain)
+                {
+                    <span class="department-badge bg-primary-subtle text-primary">
+                        <i class="bi bi-truck"></i>
+                        Supply Chain
+                    </span>
+                }
+                else if (isMedicalStores)
+                {
+                    <span class="department-badge bg-success-subtle text-success">
+                        <i class="bi bi-capsule-pill"></i>
+                        Medical Stores
+                    </span>
+                }
+                else
+                {
+                    <span class="department-badge bg-secondary-subtle text-secondary">
+                        <i class="bi bi-building"></i>
+                        @Model.Department
+                    </span>
+                }
+            </div>
+
+        </div>
+
+        <div class="row g-3 mb-4">
+
+            <div class="col-md-3">
+                <div class="card p-3 text-center bg-primary text-white stats-card">
+                    <h2>@Model.TotalOrders</h2>
+                    <p class="m-0">Total Orders</p>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card p-3 text-center bg-warning text-dark stats-card">
+                    <h2>@Model.PendingOrderCount</h2>
+                    <p class="m-0">Pending Orders</p>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card p-3 text-center bg-success text-white stats-card">
+                    <h2>@Model.CompletedOrderCount</h2>
+                    <p class="m-0">Completed Orders</p>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card p-3 text-center bg-info text-dark stats-card">
+                    <h2>@Model.TotalConsumables</h2>
+                    <p class="m-0">Consumables</p>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="card p-3 mb-4">
+
+            <h5 class="fw-bold mb-3">
+                <i class="bi bi-person-badge me-2 text-primary"></i>
+                Your Details
+            </h5>
+
+            <div class="row">
+
+                <div class="col-md-4">
+                    <p class="mb-2">
+                        <strong>Name:</strong>
+                        @Model.FirstName @Model.LastName
+                    </p>
+                </div>
+
+                <div class="col-md-4">
+                    <p class="mb-2">
+                        <strong>Job Title:</strong>
+                        @Model.JobTitle
+                    </p>
+                </div>
+
+                <div class="col-md-4">
+                    <p class="mb-2">
+                        <strong>Department:</strong>
+                        @Model.Department
+                    </p>
+                </div>
+
+                <div class="col-md-6">
+                    <p class="mb-0">
+                        <strong>Email:</strong>
+                        @Model.Email
+                    </p>
+                </div>
+
+                <div class="col-md-6">
+                    <p class="mb-0">
+                        <strong>Phone:</strong>
+                        @Model.PhoneNumber
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+        <form method="get"
+              asp-controller="StockManager"
+              asp-action="StockManagerDashboard"
+              class="search-box mb-4">
+
+            <div class="input-group">
+
+                <span class="input-group-text bg-white">
+                    <i class="bi bi-search"></i>
+                </span>
+
+                <input name="search"
+                       value="@(ViewData["Search"] ?? "")"
+                       type="text"
+                       placeholder="Search orders or consumables"
+                       class="form-control" />
+
+                <button type="submit"
+                        class="btn btn-primary">
+                    Search
+                </button>
+
+                <a asp-controller="StockManager"
+                   asp-action="StockManagerDashboard"
+                   class="btn btn-secondary">
+                    Clear
+                </a>
+
+            </div>
+
+        </form>
+
+        <div class="card p-3 mb-4">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+
+                <h4 class="mb-0 fw-bold">
+                    <i class="bi bi-hourglass-split text-warning me-2"></i>
+                    Pending Orders
+                </h4>
+
+                <span class="badge bg-warning text-dark">
+                    @Model.PendingOrderCount
+                </span>
+
+            </div>
+
+            @if (Model.PendingOrders.Any())
+            {
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-light">
+
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Items Count</th>
+                                <th>Actions</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var o in Model.PendingOrders)
+                            {
+                                <tr>
+
+                                    <td>
+                                        <strong>#@o.OrderId</strong>
+                                    </td>
+
+                                    <td>
+                                        @o.OrderName
+                                    </td>
+
+                                    <td>
+                                        @o.Description
+                                    </td>
+
+                                    <td>
+                                        <span class="badge bg-light text-dark border">
+                                            @o.OrderItems.Count
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <a asp-controller="Order"
+                                           asp-action="Receive"
+                                           asp-route-id="@o.OrderId"
+                                           class="btn-action">
+                                            <i class="bi bi-check-circle me-1"></i>
+                                            Receive
+                                        </a>
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-4">
+
+                    <i class="bi bi-check-circle text-success fs-2"></i>
+
+                    <p class="text-muted mb-0 mt-2">
+                        No pending orders.
+                    </p>
+
+                </div>
+            }
+
+        </div>
+
+        <div class="card p-3 mb-4">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+
+                <h4 class="mb-0 fw-bold">
+                    <i class="bi bi-check2-circle text-success me-2"></i>
+                    Completed Orders
+                </h4>
+
+                <span class="badge bg-success">
+                    @Model.CompletedOrderCount
+                </span>
+
+            </div>
+
+            @if (Model.CompletedOrders.Any())
+            {
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-light">
+
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Items Count</th>
+                                <th>Status</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var o in Model.CompletedOrders)
+                            {
+                                <tr>
+
+                                    <td>
+                                        <strong>#@o.OrderId</strong>
+                                    </td>
+
+                                    <td>
+                                        @o.OrderName
+                                    </td>
+
+                                    <td>
+                                        @o.Description
+                                    </td>
+
+                                    <td>
+                                        <span class="badge bg-light text-dark border">
+                                            @o.OrderItems.Count
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle me-1"></i>
+                                            Received
+                                        </span>
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-4">
+
+                    <i class="bi bi-inbox text-muted fs-2"></i>
+
+                    <p class="text-muted mb-0 mt-2">
+                        No completed orders.
+                    </p>
+
+                </div>
+            }
+
+        </div>
+
+        <div class="card p-3 mb-4">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+
+                <h4 class="mb-0 fw-bold">
+                    <i class="bi bi-exclamation-triangle text-danger me-2"></i>
+                    Low Stock Consumables
+                </h4>
+
+                @if (Model.LowStockConsumables.Any())
+                {
+                    <span class="badge bg-danger">
+                        @Model.LowStockConsumables.Count
+                    </span>
+                }
+
+            </div>
+
+            @if (Model.LowStockConsumables.Any())
+            {
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-light">
+
+                            <tr>
+                                <th>Consumable ID</th>
+                                <th>Name</th>
+                                <th>Quantity On Hand</th>
+                                <th>Minimum Threshold</th>
+                                <th>Status</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var c in Model.LowStockConsumables)
+                            {
+                                <tr>
+
+                                    <td>
+                                        #@c.ConsumableId
+                                    </td>
+
+                                    <td>
+                                        <strong>
+                                            @c.ConsumableName
+                                        </strong>
+                                    </td>
+
+                                    <td>
+                                        <span class="badge bg-danger">
+                                            @c.QuantityOnHand
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        @c.MinimumConsumables
+                                    </td>
+
+                                    <td>
+                                        <span class="badge bg-danger-subtle text-danger">
+                                            <i class="bi bi-exclamation-circle me-1"></i>
+                                            Low Stock
+                                        </span>
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-4">
+
+                    <i class="bi bi-check-circle text-success fs-2"></i>
+
+                    <p class="text-muted mb-0 mt-2">
+                        All consumables are sufficiently stocked.
+                    </p>
+
+                </div>
+            }
+
+        </div>
+
+        <div class="card p-3 mb-4">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+
+                <h4 class="mb-0 fw-bold">
+                    <i class="bi bi-clipboard-check text-primary me-2"></i>
+                    Recent Stock Audits
+                </h4>
+
+            </div>
+
+            @if (Model.RecentStockTakes.Any())
+            {
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-light">
+
+                            <tr>
+                                <th>StockTake ID</th>
+                                <th>Date</th>
+                                <th>Quantity Counted</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var s in Model.RecentStockTakes)
+                            {
+                                <tr>
+
+                                    <td>
+                                        #@s.StockTakeId
+                                    </td>
+
+                                    <td>
+                                        @s.Date.ToString("yyyy-MM-dd")
+                                    </td>
+
+                                    <td>
+                                        <span class="badge bg-primary-subtle text-primary">
+                                            @s.QuantityCountered
+                                        </span>
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-4">
+
+                    <i class="bi bi-clipboard-x text-muted fs-2"></i>
+
+                    <p class="text-muted mb-0 mt-2">
+                        No recent stock audits.
+                    </p>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,186 @@
+﻿@model CreateAdmissionFolderViewModel
+
+@{
+    ViewData["Title"] = "Create Admission Folder";
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4>Create Admission Folder</h4>
+        </div>
+
+        <div class="card-body">
+            <form asp-action="CreatePatientFolder" method="post">
+
+                <input asp-for="PatientId" type="hidden" />
+
+                <div class="mb-3">
+                    <label class="form-label">Patient Name</label>
+                    <input class="form-control" value="@Model.PatientName" disabled />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ReasonForAdmission" class="form-label"></label>
+                    <textarea asp-for="ReasonForAdmission" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="ReasonForAdmission" class="text-danger"></span>
+                </div>
+
+                <div class="row mb-3">
+
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label fw-semibold">Doctor Assignment</label>
+
+                        <select asp-for="DoctorId" id="DoctorId" class="form-select">
+                            <option value="">-- Select Doctor --</option>
+
+                            @foreach (var doctor in Model.Doctors)
+                            {
+                                <option value="@doctor.DoctorId">
+                                    @doctor.Employee.FirstName @doctor.Employee.LastName
+                                </option>
+                            }
+                        </select>
+
+                        <button type="button"
+                                id="clearDoctor"
+                                class="btn btn-outline-danger btn-sm mt-2">
+                            <i class="bi bi-x-lg"></i> Remove Doctor
+                        </button>
+
+                        <span asp-validation-for="DoctorId" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label fw-semibold">Nurse Assignment</label>
+
+                        <select asp-for="NurseId" class="form-select" required>
+                            <option value="">-- Select Nurse --</option>
+
+                            @foreach (var nurse in Model.Nurses)
+                            {
+                                <option value="@nurse.NurseId">
+                                    @nurse.Employee.FirstName @nurse.Employee.LastName
+                                </option>
+                            }
+                        </select>
+
+                        <span asp-validation-for="NurseId" class="text-danger"></span>
+                    </div>
+
+                </div>
+
+                <div class="row mb-3">
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Room Assignment</label>
+
+                        <select asp-for="RoomId" id="RoomId" class="form-select" required>
+                            <option value="">-- Select Room --</option>
+
+                            @foreach (var room in Model.Rooms)
+                            {
+                                <option value="@room.RoomId">
+                                    @room.RoomNumber
+                                </option>
+                            }
+                        </select>
+
+                        <span asp-validation-for="RoomId" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Bed Assignment</label>
+
+                        <select asp-for="BedId" id="BedId" class="form-select" required>
+                            <option value="">-- Select Bed --</option>
+
+                            @foreach (var bed in Model.Beds)
+                            {
+                                <option value="@bed.BedId">
+                                    Bed No. @bed.BedNumber
+                                </option>
+                            }
+                        </select>
+
+                        <span asp-validation-for="BedId" class="text-danger"></span>
+                    </div>
+
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Visit Type (Doctor Schedule)</label>
+
+                    <select asp-for="VisitType" class="form-select" required>
+                        <option value="">-- Select Visit Type --</option>
+                        <option value="Consultation">Consultation</option>
+                        <option value="Follow-up">Follow-up</option>
+                        <option value="Emergency Review">Emergency Review</option>
+                    </select>
+
+                    <span asp-validation-for="VisitType" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="WardAdminDashboard" class="btn btn-outline-secondary btn-sm px-4">
+                        <i class="bi bi-arrow-left me-1"></i> Cancel
+                    </a>
+
+                    <button type="submit" class="btn btn-primary btn-sm px-4">
+                        Create Folder & Schedule
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+
+    <script>
+
+        document.getElementById("clearDoctor").addEventListener("click", function () {
+            document.getElementById("DoctorId").value = "";
+        });
+
+
+        const roomDropdown = document.getElementById("RoomId");
+        const bedDropdown = document.getElementById("BedId");
+
+
+        roomDropdown.addEventListener("change", function () {
+
+            const roomId = this.value;
+
+            bedDropdown.innerHTML = '<option value="">-- Select Bed --</option>';
+
+
+            if (!roomId)
+                return;
+
+
+            fetch('@Url.Action("GetBedsByRoom", "WardAdmin")?roomId=' + roomId)
+
+                .then(response => response.json())
+
+                .then(data => {
+                    const beds = data.$values || [];
+                    beds.forEach(function (bed) {
+                        const option = document.createElement("option");
+                        option.value = bed.bedId;
+                        option.textContent = "Bed No. " + bed.bedNumber;
+                        bedDropdown.appendChild(option);
+                    });
+                })
+
+                .catch(error => console.error("Error loading beds:", error));
+
+
+        });
+
+
+    </script>
+
+}

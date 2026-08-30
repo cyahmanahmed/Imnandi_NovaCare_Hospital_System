@@ -1,0 +1,222 @@
+﻿@model PatientMovement
+
+@{
+    ViewData["Title"] = "Manage Patient Movement";
+    var patient = ViewBag.Patient as Patient;
+    var movementHistory = ViewBag.MovementHistory as List<PatientMovement>;
+    var rooms = ViewBag.Rooms as List<dynamic>;
+    var beds = ViewBag.Beds as List<dynamic>;
+}
+
+<div class="container-fluid p-0">
+    <div class="row justify-content-center mt-5">
+        <div class="col-lg-10">
+
+            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                <div class="card-header bg-primary text-white py-3 px-4">
+                    <h4 class="mb-0"><i class="bi bi-person-fill me-2"></i>Patient Info</h4>
+                </div>
+                <div class="card-body p-4">
+                    <ul class="list-unstyled mb-0">
+                        <li><strong>Name:</strong> @patient.FirstName @patient.LastName</li>
+                        <li><strong>ID Number:</strong> @patient.IdNumber</li>
+                        <li><strong>Current Room:</strong> @(patient.Room?.RoomName ?? "N/A")</li>
+                        <li><strong>Current Bed:</strong> @(patient.Bed?.BedNumber ?? "N/A")</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                <div class="card-header bg-success text-white py-3 px-4">
+                    <h4 class="mb-0"><i class="bi bi-arrow-left-right me-2"></i>Move Patient</h4>
+                </div>
+                <div class="card-body p-4">
+
+                    <form asp-action="ManagePatientMovement" method="post">
+                        <input type="hidden" asp-for="PatientId" value="@patient.Id" />
+
+                        <div class="mb-3">
+                            <label asp-for="MovementType" class="form-label fw-semibold">Movement Type</label>
+                            <select asp-for="MovementType" class="form-select" id="movementTypeSelect">
+                                <option value="">-- Select Movement Type --</option>
+                                <option value="Transfer">Transfer</option>
+                                <option value="Temporary Move">Temporary Move (cleaning/maintenance)</option>
+                            </select>
+                            <span asp-validation-for="MovementType" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Target Room</label>
+                                <select asp-for="ToRoomId" class="form-select" id="roomSelect">
+                                    <option value="">-- Select Room --</option>
+                                    @foreach (var r in rooms)
+                                    {
+                                        <option value="@r.RoomId">@r.RoomName (@r.RoomNumber)</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Target Bed</label>
+                                <select asp-for="ToBedId" class="form-select" id="bedSelect">
+                                    <option value="">-- Select Bed --</option>
+                                    @foreach (var b in beds)
+                                    {
+                                        <option value="@b.BedId">@b.BedNumber (@b.BedType)</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-3" id="temporaryMoveTiming" style="display:none;">
+                            <div class="col-md-6">
+                                <label asp-for="MovementDate" class="form-label fw-semibold">Move Date & Time</label>
+                                <input asp-for="MovementDate" type="datetime-local" class="form-control" />
+                                <span asp-validation-for="MovementDate" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="ReturnTime" class="form-label fw-semibold">Return Date & Time</label>
+                                <input asp-for="ReturnTime" type="datetime-local" class="form-control" />
+                                <span asp-validation-for="ReturnTime" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 d-flex justify-content-end gap-2">
+                            <a asp-action="ManagePatients" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-1"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-lg me-1"></i> Move Patient
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 rounded-4 mb-5">
+                <div class="card-header bg-info text-white py-3 px-4">
+                    <h4 class="mb-0"><i class="bi bi-clock-history me-2"></i>Patient Movement History</h4>
+                </div>
+                <div class="card-body p-4">
+                    <table class="table table-hover table-striped align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>From Room</th>
+                                <th>From Bed</th>
+                                <th>Movement Type</th>
+                                <th>To Room</th>
+                                <th>To Bed</th>
+                                <th>Issued by</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (movementHistory != null && movementHistory.Any())
+                            {
+                                foreach (var m in movementHistory)
+                                {
+                                    <tr>
+                                        <td>@m.MovementDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td>@(m.FromRoom?.RoomName ?? "N/A")</td>
+                                        <td>@(m.FromBed?.BedNumber ?? "N/A")</td>
+                                        <td>@(m.MovementType)</td>
+                                        <td>@(m.ToRoom?.RoomName ?? "N/A")</td>
+                                        <td>@(m.ToBed?.BedNumber ?? "N/A")</td>
+                                        <td>@(m.WardAdmin?.Employee?.FirstName) @(m.WardAdmin?.Employee?.LastName)</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="7" class="text-center">No movement history available.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                        <a asp-controller="WardAdmin" asp-action="ManagePatients" class="btn btn-outline-primary">
+                            <i class="bi bi-arrow-left me-1"></i> Back
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+<script>
+    const allBeds = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(beds));
+    const roomSelect = document.getElementById('roomSelect');
+    const bedSelect = document.getElementById('bedSelect');
+
+    roomSelect.addEventListener('change', function () {
+        const roomId = parseInt(this.value);
+        bedSelect.innerHTML = '<option value="">-- Select Bed --</option>';
+        if (!isNaN(roomId)) {
+            const filteredBeds = allBeds.filter(b => b.RoomId === roomId && !b.IsOccupied && !b.IsDeleted);
+            filteredBeds.forEach(b => {
+                const opt = document.createElement('option');
+                opt.value = b.BedId;
+                opt.text = b.BedNumber + ' (' + b.BedType + ')';
+                bedSelect.appendChild(opt);
+            });
+        }
+    });
+
+    const movementTypeSelect = document.getElementById('movementTypeSelect');
+    const tempMoveDiv = document.getElementById('temporaryMoveTiming');
+
+    movementTypeSelect.addEventListener('change', function () {
+        if (this.value === 'Temporary Move') {
+            tempMoveDiv.style.display = 'flex';
+        } else {
+            tempMoveDiv.style.display = 'none';
+        }
+    });
+</script>
+
+<style>
+    body {
+        background-color: #f5f5f7;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .card {
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        background: white;
+    }
+
+    .form-label {
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .form-select, .form-control {
+        border-radius: 0.5rem;
+    }
+
+    .btn {
+        border-radius: 50px;
+    }
+
+    .table {
+        font-size: 0.875rem;
+    }
+
+        .table th, .table td {
+            vertical-align: middle;
+        }
+
+    .card-header {
+        font-weight: 600;
+        font-size: 1rem;
+    }
+</style>

@@ -1,0 +1,86 @@
+﻿@model Consumable
+@{
+    ViewData["Title"] = "Delete Consumable";
+}
+
+<h1 class="mb-4 text-danger">
+    <i class="bi bi-trash-fill"></i> Delete Consumable
+</h1>
+
+<div class="alert alert-warning shadow-sm" role="alert">
+    <h5 class="alert-heading"><i class="bi bi-exclamation-triangle-fill"></i> Warning!</h5>
+    <p>
+        This action will <strong>delete</strong> the Consumable. The record will be deleted.
+    </p>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-danger text-white">
+        <h5 class="mb-0">Consumable Details</h5>
+    </div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Consumable Name</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(c => c.ConsumableName)</dd>
+
+            <dt class="col-sm-3">Unit</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(c => c.Unit)</dd>
+
+            <dt class="col-sm-3">Quantity on Hand</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(c => c.QuantityOnHand)</dd>
+
+
+
+            <dt class="col-sm-3">Status</dt>
+            <dd class="col-sm-9">
+                @if (Model.IsDeleted)
+                {
+                    <span class="badge bg-secondary">Deleted</span>
+                }
+                else
+                {
+                    <span class="badge bg-success">Active</span>
+                }
+            </dd>
+        </dl>
+    </div>
+</div>
+
+<div class="d-flex gap-2">
+    <form asp-action="DeleteConsumable" asp-route-id="@Model.ConsumableId" method="post" class="d-inline">
+
+        <input type="hidden" asp-for="ConsumableId" />
+        <button type="submit" class="btn btn-danger shadow-sm">
+            <i class="bi bi-trash-fill"></i> Confirm Delete
+        </button>
+    </form>
+    <a asp-action="ManageConsumables" class="btn btn-secondary shadow-sm">
+        <i class="bi bi-arrow-left-circle-fill"></i> Back to List
+    </a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .card-header i {
+        color: #fff;
+    }
+
+    .list-group-item {
+        font-size: 1rem;
+    }
+
+    .btn-lg {
+        padding: 0.5rem 1.5rem;
+        font-size: 1rem;
+    }
+</style>

@@ -1,0 +1,212 @@
+﻿@model IEnumerable<Nurse>
+
+@{
+    ViewData["Title"] = "Manage Nurses";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet" />
+
+<style>
+    body {
+        background: linear-gradient(135deg,#f6f9fc 0%,#e8f0fe 100%);
+        font-family: 'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+        .page-header h3 {
+            font-weight: 600;
+            color: #0d6efd;
+        }
+
+    .nurse-card {
+        background: #fff;
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 4px 15px rgba(0,0,0,.08);
+        transition: .3s;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+
+        .nurse-card::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 6px;
+            height: 100%;
+            background: linear-gradient(180deg,#0d6efd,#20c997);
+        }
+
+        .nurse-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 25px rgba(0,0,0,.15);
+        }
+
+    .avatar {
+        width: 75px;
+        height: 75px;
+        border-radius: 50%;
+        background: linear-gradient(135deg,#0d6efd,#20c997);
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: auto;
+        font-size: 2rem;
+    }
+
+    .badge-role {
+        background: #e7f1ff;
+        color: #0d6efd;
+        padding: .45rem 1rem;
+        border-radius: 30px;
+        font-size: .85rem;
+        font-weight: 600;
+    }
+
+    .info-box {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 15px;
+        margin-top: 18px;
+    }
+
+        .info-box div {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: .5rem;
+        }
+
+            .info-box div:last-child {
+                margin-bottom: 0;
+            }
+
+    .btn-manage {
+        border-radius: 30px;
+        font-weight: 500;
+        transition: .3s;
+    }
+
+        .btn-manage:hover {
+            background: #0d6efd;
+            color: white;
+        }
+
+    .empty-state {
+        text-align: center;
+        padding: 5rem 2rem;
+        color: #6c757d;
+    }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+</style>
+
+<div class="container py-5">
+
+    <div class="mb-4">
+        <a asp-action="NurseSisterDashboard"
+           class="btn btn-outline-primary px-4 py-2 rounded-pill shadow-sm">
+            <i class="bi bi-house-door-fill me-2"></i>
+            Back to Dashboard
+        </a>
+    </div>
+
+    <div class="page-header">
+        <h3>
+            <i class="bi bi-person-badge-fill me-2"></i>
+            Manage Nurses
+        </h3>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <i class="bi bi-person-x"></i>
+            <h4>No Nurses Found</h4>
+            <p>There are currently no nurses available.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+
+            @foreach (var nurse in Model)
+            {
+                <div class="col-xl-3 col-lg-4 col-md-6">
+
+                    <div class="nurse-card p-4 text-center">
+
+                        <div class="avatar">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+
+                        <h5 class="fw-bold mt-3 mb-1">
+                            @nurse.FirstName @nurse.LastName
+                        </h5>
+
+                        <span class="badge-role">
+                            Registered Nurse
+                        </span>
+
+                        <div class="info-box">
+
+                            <div>
+                                <span>
+                                    <i class="bi bi-people-fill me-1 text-primary"></i>
+                                    Assigned Patients
+                                </span>
+
+                                <strong>
+                                    @nurse.Patients.Count(p => !p.IsDischarged)
+                                </strong>
+                            </div>
+
+                            <div>
+                                <span>
+                                    <i class="bi bi-check-circle-fill me-1 text-success"></i>
+                                    Status
+                                </span>
+
+                                <span class="badge bg-success">
+                                    Active
+                                </span>
+                            </div>
+
+                        </div>
+
+                        <div class="d-grid mt-4">
+
+                            <a asp-action="ManageSingleNurse"
+                               asp-route-nurseId="@nurse.NurseId"
+                               class="btn btn-outline-primary btn-manage">
+
+                                <i class="bi bi-sliders me-2"></i>
+                                Manage Nurse
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

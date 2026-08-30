@@ -1,0 +1,231 @@
+﻿@page
+@model Imnandi_NovaCare_Hospital_System.Areas.Identity.Pages.Account.LoginModel
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<div class="login-page container-fluid d-flex justify-content-center align-items-center vh-100">
+
+    <div class="login-card card shadow-lg border-0 rounded-lg p-5">
+        <div class="card-header text-center mb-4">
+            <h2 class="card-title fw-bold text-primary">Imnandi NovaCare Login</h2>
+            <p class="text-muted">Use your account to access the dashboard</p>
+        </div>
+
+        <div class="card-body">
+            <form method="post">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly"
+                     class="alert alert-danger mb-3"
+                     role="alert"></div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Email"
+                           class="form-control"
+                           placeholder="name@example.com"
+                           autocomplete="username" />
+                    <label asp-for="Input.Email">Email</label>
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Password"
+                           type="password"
+                           class="form-control"
+                           placeholder="Password"
+                           autocomplete="current-password" />
+                    <label asp-for="Input.Password">Password</label>
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input asp-for="Input.RememberMe" class="form-check-input" />
+                    <label class="form-check-label" asp-for="Input.RememberMe">
+                        Remember me
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-login w-100 btn-lg mb-3">
+                    Log in
+                </button>
+
+                <div class="text-center">
+                    <a asp-controller="Home"
+                       asp-action="ForgotPassword"
+                       class="link-forgot">
+                        Forgot your password?
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (Model.CanCreateFirstAdmin)
+    {
+        <div class="admin-setup-card">
+            <div class="admin-setup-content">
+
+                <div class="admin-icon">
+                    <i class="bi bi-shield-lock"></i>
+                </div>
+
+                <h3>System Setup</h3>
+
+                <p>
+                    Setting up the hospital management system for the first time?
+                </p>
+
+                <p class="admin-setup-description">
+                    Create the first administrator account to get started.
+                </p>
+
+                <a asp-controller="Setup"
+                   asp-action="CreateAdmin"
+                   class="btn btn-admin-setup">
+                    Create Administrator
+                </a>
+
+            </div>
+        </div>
+    }
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<style>
+    .login-page {
+        background: linear-gradient(135deg, #f5f7fa 0%, #e4edf9 100%);
+        min-height: 100vh;
+        position: relative;
+    }
+
+    .login-card {
+        border-radius: 1rem;
+        box-shadow: 0 10px 30px rgba(0, 34, 68, 0.15);
+        border: 1px solid rgba(0, 34, 68, 0.1);
+        max-width: 500px;
+        width: 100%;
+        padding: 3rem !important;
+    }
+
+    .card-header h2 {
+        color: #002244;
+    }
+
+    .form-control:focus {
+        border-color: #00c853;
+        box-shadow: 0 0 0 0.25rem rgba(0, 200, 83, 0.25);
+    }
+
+    .form-floating label {
+        font-weight: 500;
+        color: #555;
+    }
+
+    .form-floating .form-control:focus ~ label {
+        color: #00c853;
+    }
+
+    .btn-login {
+        background-color: #002244;
+        border: none;
+        color: white;
+        font-weight: 600;
+        padding: 0.75rem;
+        transition: all 0.3s ease;
+    }
+
+        .btn-login:hover {
+            background-color: #001a33;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 34, 68, 0.3);
+        }
+
+    .link-forgot {
+        color: #002244;
+        text-decoration: none;
+        font-size: 0.95rem;
+        transition: color 0.2s;
+    }
+
+        .link-forgot:hover {
+            color: #00c853;
+            text-decoration: underline;
+        }
+
+    .text-danger {
+        font-size: 0.875rem;
+    }
+
+    .admin-setup-card {
+        position: absolute;
+        left: calc(50% + 275px);
+        width: 330px;
+        background: white;
+        border-radius: 1rem;
+        border: 1px solid rgba(0, 34, 68, 0.1);
+        box-shadow: 0 10px 30px rgba(0, 34, 68, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 2.5rem;
+    }
+
+    .admin-setup-content {
+        width: 100%;
+    }
+
+    .admin-icon {
+        width: 65px;
+        height: 65px;
+        margin: 0 auto 1.25rem;
+        border-radius: 50%;
+        background-color: rgba(0, 34, 68, 0.08);
+        color: #002244;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+    }
+
+    .admin-setup-card h3 {
+        color: #002244;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .admin-setup-card p {
+        color: #555;
+        margin-bottom: 0.75rem;
+        line-height: 1.5;
+    }
+
+    .admin-setup-description {
+        font-size: 0.9rem;
+        color: #777 !important;
+        margin-bottom: 1.5rem !important;
+    }
+
+    .btn-admin-setup {
+        width: 100%;
+        background-color: #00c853;
+        color: white;
+        border: none;
+        font-weight: 600;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+        .btn-admin-setup:hover {
+            background-color: #00a844;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 200, 83, 0.3);
+        }
+</style>

@@ -1,0 +1,52 @@
+﻿@model Discharge
+
+<h2>Discharge Patient</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (Model.Patient == null)
+{
+    <div class="alert alert-danger">Patient information not available.</div>
+}
+else
+{
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            Patient Information
+        </div>
+        <div class="card-body">
+            <p><strong>Name:</strong> @Model.Patient.FirstName @Model.Patient.LastName</p>
+            <p><strong>ID Number:</strong> @Model.Patient.IdNumber</p>
+            <p><strong>Date Admitted:</strong> @Model.Patient.DateAdmitted.ToString("yyyy-MM-dd")</p>
+        </div>
+    </div>
+
+    <form asp-action="DischargePatient" method="post">
+        <input type="hidden" asp-for="PatientId" />
+
+        <div class="mb-3">
+            <label asp-for="TreatmentSummary" class="form-label">Treatment Summary</label>
+            <textarea asp-for="TreatmentSummary" class="form-control" rows="4" required></textarea>
+            <span asp-validation-for="TreatmentSummary" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="FolloupInstructions" class="form-label">Follow-up Instructions</label>
+            <textarea asp-for="FolloupInstructions" class="form-control" rows="3" required></textarea>
+            <span asp-validation-for="FolloupInstructions" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-success">Discharge</button>
+        <a asp-action="AdmissionPatientFolder" asp-route-patientId="@Model.PatientId" class="btn btn-secondary ms-2">Cancel</a>
+    </form>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,121 @@
+﻿@model StockTake
+
+@{
+    ViewData["Title"] = "Delete Stock Take";
+}
+
+<div class="container-fluid p-0">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+
+                <div class="bg-danger text-white py-4 px-5 d-flex align-items-center justify-content-between">
+                    <div>
+                        <h3 class="mb-0">
+                            <i class="bi bi-trash-fill me-2"></i> Delete Stock Take
+                        </h3>
+                        <p class="mb-0 small opacity-90">This action cannot be undone.</p>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <div class="alert alert-warning shadow-sm mb-4" role="alert">
+                        <h5 class="alert-heading">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i> Warning!
+                        </h5>
+                        <p class="mb-0">
+                            Deleting this stock take will <strong>permanently remove</strong> all its related data and associations.
+                        </p>
+                    </div>
+
+                    <dl class="row mb-4">
+                        <dt class="col-sm-4 fw-semibold text-secondary">Stock Take ID</dt>
+                        <dd class="col-sm-8">@Model.StockTakeId</dd>
+
+                        <dt class="col-sm-4 fw-semibold text-secondary">Date</dt>
+                        <dd class="col-sm-8">@Model.Date</dd>
+
+                        <dt class="col-sm-4 fw-semibold text-secondary">Quantity Counted</dt>
+                        <dd class="col-sm-8">@Model.QuantityCountered</dd>
+
+                        <dt class="col-sm-4 fw-semibold text-secondary">Stock Manager</dt>
+                        <dd class="col-sm-8">@Model.StockManager?.FirstName @Model.StockManager?.LastName</dd>
+
+                        @if (Model.Ward != null)
+                        {
+                            <dt class="col-sm-4 fw-semibold text-secondary">Ward</dt>
+                            <dd class="col-sm-8">@Model.Ward.WardName</dd>
+                        }
+
+                        @if (Model.Consumables != null && Model.Consumables.Any())
+                        {
+                            <dt class="col-sm-4 fw-semibold text-secondary">Consumables</dt>
+                            <dd class="col-sm-8">
+                                <ul class="list-unstyled mb-0">
+                                    @foreach (var c in Model.Consumables)
+                                    {
+                                        <li><i class="bi bi-caret-right-fill text-primary me-1"></i>@c.ConsumableName</li>
+                                    }
+                                </ul>
+                            </dd>
+                        }
+                        else
+                        {
+                            <dt class="col-sm-4 fw-semibold text-secondary">Consumables</dt>
+                            <dd class="col-sm-8 text-muted">No consumables linked</dd>
+                        }
+                    </dl>
+
+                    <div class="d-flex gap-3 pt-3">
+                        <form asp-action="DeleteStockTake" asp-controller="StockManager" asp-route-id="@Model.StockTakeId" method="post" class="d-inline">
+                            <input type="hidden" asp-for="StockTakeId" />
+                            <button type="submit" class="btn btn-danger btn-sm px-4">
+                                <i class="bi bi-trash-fill me-1"></i> Confirm Delete
+                            </button>
+                        </form>
+
+                        <a asp-action="ManageStockTakes" asp-controller="StockManager" class="btn btn-secondary btn-sm px-4">
+                            <i class="bi bi-arrow-left-circle-fill me-1"></i> Cancel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    dt, dd {
+        font-size: 0.95rem;
+    }
+
+    .badge {
+        font-size: 0.85rem;
+    }
+
+    .btn-sm {
+        border-radius: 50px;
+    }
+
+    .bg-danger {
+        background: linear-gradient(135deg, #dc3545, #b52a37);
+    }
+
+    .alert-heading i {
+        color: #856404;
+    }
+
+    .card {
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+</style>

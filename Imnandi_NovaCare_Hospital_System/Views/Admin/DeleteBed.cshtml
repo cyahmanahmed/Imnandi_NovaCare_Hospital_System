@@ -1,0 +1,60 @@
+﻿@model Bed
+
+
+<h1 class="mb-4 text-danger">
+    <i class="bi bi-trash-fill"></i> Delete Bed
+</h1>
+
+<div class="alert alert-warning shadow-sm" role="alert">
+    <h5 class="alert-heading"><i class="bi bi-exclamation-triangle-fill"></i> Warning!</h5>
+    <p>
+        This action will <strong>delete</strong> the Bed. The record will be deleted.
+    </p>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-danger text-white">
+        <h5 class="mb-0">Bed Details</h5>
+    </div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Bed Number</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(m => m.BedNumber)</dd>
+
+            <dt class="col-sm-3">Bed Type</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(m => m.BedType)</dd>
+
+
+
+            <dt class="col-sm-3">Status</dt>
+            <dd class="col-sm-9">
+                @if (Model.IsDeleted)
+                {
+                    <span class="badge bg-secondary">Deleted</span>
+                }
+                else
+                {
+                    <span class="badge bg-success">Active</span>
+                }
+            </dd>
+        </dl>
+    </div>
+</div>
+
+<div class="d-flex gap-2">
+    <form asp-action="DeleteBedConfirmed" asp-route-roomId="@Model.BedId" method="post" class="d-inline">
+        <input type="hidden" asp-for="BedId" />
+        <button type="submit" class="btn btn-danger shadow-sm">
+            <i class="bi bi-trash-fill"></i> Confirm Delete
+        </button>
+    </form>
+    <a asp-action="ManageBeds" class="btn btn-secondary shadow-sm">
+        <i class="bi bi-arrow-left-circle-fill"></i> Back to List
+    </a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

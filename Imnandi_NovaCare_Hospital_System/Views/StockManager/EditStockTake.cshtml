@@ -1,0 +1,87 @@
+﻿@model StockTake
+
+@{
+    ViewData["Title"] = "Edit Stock Take";
+}
+
+<div class="container-fluid p-0">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+
+                <div class="bg-success text-white py-4 px-5 d-flex align-items-center justify-content-between">
+                    <div>
+                        <h3 class="mb-0">
+                            <i class="bi bi-pencil-square me-2"></i> Edit Stock Take
+                        </h3>
+                        <p class="mb-0 small opacity-90">Update stock count details</p>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <form asp-action="EditStockTake" asp-controller="StockManager" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        <input type="hidden" asp-for="StockTakeId" />
+
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="bi bi-box-seam-fill text-success fs-5 me-2"></i>
+                                <h3 class="mb-0 text-dark">Stock Take Information</h3>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label asp-for="Date" class="form-label small fw-semibold">Date</label>
+                                <input asp-for="Date" type="date" class="form-control form-control-sm rounded-pill" />
+                                <span asp-validation-for="Date" class="text-danger small"></span>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label asp-for="QuantityCountered" class="form-label small fw-semibold">Quantity Counted</label>
+                                <input asp-for="QuantityCountered" class="form-control form-control-sm rounded-pill" />
+                                <span asp-validation-for="QuantityCountered" class="text-danger small"></span>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label asp-for="WardId" class="form-label small fw-semibold">Ward</label>
+                                <select asp-for="WardId" asp-items="ViewBag.WardId" class="form-select form-select-sm rounded-pill">
+                                    <option value="">-- Select Ward --</option>
+                                </select>
+                                <span asp-validation-for="WardId" class="text-danger small"></span>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label class="form-label small fw-semibold">Consumables</label>
+
+                                <select name="selectedConsumableIds"
+                                        asp-items="ViewBag.Consumables"
+                                        multiple
+                                        class="form-select form-select-sm rounded-3"
+                                        style="height: 140px;">
+                                </select>
+
+                                <span class="text-muted small d-block mt-1">
+                                    Hold <strong>Ctrl</strong> to select multiple items.
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-3 pt-4">
+                            <button type="submit" class="btn btn-success btn-sm px-4">
+                                <i class="bi bi-save me-1"></i> Save Changes
+                            </button>
+
+                            <a asp-action="ManageStock" class="btn btn-secondary ms-2">
+                                <i class="bi bi-x-circle me-1"></i> Cancel
+                            </a>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

@@ -1,0 +1,544 @@
+﻿@model IEnumerable<Visit>
+
+@{
+    ViewData["Title"] = "Visit History";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>@ViewData["Title"] - Ward Management System</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          rel="stylesheet" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+          rel="stylesheet" />
+
+    <style>
+
+        body {
+            background-color: #f5f7fb;
+            font-family: Arial, sans-serif;
+        }
+
+        .page-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        .page-header {
+            background: #ffffff;
+            border: 1px solid #e7ebf0;
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin-bottom: 22px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+        }
+
+        .page-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+
+        .page-subtitle {
+            color: #6b7280;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .header-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background-color: #eaf2ff;
+            color: #0d6efd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 25px;
+            flex-shrink: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .header-actions .btn {
+            border-radius: 10px;
+            padding: 9px 15px;
+            font-weight: 600;
+        }
+
+        .summary-card {
+            background: #ffffff;
+            border: 1px solid #e7ebf0;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 22px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+        }
+
+        .summary-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background-color: #eef6ff;
+            color: #0d6efd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .summary-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 3px;
+        }
+
+        .summary-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .table-card {
+            background: #ffffff;
+            border: 1px solid #e7ebf0;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+        }
+
+        .table-card-header {
+            padding: 20px 22px;
+            border-bottom: 1px solid #edf0f4;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .table-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 0;
+        }
+
+        .table-subtitle {
+            color: #6b7280;
+            font-size: 13px;
+            margin: 4px 0 0;
+        }
+
+        .count-badge {
+            background-color: #f1f5f9;
+            color: #475569;
+            border-radius: 50px;
+            padding: 7px 13px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .visit-table {
+            width: 100%;
+            margin: 0;
+            border-collapse: collapse;
+        }
+
+            .visit-table thead th {
+                background-color: #f8fafc;
+                color: #64748b;
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: .04em;
+                padding: 15px 18px;
+                border-bottom: 1px solid #e5e7eb;
+                white-space: nowrap;
+            }
+
+            .visit-table tbody td {
+                padding: 16px 18px;
+                border-bottom: 1px solid #f0f2f5;
+                color: #374151;
+                font-size: 14px;
+                vertical-align: middle;
+            }
+
+            .visit-table tbody tr:last-child td {
+                border-bottom: none;
+            }
+
+            .visit-table tbody tr:hover {
+                background-color: #fafbfc;
+            }
+
+        .visit-number {
+            font-weight: 700;
+            color: #64748b;
+        }
+
+        .patient-name {
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .patient-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background-color: #eef2ff;
+            color: #4f46e5;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 9px;
+        }
+
+        .date-text {
+            color: #475569;
+            white-space: nowrap;
+        }
+
+        .time-text {
+            color: #475569;
+            white-space: nowrap;
+        }
+
+        .purpose-text {
+            color: #475569;
+            max-width: 400px;
+        }
+
+        .purpose-label {
+            display: inline-block;
+            background-color: #f1f5f9;
+            color: #475569;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .empty-state {
+            padding: 65px 20px;
+            text-align: center;
+        }
+
+        .empty-icon {
+            width: 65px;
+            height: 65px;
+            margin: 0 auto 18px;
+            border-radius: 50%;
+            background-color: #f1f5f9;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 27px;
+        }
+
+        .empty-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        .empty-text {
+            color: #94a3b8;
+            font-size: 13px;
+            margin: 0;
+        }
+
+        @@media (max-width: 768px) {
+
+            .page-wrapper {
+                padding: 15px;
+            }
+
+            .page-header {
+                padding: 20px;
+            }
+
+            .page-title {
+                font-size: 22px;
+            }
+
+            .header-actions {
+                width: 100%;
+            }
+
+                .header-actions .btn {
+                    width: 100%;
+                }
+
+            .table-card-header {
+                align-items: flex-start;
+            }
+
+            .count-badge {
+                align-self: flex-start;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="page-wrapper">
+        <div class="page-header">
+
+            <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
+
+                <div class="d-flex align-items-center gap-3">
+
+                    <div class="header-icon">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+
+                    <div>
+
+                        <div class="page-title">
+                            Visit History
+                        </div>
+
+                        <p class="page-subtitle">
+                            Review previous patient visits, dates, times and consultation purposes.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="header-actions">
+
+                    <a asp-action="DoctorDashboard"
+                       asp-controller="Doctor"
+                       class="btn btn-outline-primary">
+
+                        <i class="bi bi-house-door-fill me-2"></i>
+                        Back to Dashboard
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="summary-card">
+
+                <div class="d-flex align-items-center gap-3">
+
+                    <div class="summary-icon">
+                        <i class="bi bi-calendar2-check"></i>
+                    </div>
+
+                    <div>
+
+                        <div class="summary-label">
+                            TOTAL PATIENT VISITS
+                        </div>
+
+                        <div class="summary-value">
+                            @Model.Count()
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="table-card">
+
+                <div class="table-card-header">
+
+                    <div>
+
+                        <h2 class="table-title">
+                            Patient Visit History
+                        </h2>
+
+                        <p class="table-subtitle">
+                            A record of previous consultations and patient visits.
+                        </p>
+
+                    </div>
+
+                    <span class="count-badge">
+                        @Model.Count() Visit(s)
+                    </span>
+
+                </div>
+
+
+                <div class="table-container">
+
+                    <table class="visit-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>#</th>
+
+                                <th>Patient</th>
+
+                                <th>Visit Date</th>
+
+                                <th>Time</th>
+
+                                <th>Purpose</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            @{
+                                int count = 1;
+                            }
+
+                            @foreach (var visit in Model)
+                            {
+
+                                <tr>
+
+                                    <td>
+                                        <span class="visit-number">
+                                            #@count
+                                        </span>
+                                    </td>
+
+                                    <td>
+
+                                        <div class="d-flex align-items-center">
+
+                                            <span class="patient-icon">
+                                                <i class="bi bi-person"></i>
+                                            </span>
+
+                                            <span class="patient-name">
+                                                @visit.Patient.FirstName
+                                                @visit.Patient.LastName
+                                            </span>
+
+                                        </div>
+
+                                    </td>
+
+                                    <td>
+
+                                        <span class="date-text">
+
+                                            <i class="bi bi-calendar3 me-1"></i>
+
+                                            @visit.VisitDateTime.ToString("dd MMM yyyy")
+
+                                        </span>
+
+                                    </td>
+
+                                    <td>
+
+                                        <span class="time-text">
+
+                                            <i class="bi bi-clock me-1"></i>
+
+                                            @visit.VisitDateTime.ToString("HH:mm")
+
+                                        </span>
+
+                                    </td>
+
+                                    <td>
+
+                                        @if (!string.IsNullOrWhiteSpace(visit.Purpose))
+                                        {
+                                            <span class="purpose-label">
+                                                @visit.Purpose
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">
+                                                No purpose recorded
+                                            </span>
+                                        }
+
+                                    </td>
+
+                                </tr>
+
+                                count++;
+
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        }
+        else
+        {
+            <div class="table-card">
+
+                <div class="empty-state">
+
+                    <div class="empty-icon">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+
+                    <div class="empty-title">
+                        No Visit History
+                    </div>
+
+                    <p class="empty-text">
+                        There are currently no patient visits available to display.
+                    </p>
+
+                </div>
+
+            </div>
+
+        }
+
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

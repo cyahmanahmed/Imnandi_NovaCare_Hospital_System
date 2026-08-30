@@ -1,0 +1,88 @@
+﻿@{
+    ViewData["Title"] = "Create Alert";
+    var users = ViewBag.Users as List<User>;
+    var roles = ViewBag.Roles as List<string>;
+}
+
+<div class="container mt-4">
+    <h2>Create Alert</h2>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <p>@error.ErrorMessage</p>
+            }
+        </div>
+    }
+
+    <form asp-action="CreateAlert" method="post">
+        <div class="mb-3">
+            <label class="form-label">Message</label>
+            <textarea name="message" class="form-control" rows="3" required></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Specific User (optional)</label>
+            <select name="userId" class="form-select">
+                <option value="">-- Select User --</option>
+                @foreach (var u in users)
+                {
+                    <option value="@u.Id">@u.FirstName @u.LastName (@u.Role)</option>
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Specific Role (optional)</label>
+            <select name="role" class="form-select">
+                <option value="">-- Select Role --</option>
+                @foreach (var r in roles)
+                {
+                    <option value="@r">@r</option>
+                }
+            </select>
+            <small class="text-muted d-block mt-1">If both user and role are empty, alert will go to all users.</small>
+        </div>
+
+        <button type="submit" class="btn btn-success">Send Alert</button>
+        <a asp-action="ManageEmployees" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+<script>
+    const userSelect = document.querySelector('select[name="userId"]');
+    const roleSelect = document.querySelector('select[name="role"]');
+
+    userSelect.addEventListener('change', () => {
+        roleSelect.disabled = userSelect.value !== "";
+    });
+
+    roleSelect.addEventListener('change', () => {
+        userSelect.disabled = roleSelect.value !== "";
+    });
+</script>
+
+<style>
+    h2 {
+        color: #1e40af;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+    }
+
+    .btn-success {
+        min-width: 120px;
+    }
+
+    .btn-secondary {
+        margin-left: 0.5rem;
+    }
+</style>

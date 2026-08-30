@@ -1,0 +1,234 @@
+﻿@model IEnumerable<AuditLog>
+
+@{
+    ViewData["Title"] = "Audit Logs for " + (ViewBag.Username ?? "User");
+}
+
+<style>
+    body {
+        background-color: #f8fafc;
+        font-family: 'Segoe UI', sans-serif;
+        color: #1e293b;
+    }
+
+    .header-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 0.25rem;
+    }
+
+    .sub-title {
+        color: #64748b;
+        margin-bottom: 1.5rem;
+    }
+
+    .card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    .card-header {
+        padding: 1rem 1.5rem;
+        background: #f1f5f9;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .filters {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+        align-items: flex-end;
+    }
+
+        .filters input,
+        .filters button {
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            font-size: 0.9rem;
+        }
+
+    .table-container {
+        overflow: auto;
+        max-height: 65vh;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 700px;
+    }
+
+    thead th {
+        position: sticky;
+        top: 0;
+        background: #e0f2fe;
+        color: #0c4a6e;
+        font-weight: 600;
+        padding: 0.75rem 1rem;
+        border-bottom: 2px solid #bae6fd;
+        text-align: left;
+    }
+
+    tbody td {
+        padding: 0.65rem 1rem;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 0.9rem;
+        color: #1e293b;
+        vertical-align: top;
+        word-break: break-word;
+    }
+
+    tbody tr:nth-child(even) {
+        background-color: #f8fafc;
+    }
+
+    tbody tr:hover {
+        background-color: #e0f2fe;
+    }
+
+    .scroll-wrapper {
+        overflow-x: auto;
+        overflow-y: auto;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #64748b;
+    }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #a5b4fc;
+        }
+
+    .filter-label {
+        font-weight: 500;
+        margin-right: 0.25rem;
+    }
+
+    .btn-pdf {
+        background-color: #0ea5e9;
+        color: white;
+        border-radius: 50px;
+        padding: 0.4rem 1rem;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+        .btn-pdf:hover {
+            background-color: #0284c7;
+            color: white;
+        }
+</style>
+
+<div class="container-fluid py-4">
+    <div class="row mb-3">
+        <div class="col-12">
+            <a asp-controller="Admin" asp-action="ManageAuditLogs" class="btn btn-outline-primary btn-sm shadow-sm" style="border-radius: 80px;">
+                <i class="bi bi-arrow-left me-2"></i> Back to Audit Logs
+            </a>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <h1 class="header-title">Audit Logs for @ViewBag.Username</h1>
+            <p class="sub-title">Showing key details of user activity.</p>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <form method="post" asp-controller="Reports" asp-action="UserAuditReport" class="filters">
+                <input type="hidden" name="userId" value="@Context.Request.Query["userId"]" />
+                <div>
+                    <label for="month" class="filter-label">Select Month:</label>
+                    <input type="month" id="month" name="month" class="form-control" required />
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-pdf">
+                        <i class="bi bi-file-earmark-pdf-fill me-1"></i> Generate PDF Report
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <form method="get" class="filters">
+                <div>
+                    <label class="filter-label">From:</label>
+                    <input type="date" name="fromDate" value="@Context.Request.Query["fromDate"]" />
+                </div>
+                <div>
+                    <label class="filter-label">To:</label>
+                    <input type="date" name="toDate" value="@Context.Request.Query["toDate"]" />
+                </div>
+                <div>
+                    <input type="text" name="search" placeholder="Search details..." value="@Context.Request.Query["search"]" />
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Audit Log Entries</h5>
+                    <small>@Model.Count() logs</small>
+                </div>
+
+                <div class="scroll-wrapper table-container">
+                    @if (!Model.Any())
+                    {
+                        <div class="empty-state">
+                            <i class="fas fa-clipboard-list"></i>
+                            <h5>No audit logs found for this user</h5>
+                            <p>They may not have performed any actions yet.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date/Time</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var log in Model)
+                                {
+                                    <tr>
+                                        <td>@(log.Timestamp.ToString("yyyy-MM-dd HH:mm:ss"))</td>
+                                        <td>
+                                            <pre style="margin:0; white-space: pre-wrap; word-break: break-word; font-family: monospace; font-size: 0.85rem; color:#1e293b;"> @log.Details</pre>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.js"></script>

@@ -1,0 +1,178 @@
+﻿@page
+@model Imnandi_NovaCare_Hospital_System.Areas.Identity.Pages.Account.LogoutModel
+@{
+    ViewData["Title"] = "Log Out";
+
+    string dashboardArea = "";
+    string dashboardController = "";
+    string dashboardAction = "Index";
+
+    if (User.Identity?.IsAuthenticated ?? false)
+    {
+        if (User.IsInRole("Admin"))
+        {
+            dashboardArea = "";
+            dashboardController = "Admin";
+            dashboardAction = "AdminDashboard";
+        }
+        else if (User.IsInRole("Doctor"))
+        {
+            dashboardArea = "";
+            dashboardController = "Doctor";
+            dashboardAction = "DoctorDashboard";
+        }
+        else if (User.IsInRole("Nurse"))
+        {
+            dashboardArea = "";
+            dashboardController = "Nurse";
+            dashboardAction = "NurseDashboard";
+        }
+        else if (User.IsInRole("NurseSister"))
+        {
+            dashboardArea = "";
+            dashboardController = "NurseSister";
+            dashboardAction = "NurseSisterDashboard";
+        }
+        else if (User.IsInRole("StockManager"))
+        {
+            dashboardArea = "";
+            dashboardController = "StockManager";
+            dashboardAction = "StockManagerDashboard";
+        }
+        else if (User.IsInRole("ScriptManager"))
+        {
+            dashboardArea = "";
+            dashboardController = "ScriptManager";
+            dashboardAction = "ScriptManagerDashboard";
+        }
+        else if (User.IsInRole("WardAdmin"))
+        {
+            dashboardArea = "";
+            dashboardController = "WardAdmin";
+            dashboardAction = "WardAdminDashboard";
+        }
+        else
+        {
+            dashboardController = "Home";
+        }
+    }
+    else
+    {
+        dashboardController = "Home";
+    }
+}
+
+<div class="container-fluid p-0">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-7 col-lg-6">
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+                <div class="bg-primary text-white text-center py-4">
+                    <h2 class="mb-0 fw-semibold">@ViewData["Title"]</h2>
+                    <p class="mb-0 small opacity-90">
+                        @if (User.Identity?.IsAuthenticated ?? false)
+                        {
+                            <text>Confirm logout from your session</text>
+                        }
+                        else
+                        {
+                            <text>You've been successfully signed out</text>
+                        }
+                    </p>
+                </div>
+
+                <div class="card-body p-5 text-center">
+                    @if (User.Identity?.IsAuthenticated ?? false)
+                    {
+                        <p class="lead mb-4 text-dark">
+                            Are you sure you want to log out of your account?
+                        </p>
+
+                        <form method="post" class="mb-3">
+                            <button type="submit" class="btn btn-danger btn-lg w-100 rounded-pill">
+                                Log Out
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="mb-4">
+                            <p class="lead text-success fw-semibold mb-0">You have successfully logged out.</p>
+                            <p class="text-muted small mt-2">Your session has ended securely.</p>
+                        </div>
+                    }
+
+                    <a asp-area="@dashboardArea"
+                       asp-controller="@dashboardController"
+                       asp-action="@dashboardAction"
+                       class="btn btn-primary btn-lg w-100 rounded-pill fw-medium">
+                        Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-5 text-center text-muted small">
+        <hr />
+        <p>&copy; @DateTime.Now.Year - <strong>Imnandi NovaCare Medical Center</strong>. All rights reserved.</p>
+    </footer>
+</div>
+
+<style>
+    body {
+        background-color: whitesmoke;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .card {
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        background: white;
+    }
+
+    .bg-primary {
+        background: linear-gradient(135deg, dodgerblue, navy);
+    }
+
+    .btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+        border-radius: 50px;
+        transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, dodgerblue, navy);
+        border: none;
+        color: white;
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, crimson, firebrick);
+        border: none;
+        color: white;
+    }
+
+    .btn-lg {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+    }
+
+    .rounded-pill {
+        border-radius: 50px;
+    }
+
+    .text-dark {
+        color: black !important;
+    }
+
+    .text-muted {
+        color: gray !important;
+    }
+
+    svg.bi {
+        max-width: 60px;
+        opacity: 0.9;
+    }
+</style>

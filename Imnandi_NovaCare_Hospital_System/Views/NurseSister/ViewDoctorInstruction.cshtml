@@ -1,0 +1,71 @@
+﻿@model IEnumerable<Instruction>
+
+@{
+    ViewData["Title"] = "Doctor's Instructions";
+}
+
+<head>
+    <style>
+        .card-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .card-body::-webkit-scrollbar-thumb {
+            background-color: #ccc;
+            border-radius: 4px;
+        }
+
+            .card-body::-webkit-scrollbar-thumb:hover {
+                background-color: #999;
+            }
+    </style>
+</head>
+<div class="row mt-4">
+    <div class="col-12 mb-4">
+        <a asp-controller="NurseSister" asp-action="NurseSisterDashBoard"
+           class="btn btn-outline-primary btn-sm px-3 d-flex align-items-center shadow-sm"
+           style="border-radius: 80px;">
+            <i class="bi bi-house-door-fill me-2"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+
+
+
+<h2 class="mb-4 text-center">@ViewData["Title"]</h2>
+
+<div class="row g-3">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card border-primary text-dark">
+                <div class="text-center">
+                    <p class="text-dark">#@item.InstructionId</p>
+                    <p class=" text-muted mb-2">
+                    <p><strong>Created:</strong> @item.CreatedAt.ToString("dd MMM yyyy HH:mm")</p>
+
+                </div>
+                <div class="card-body" style="max-height: 300px; overflow-y: auto; word-wrap: break-word; white-space: normal;">
+                    <h4 class="card-title text-primary">@item.Title</h4>
+
+                    <div class="row" style="font-size: large;">
+                        <p class="text-wrap mb-3">
+                            <b>Description:</b> @item.Description
+                        </p>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-start mt-3 flex-wrap" style="gap: 1rem;">
+                        <div style="font-size: larger; min-width: 250px;">
+                            <p><b>Patient:</b> @item.Patient.FirstName&nbsp;@item.Patient.LastName</p>
+                            <p><b>Ward Info:</b> @item.Patient.Room.Ward.WardName</p>
+                            <p><b>Room Info:</b> @item.Patient.Room.RoomName</p>
+                        </div>
+
+                   
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    }
+</div>

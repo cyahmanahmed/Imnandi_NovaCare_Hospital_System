@@ -1,0 +1,34 @@
+﻿@model DischargeInstruction
+
+@{
+    ViewData["Title"] = "Issue Discharge";
+}
+
+<h2>Issue Discharge for @Model.Patient.FirstName @Model.Patient.LastName</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<form asp-action="IssueDischarge" method="post">
+    <input type="hidden" asp-for="PatientId" />
+
+    <div class="mb-3">
+        <label asp-for="Reason" class="form-label">Reason for Discharge</label>
+        <textarea asp-for="Reason" class="form-control" rows="4" required></textarea>
+        <span asp-validation-for="Reason" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">
+        <i class="bi bi-check-circle"></i> Issue Discharge
+    </button>
+    <a asp-action="PatientsFolder" asp-controller="Doctor" asp-route-id="@Model.PatientId" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

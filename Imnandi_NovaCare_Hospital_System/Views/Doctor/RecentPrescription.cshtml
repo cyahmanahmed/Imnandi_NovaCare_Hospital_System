@@ -1,0 +1,611 @@
+﻿@using Imnandi_NovaCare_Hospital_System.Models
+@model IEnumerable<Prescription>
+
+@{
+    ViewData["Title"] = "Recent Prescriptions";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet" />
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+      rel="stylesheet" />
+
+<style>
+
+    body {
+        background-color: #f5f7fb;
+        font-family: Arial, sans-serif;
+    }
+
+    .page-wrapper {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 30px;
+    }
+
+    .page-header {
+        background: #ffffff;
+        border: 1px solid #e7ebf0;
+        border-radius: 16px;
+        padding: 24px 28px;
+        margin-bottom: 22px;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+    }
+
+    .page-title {
+        font-size: 26px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 5px;
+    }
+
+    .page-subtitle {
+        color: #6b7280;
+        font-size: 14px;
+        margin: 0;
+    }
+
+    .header-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        background-color: #eaf2ff;
+        color: #0d6efd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 25px;
+        flex-shrink: 0;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+        .header-actions .btn {
+            border-radius: 10px;
+            padding: 9px 15px;
+            font-weight: 600;
+        }
+
+    .summary-card {
+        background: #ffffff;
+        border: 1px solid #e7ebf0;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 22px;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+    }
+
+    .summary-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background-color: #eef6ff;
+        color: #0d6efd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+    }
+
+    .summary-label {
+        font-size: 12px;
+        color: #6b7280;
+        margin-bottom: 3px;
+    }
+
+    .summary-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .report-card {
+        background: #ffffff;
+        border: 1px solid #e7ebf0;
+        border-radius: 16px;
+        padding: 18px 20px;
+        margin-bottom: 22px;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+    }
+
+    .report-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 3px;
+    }
+
+    .report-description {
+        color: #6b7280;
+        font-size: 13px;
+        margin: 0;
+    }
+
+    .report-button {
+        border-radius: 10px;
+        padding: 10px 17px;
+        font-weight: 600;
+    }
+
+    .table-card {
+        background: #ffffff;
+        border: 1px solid #e7ebf0;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+    }
+
+    .table-card-header {
+        padding: 20px 22px;
+        border-bottom: 1px solid #edf0f4;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .table-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0;
+    }
+
+    .table-subtitle {
+        color: #6b7280;
+        font-size: 13px;
+        margin: 4px 0 0;
+    }
+
+    .count-badge {
+        background-color: #f1f5f9;
+        color: #475569;
+        border-radius: 50px;
+        padding: 7px 13px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .table-container {
+        overflow-x: auto;
+    }
+
+    .prescription-table {
+        width: 100%;
+        margin: 0;
+        border-collapse: collapse;
+    }
+
+        .prescription-table thead th {
+            background-color: #f8fafc;
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            padding: 15px 18px;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+        .prescription-table tbody td {
+            padding: 16px 18px;
+            border-bottom: 1px solid #f0f2f5;
+            color: #374151;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        .prescription-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .prescription-table tbody tr:hover {
+            background-color: #fafbfc;
+        }
+
+    .prescription-id {
+        font-weight: 700;
+        color: #64748b;
+    }
+
+    .patient-name {
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .medication-name {
+        font-weight: 600;
+        color: #2563eb;
+    }
+
+    .date-text {
+        color: #475569;
+        white-space: nowrap;
+    }
+
+    .time-text {
+        color: #475569;
+        white-space: nowrap;
+    }
+
+    .script-manager {
+        color: #475569;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 11px;
+        border-radius: 50px;
+        font-size: 11px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .status-pending {
+        background-color: #fff7ed;
+        color: #c2410c;
+    }
+
+    .status-processed {
+        background-color: #ecfdf3;
+        color: #15803d;
+    }
+
+    .status-default {
+        background-color: #eff6ff;
+        color: #2563eb;
+    }
+
+    .empty-state {
+        padding: 65px 20px;
+        text-align: center;
+    }
+
+    .empty-icon {
+        width: 65px;
+        height: 65px;
+        margin: 0 auto 18px;
+        border-radius: 50%;
+        background-color: #f1f5f9;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 27px;
+    }
+
+    .empty-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #374151;
+        margin-bottom: 6px;
+    }
+
+    .empty-text {
+        color: #94a3b8;
+        font-size: 13px;
+        margin: 0;
+    }
+
+    @@media (max-width: 768px) {
+
+        .page-wrapper {
+            padding: 15px;
+        }
+
+        .page-header {
+            padding: 20px;
+        }
+
+        .page-title {
+            font-size: 22px;
+        }
+
+        .header-actions {
+            width: 100%;
+        }
+
+            .header-actions .btn {
+                width: 100%;
+            }
+
+        .report-card {
+            padding: 18px;
+        }
+
+            .report-card .d-flex {
+                align-items: flex-start !important;
+                flex-direction: column;
+            }
+
+        .report-button {
+            width: 100%;
+        }
+    }
+
+</style>
+
+<div class="page-wrapper">
+    <div class="page-header">
+
+        <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
+
+            <div class="d-flex align-items-center gap-3">
+
+                <div class="header-icon">
+                    <i class="bi bi-capsule"></i>
+                </div>
+
+                <div>
+                    <div class="page-title">
+                        Recent Prescriptions
+                    </div>
+
+                    <p class="page-subtitle">
+                        Monitor prescriptions issued to patients and review recent medication activity.
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="header-actions">
+
+                <a asp-action="DoctorDashboard"
+                   asp-controller="Doctor"
+                   class="btn btn-outline-primary">
+
+                    <i class="bi bi-house-door-fill me-2"></i>
+                    Back to Dashboard
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="summary-card">
+
+            <div class="d-flex align-items-center gap-3">
+
+                <div class="summary-icon">
+                    <i class="bi bi-file-medical"></i>
+                </div>
+
+                <div>
+
+                    <div class="summary-label">
+                        TOTAL RECENT PRESCRIPTIONS
+                    </div>
+
+                    <div class="summary-value">
+                        @Model.Count()
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="report-card">
+
+            <div class="d-flex justify-content-between align-items-center gap-3">
+
+                <div>
+
+                    <div class="report-title">
+                        <i class="bi bi-file-earmark-bar-graph me-2 text-success"></i>
+                        Prescription Monitoring Report
+                    </div>
+
+                    <p class="report-description">
+                        Generate a report of prescriptions recently issued by you for senior management review.
+                    </p>
+
+                </div>
+
+                <a asp-controller="Reports"
+                   asp-action="DoctorPrescriptionReport"
+                   asp-route-doctorId="@Model.First().DoctorId"
+                   class="btn btn-outline-success report-button">
+
+                    <i class="bi bi-file-earmark-arrow-down me-1"></i>
+                    Generate Prescription Report
+
+                </a>
+
+            </div>
+
+        </div>
+        <div class="table-card">
+
+            <div class="table-card-header">
+
+                <div>
+
+                    <h2 class="table-title">
+                        Prescription History
+                    </h2>
+
+                    <p class="table-subtitle">
+                        Recently issued prescriptions and their current processing status.
+                    </p>
+
+                </div>
+
+                <span class="count-badge">
+                    @Model.Count() Prescription(s)
+                </span>
+
+            </div>
+
+
+            <div class="table-container">
+
+                <table class="prescription-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>#</th>
+                            <th>Patient</th>
+                            <th>Medication</th>
+                            <th>Issued Date</th>
+                            <th>Issued Time</th>
+                            <th>Script Manager</th>
+                            <th>Status</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var p in Model)
+                        {
+
+                            <tr>
+
+                                <td>
+                                    <span class="prescription-id">
+                                        #@p.PrescriptionId
+                                    </span>
+                                </td>
+
+                                <td>
+
+                                    <div class="patient-name">
+                                        @p.Patient.FirstName @p.Patient.LastName
+                                    </div>
+
+                                </td>
+
+                                <td>
+
+                                    <div class="medication-name">
+                                        <i class="bi bi-capsule me-1"></i>
+                                        @p.Medication.MedicationName
+                                    </div>
+
+                                </td>
+
+                                <td>
+
+                                    <span class="date-text">
+                                        <i class="bi bi-calendar3 me-1"></i>
+                                        @p.IssueDate.ToString("yyyy-MM-dd")
+                                    </span>
+
+                                </td>
+
+                                <td>
+
+                                    <span class="time-text">
+                                        <i class="bi bi-clock me-1"></i>
+                                        @p.IssueTime.ToString("HH:mm")
+                                    </span>
+
+                                </td>
+
+                                <td>
+
+                                    @if (p.ScriptManager != null && p.ScriptManager.Employee != null)
+                                    {
+                                        <span class="script-manager">
+                                            @p.ScriptManager.Employee.FirstName
+                                            @p.ScriptManager.Employee.LastName
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            N/A
+                                        </span>
+                                    }
+
+                                </td>
+
+                                <td>
+
+                                    @if (p.Status == "Pending")
+                                    {
+                                        <span class="status-badge status-pending">
+                                            <i class="bi bi-hourglass-split"></i>
+                                            Pending
+                                        </span>
+                                    }
+                                    else if (p.Status == "Processed")
+                                    {
+                                        <span class="status-badge status-processed">
+                                            <i class="bi bi-check-circle"></i>
+                                            Processed
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge status-default">
+                                            <i class="bi bi-info-circle"></i>
+                                            @p.Status
+                                        </span>
+                                    }
+
+                                </td>
+
+                            </tr>
+
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    }
+    else
+    {
+        <div class="table-card">
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    <i class="bi bi-capsule"></i>
+                </div>
+
+                <div class="empty-title">
+                    No Recent Prescriptions
+                </div>
+
+                <p class="empty-text">
+                    There are currently no prescriptions available to display.
+                </p>
+
+            </div>
+
+        </div>
+
+    }
+
+</div>
+
+@section Scripts {
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+}

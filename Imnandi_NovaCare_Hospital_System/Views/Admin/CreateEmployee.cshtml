@@ -1,0 +1,290 @@
+﻿@model CreateEmployeeViewModel
+
+<div class="container-fluid p-0">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+
+                <div class="bg-primary text-white py-4 px-5 d-flex align-items-center justify-content-between">
+                    <div>
+                        <h3 class="mb-0"><i class="bi bi-person-plus-fill me-2"></i> Add New Employee</h3>
+                        <p class="mb-0 small opacity-90">Register a new staff member with full access and role assignment</p>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <form asp-action="CreateEmployee" asp-controller="Admin" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger alert-dismissible fade show mb-4"></div>
+
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="bi bi-lock-fill text-primary fs-5 me-2"></i>
+                                <h5 class="mb-0 text-dark">Personal & Account</h5>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="FirstName" class="form-label small fw-semibold">First Name</label>
+                                <input asp-for="FirstName" class="form-control form-control-sm rounded-pill" />
+                                <span asp-validation-for="FirstName" class="text-danger small"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="LastName" class="form-label small fw-semibold">Surname</label>
+                                <input asp-for="LastName" class="form-control form-control-sm rounded-pill" />
+                                <span asp-validation-for="LastName" class="text-danger small"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="UserName" class="form-label small fw-semibold">Username</label>
+                                <input asp-for="UserName" class="form-control form-control-sm rounded-pill" placeholder="e.g. johndoe" />
+                                <span asp-validation-for="UserName" class="text-danger small"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Email" class="form-label small fw-semibold">Email Address</label>
+                                <input asp-for="Email" placeholder="user@gmail.com" type="email" class="form-control form-control-sm rounded-pill" />
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Password" class="form-label small fw-semibold">Password</label>
+                                <input asp-for="Password" type="password" class="form-control form-control-sm rounded-pill" placeholder="••••••••" />
+                                <span asp-validation-for="Password" class="text-danger small"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Role" class="form-label small fw-semibold">Role</label>
+                                <select asp-for="Role" class="form-select form-select-sm rounded-pill" id="roleSelect">
+                                    <option value="">-- Select Role --</option>
+                                    <option value="Admin">Admin</option>
+                                    <option value="Doctor">Doctor</option>
+                                    <option value="Nurse">Nurse</option>
+                                    <option value="NurseSister">Nurse Sister</option>
+                                    <option value="WardAdmin">Ward Admin</option>
+                                    <option value="StockManager">Stock Manager</option>
+                                    <option value="ScriptManager">Script Manager</option>
+                                </select>
+                                <span asp-validation-for="Role" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="bi bi-briefcase-fill text-primary fs-5 me-2"></i>
+                                <h5 class="mb-0 text-dark">Job & Contact</h5>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="JobTitle" class="form-label small fw-semibold">Job Title</label>
+                                <input asp-for="JobTitle" class="form-control form-control-sm rounded-pill" placeholder="Doctor, Nurse, Head Nurse...." />
+                                <span asp-validation-for="JobTitle" class="text-danger small"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="PhoneNumber" class="form-label small fw-semibold">Phone Number</label>
+                                <input asp-for="PhoneNumber" class="form-control form-control-sm rounded-pill" placeholder="0000000000" maxlength="10" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="EmergencyContact" class="form-label small fw-semibold">Emergency Contact</label>
+                                <input asp-for="EmergencyContact" class="form-control form-control-sm rounded-pill" placeholder="0000000000" maxlength="10" />
+                                <span asp-validation-for="EmergencyContact" class="text-danger small"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Department" class="form-label small fw-semibold">Department</label>
+                                <select asp-for="Department" class="form-select form-select-sm rounded-pill" id="departmentSelect">
+                                    <option value="">-- Select Department --</option>
+                                </select>
+                                <span asp-validation-for="Department" class="text-danger small"></span>
+                            </div>
+                            <div class="mb-3" id="wardSection" style="display:none;">
+                                <label asp-for="WardId" class="form-label small fw-semibold">Assigned Ward</label>
+
+                                <select asp-for="WardId"
+                                        asp-items="ViewBag.Wards"
+                                        class="form-select form-select-sm rounded-pill"
+                                        id="WardId"
+                                        disabled>
+                                </select>
+
+                                <small class="text-muted">
+                                    Assigned automatically based on the selected department.
+                                </small>
+
+                                <span asp-validation-for="WardId" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="bi bi-file-earmark-medical-fill text-primary fs-5 me-2"></i>
+                                <h5 class="mb-0 text-dark">Finance Information</h5>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="TaxNumber" class="form-label small fw-semibold">Tax Number</label>
+                                <input asp-for="TaxNumber" class="form-control form-control-sm rounded-pill" placeholder="ZA123456789" maxlength="10" />
+                                <span asp-validation-for="TaxNumber" class="text-danger small"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="BankName" class="form-label small fw-semibold">Bank Name</label>
+                                <input asp-for="BankName" class="form-control form-control-sm rounded-pill" placeholder="FNB, Standard Bank" />
+                                <span asp-validation-for="BankName" class="text-danger small"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="BankAccountNumber" class="form-label small fw-semibold">Bank Account Number</label>
+                                <input asp-for="BankAccountNumber" class="form-control form-control-sm rounded-pill" placeholder="123456789" maxlength="12" />
+                                <span asp-validation-for="BankAccountNumber" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-3 pt-4">
+                            <a asp-action="ManageEmployees" class="btn btn-outline-secondary btn-sm px-4">
+                                <i class="bi bi-arrow-left me-1"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-sm px-4">
+                                <i class="bi bi-save me-1"></i> Save
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    const departmentOptions = {
+        Admin: ["Administration", "HR", "Finance", "IT"],
+        Nurse: ["Pediatrics", "Emergency", "Intensive Care", "Outpatient", "Maternity"],
+        Doctor: ["Cardiology", "Orthopedics", "Pediatrics", "General Medicine", "Oncology", "Surgery", "Radiology"],
+        NurseSister:["Nursing Management"],
+        WardAdmin: ["Ward Management"],
+        StockManager: ["Supply Chain", "Medical Stores"],
+        ScriptManager: ["Pharmacy"]
+    };
+
+    document.getElementById("roleSelect").addEventListener("change", function () {
+        const role = this.value;
+        const deptSelect = document.getElementById("departmentSelect");
+        deptSelect.innerHTML = '<option value="">-- Select Department --</option>';
+
+        if (departmentOptions[role]) {
+            departmentOptions[role].forEach(dept => {
+                const option = document.createElement("option");
+                option.value = dept;
+                option.textContent = dept;
+                deptSelect.appendChild(option);
+            });
+        }
+    });
+
+    document.getElementById("departmentSelect").addEventListener("change", function () {
+
+        const role = document.getElementById("roleSelect").value;
+
+        if (role !== "Doctor")
+            return;
+
+        const wardSelect = document.getElementById("WardId");
+        const department = this.value;
+
+        let wardName = "";
+
+        switch (department) {
+
+            case "Cardiology":
+            case "General Medicine":
+            case "Oncology":
+                wardName = "Medical Ward";
+                break;
+
+            case "Surgery":
+            case "Orthopedics":
+            case "Radiology":
+                wardName = "Surgical Ward";
+                break;
+
+            case "Pediatrics":
+                wardName = "Maternity Ward";
+                break;
+        }
+
+        for (let i = 0; i < wardSelect.options.length; i++) {
+
+            if (wardSelect.options[i].text.trim() === wardName) {
+                wardSelect.selectedIndex = i;
+                break;
+            }
+        }
+    });
+
+    document.querySelector("form").addEventListener("submit", function () {
+        document.getElementById("WardId").disabled = false;
+    });
+</script>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .card {
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        background: white;
+    }
+
+    .bg-primary {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+    }
+
+    .rounded-pill {
+        border-radius: 50px;
+    }
+
+    .form-label {
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .form-control {
+        padding: 0.5rem;
+        border: 1px solid #ced4da;
+        border-radius: 50px;
+        transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    .btn {
+        border-radius: 50px;
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        border: none;
+        color: white;
+    }
+
+    .btn-outline-secondary {
+        border: 1px solid #6c757d;
+        color: #6c757d;
+    }
+
+    .small {
+        font-size: 0.85rem;
+    }
+</style>

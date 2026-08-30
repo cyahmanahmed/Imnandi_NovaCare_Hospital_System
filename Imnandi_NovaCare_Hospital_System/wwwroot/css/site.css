@@ -1,0 +1,321 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    color: #333;
+    background-color: #f8f9fa;
+    overflow-x: hidden;
+    width: 100%;
+}
+
+a {
+    text-decoration: none;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 240px;
+    height: 100vh;
+    background: linear-gradient(135deg, #002244, #001a33);
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: white;
+    z-index: 1000;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-title {
+    font-size: 1.6rem;
+    font-weight: bold;
+    border-bottom: 3px solid #00c853;
+    padding-bottom: 0.5rem;
+    margin-bottom: 2rem;
+    color: white;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+    flex-grow: 1;
+}
+
+    .sidebar ul li {
+        margin: 1rem 0;
+    }
+
+        .sidebar ul li a {
+            display: block;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            color: #ffffffcc;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+            .sidebar ul li a:hover {
+                background-color: #00c853;
+                color: white;
+                padding-left: 1.25rem;
+            }
+
+.social-icons {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 2rem;
+    gap: 1rem;
+}
+
+    .social-icons a {
+        font-size: 1.3rem;
+        color: #ffffffcc;
+        transition: color 0.3s ease;
+    }
+
+        .social-icons a:hover {
+            color: #00c853;
+        }
+
+/* Main Content Area */
+.main-content {
+    margin-left: 240px;
+    width: calc(100vw - 240px);
+    max-width: calc(100vw - 240px);
+    min-height: 100vh;
+    position: relative;
+    background-color: lightgray;
+    overflow-x: hidden;
+}
+
+/* Section Container */
+.section {
+    position: relative;
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 3rem;
+    text-align: center;
+    z-index: 1;
+}
+
+    .section h2 {
+        font-size: 2rem;
+        color: #001a33;
+        margin-bottom: 1rem;
+        font-weight: 900;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.15);
+        font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+
+    .section p {
+        font-size: 1.1rem;
+        line-height: 1.7;
+        margin-bottom: 1rem;
+        color: #002244;
+        font-weight: 600;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+        text-shadow: 0.5px 0.5px 1px rgba(0,0,0,0.1);
+        font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+
+    .section .text-card {
+        background: rgba(255,255,255,0.95);
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        border: 2px solid #00c853;
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Background Image Wrapper */
+    .section .home-bg-wrapper {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        overflow: hidden;
+        border-radius: 0;
+    }
+
+        .section .home-bg-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+        }
+
+/* Home Hero Section (Right Aligned Container) */
+#home {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-height: 100vh;
+    width: 100%;
+    padding: 0 5rem;
+}
+
+    #home .home-bg-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+    }
+
+/* Smaller Right-Aligned Welcome Card */
+.home-card {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2rem;
+    border-radius: 15px;
+    max-width: 420px;
+    width: 100%;
+    margin: 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    text-align: left;
+    backdrop-filter: blur(4px);
+    animation: fadeInUp 0.8s ease-out;
+    z-index: 2;
+    position: relative;
+    border: 2px solid #00c853;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.home-card h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.8rem;
+    color: #001a33;
+    font-weight: 900;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.15);
+    font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.home-card p {
+    font-size: 1rem;
+    margin-bottom: 1.2rem;
+    color: #002244;
+    line-height: 1.6;
+    font-weight: 600;
+    text-shadow: 0.5px 0.5px 1px rgba(0,0,0,0.1);
+    font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.home-card-buttons {
+    display: flex;
+    gap: 0.8rem;
+}
+
+    .home-card-buttons .btn {
+        padding: 0.6rem 1.2rem;
+        font-weight: 700;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+    }
+
+.btn-primary {
+    background-color: #00c853;
+    color: white;
+}
+
+    .btn-primary:hover {
+        background-color: #00a842;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 200, 83, 0.3);
+    }
+
+.btn-secondary {
+    background-color: #002244;
+    color: white;
+}
+
+    .btn-secondary:hover {
+        background-color: #001a33;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 34, 68, 0.3);
+    }
+
+/* Mobile View Adjustments */
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+    }
+
+    .main-content {
+        margin-left: 0;
+        width: 100vw;
+        max-width: 100vw;
+    }
+
+    #home {
+        justify-content: center;
+        text-align: center;
+        padding: 1rem;
+    }
+
+    .home-card {
+        margin: 0 auto;
+        max-width: 95%;
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .home-card-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .section {
+        padding: 2rem 1rem;
+        min-height: auto;
+        margin: 0;
+    }
+
+        .section h2 {
+            font-size: 1.8rem;
+        }
+
+        .section .text-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 2px solid #00c853;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            max-width: 100%;
+            margin: 0 auto;
+            text-align: center;
+        }
+}

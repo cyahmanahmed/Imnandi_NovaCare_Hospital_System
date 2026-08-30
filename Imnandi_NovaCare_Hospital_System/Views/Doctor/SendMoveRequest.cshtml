@@ -1,0 +1,76 @@
+﻿@model PatientMoveRequest
+
+@{
+    ViewData["Title"] = "Send Move Request";
+    var patient = ViewBag.Patient as Patient;
+    var wards = ViewBag.Wards as SelectList;
+}
+
+<h2 class="mb-4">Send Move Request for Patient</h2>
+
+@if (TempData["TempSuccess"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>Success!</strong> @TempData["TempSuccess"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["TempError"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Error!</strong> @TempData["TempError"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+    </div>
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="SendMoveRequest" method="post">
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" asp-for="PatientId" value="@patient?.Id" />
+            <input type="hidden" asp-for="DoctorId" value="@Model.DoctorId" />
+
+            <div class="mb-3">
+                <label class="form-label">Patient Name:</label>
+                <input type="text" class="form-control" value="@($"{patient?.FirstName} {patient?.LastName}")" readonly />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Current Ward:</label>
+                <input type="text" class="form-control" value="@patient?.Bed?.Room?.Ward?.WardName " N /A"" readonly />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="TargetWardId" class="form-label">Target Ward:</label>
+                <select asp-for="TargetWardId" class="form-select" asp-items="wards">
+                    <option value="">-- Select Ward --</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Reason" class="form-label">Reason for Move:</label>
+                <textarea asp-for="Reason" class="form-control" rows="3"></textarea>
+            </div>
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-warning">
+                    <i class="bi bi-arrow-repeat me-1"></i> Send Move Request
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

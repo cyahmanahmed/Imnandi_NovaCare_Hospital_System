@@ -1,0 +1,158 @@
+﻿@model IEnumerable<Employee>
+@{
+    ViewData["Title"] = "Deleted Employees";
+    var searchString = Context.Request.Query["searchString"].ToString();
+}
+
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <a asp-controller="Admin" asp-action="ManageEmployees"
+               class="btn btn-outline-primary btn-sm px-3 d-flex align-items-center shadow-sm"
+               style="border-radius: 80px;">
+                <i class="bi bi-house-door-fill me-2"></i> Back
+            </a>
+        </div>
+    </div>
+
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-8">
+            <h1 class="header-title">Deleted Employees</h1>
+            <p class="sub-title">View and restore employees that have been soft deleted.</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6 col-lg-4">
+            <form asp-action="ManageDeletedEmployees" method="get" class="input-group">
+                <input type="text"
+                       name="searchString"
+                       class="form-control form-control-lg"
+                       placeholder="Search by name, job title, or phone..."
+                       value="@searchString" />
+                <button type="submit" class="btn btn-outline-primary">
+                    Search
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 table-responsive">
+            @if (!Model.Any())
+            {
+                <div class="card bg-light border-0">
+                    <div class="card-body text-center empty-state">
+                        <i class="fas fa-users-slash fa-3x text-muted mb-3"></i>
+                        <h4>No deleted employees found</h4>
+                        <p class="mb-0">Deleted employees will appear here for restoration.</p>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Deleted Employee List</h5>
+                        <small>@Model.Count() employees</small>
+                    </div>
+                    <div class="">
+                        <table class="table table-striped table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-start">Name</th>
+                                    <th class="text-start">Phone</th>
+                                    <th class="text-start">Role</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td class="text-start">
+                                            <strong>@item.FirstName</strong> @item.LastName
+                                            <span class="badge bg-secondary ms-2">Deleted</span>
+                                        </td>
+                                        <td class="text-start">@item.PhoneNumber</td>
+                                        <td class="text-start">
+                                            @if (item.User != null)
+                                            {
+                                                <span class="badge badge-job badge-job-success">@item.User.Role</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Not assigned</span>
+                                            }
+                                        </td>
+                                        <td class="text-center">
+                                            <a asp-controller="Admin" asp-action="RestoreEmployee" asp-route-id="@item.Id"
+                                               class="btn btn-restore px-4 fw-bold" title="Restore">
+                                                <i class="bi bi-arrow-counterclockwise me-1"></i> Restore
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .header-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1e40af;
+    }
+
+    .sub-title {
+        color: #6b7280;
+        font-size: 1rem;
+    }
+
+    .badge-job {
+        font-size: 0.85em;
+        padding: 0.4em 0.8em;
+        border-radius: 50px;
+        font-weight: 500;
+    }
+
+    .badge-job-success {
+        background-color: #dcfce7;
+        color: #000;
+    }
+
+    .empty-state {
+        padding: 4rem 1rem;
+        color: #6b7280;
+    }
+
+    .btn-restore {
+        background-color: #fff !important;
+        border: 1px solid #000 !important;
+        color: #000 !important;
+        font-weight: 600;
+    }
+
+        .btn-restore:hover {
+            background-color: #f1f1f1 !important;
+            border-color: #000 !important;
+            color: #000 !important;
+        }
+
+    .badge.bg-secondary {
+        background-color: #6c757d !important;
+        color: #fff !important;
+    }
+</style>

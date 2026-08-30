@@ -1,0 +1,111 @@
+﻿@model IEnumerable<Patient>
+
+@{
+    ViewData["Title"] = "Manage Patients";
+}
+
+<div class="container-fluid p-0">
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <h3 class="fw-bold"><i class="bi bi-people-fill me-2"></i>Manage Patients</h3>
+            <a asp-controller="WardAdmin" asp-action="ManagePatients" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left me-1"></i> Back
+            </a>
+        </div>
+    </div>
+
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-md-6">
+            <input type="text" name="search" class="form-control" placeholder="Search by name or ID number" value="@ViewBag.Search" />
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary"><i class="bi bi-search me-1"></i> Search</button>
+        </div>
+    </form>
+
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+        <div class="card-body p-4">
+            <table class="table table-hover table-striped align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Patient Name</th>
+                        <th>ID Number</th>
+                        <th>Gender</th>
+                        <th>Room</th>
+                        <th>Bed</th>
+                        <th>Date Admitted</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Any())
+                    {
+                        int count = 1;
+                        foreach (var patient in Model)
+                        {
+                            <tr>
+                                <td>@count</td>
+                                <td><strong>@patient.FirstName</strong></td>
+                                <td>@patient.IdNumber</td>
+                                <td>@patient.Gender</td>
+                                <td>@(patient.Room?.RoomName ?? "N/A")</td>
+                                <td>@(patient.Bed?.BedNumber ?? "N/A")</td>
+                                <td>@patient.DateAdmitted.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <a asp-action="ManagePatientMovement" asp-route-patientId="@patient.Id" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-arrow-right-circle me-1"></i> Move Patient
+                                    </a>
+                                </td>
+                            </tr>
+                            count++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center text-muted">No patients found.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .card {
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        background: white;
+    }
+
+    .btn {
+        border-radius: 50px;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        border: none;
+        color: white;
+    }
+
+    .btn-outline-secondary {
+        border: 1px solid #6c757d;
+        color: #6c757d;
+    }
+
+    table th, table td {
+        vertical-align: middle;
+    }
+</style>

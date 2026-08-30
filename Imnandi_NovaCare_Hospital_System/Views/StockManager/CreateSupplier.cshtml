@@ -1,0 +1,678 @@
+﻿@model Supplier
+
+@{
+    ViewData["Title"] = "Create Supplier";
+}
+
+<style>
+
+    .create-supplier-page {
+        padding: 30px;
+        background-color: #f8f9fa;
+        min-height: calc(100vh - 70px);
+    }
+
+    .supplier-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+        .supplier-breadcrumb a {
+            color: #6c757d;
+            text-decoration: none;
+            transition: 0.2s ease;
+        }
+
+            .supplier-breadcrumb a:hover {
+                color: #0d6efd;
+            }
+
+        .supplier-breadcrumb .separator {
+            color: #adb5bd;
+        }
+
+        .supplier-breadcrumb .current {
+            color: #6c757d;
+        }
+
+    .supplier-page-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #212529;
+        margin-bottom: 5px;
+    }
+
+        .supplier-page-title i {
+            color: #0d6efd;
+        }
+
+    .supplier-page-subtitle {
+        color: #6c757d;
+        font-size: 14px;
+        margin-bottom: 0;
+    }
+
+    .supplier-card {
+        background: #ffffff;
+        border: none;
+        border-radius: 14px;
+        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+    }
+
+    .supplier-card-header {
+        padding: 22px 25px;
+        border-bottom: 1px solid #edf0f2;
+        background-color: #ffffff;
+    }
+
+    .supplier-header-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 11px;
+        background-color: #e7f1ff;
+        color: #0d6efd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 21px;
+        margin-right: 14px;
+    }
+
+    .supplier-card-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #212529;
+        margin-bottom: 3px;
+    }
+
+    .supplier-card-description {
+        color: #6c757d;
+        font-size: 13px;
+        margin-bottom: 0;
+    }
+
+    .supplier-card-body {
+        padding: 28px;
+    }
+
+    .supplier-section {
+        margin-bottom: 28px;
+    }
+
+    .supplier-section-header {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding-bottom: 13px;
+        margin-bottom: 22px;
+        border-bottom: 1px solid #edf0f2;
+    }
+
+    .supplier-section-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background-color: #f0f6ff;
+        color: #0d6efd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+    }
+
+    .supplier-section-title {
+        font-size: 15px;
+        font-weight: 600;
+        color: #343a40;
+        margin-bottom: 2px;
+    }
+
+    .supplier-section-subtitle {
+        font-size: 12px;
+        color: #8a9299;
+        margin-bottom: 0;
+    }
+
+    .supplier-form-label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: #343a40;
+        margin-bottom: 7px;
+    }
+
+    .supplier-required {
+        color: #dc3545;
+    }
+
+    .supplier-input-group {
+        display: flex;
+        width: 100%;
+    }
+
+    .supplier-input-icon {
+        width: 46px;
+        min-width: 46px;
+        height: 44px;
+        border: 1px solid #dfe3e7;
+        border-right: none;
+        border-radius: 7px 0 0 7px;
+        background-color: #f8f9fa;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .supplier-input {
+        width: 100%;
+        min-height: 44px;
+        border: 1px solid #dfe3e7;
+        border-radius: 0 7px 7px 0;
+        padding: 9px 12px;
+        font-size: 14px;
+        color: #212529;
+        background-color: #ffffff;
+        outline: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .supplier-input::placeholder {
+            color: #adb5bd;
+        }
+
+        .supplier-input:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.10);
+        }
+
+    .supplier-textarea-icon {
+        align-items: flex-start;
+        padding-top: 13px;
+    }
+
+    .supplier-textarea {
+        min-height: 115px;
+        resize: vertical;
+    }
+
+    .supplier-help-text {
+        display: block;
+        margin-top: 5px;
+        font-size: 12px;
+        color: #8a9299;
+    }
+
+    .supplier-validation {
+        display: block;
+        margin-top: 5px;
+        font-size: 12px;
+        color: #dc3545;
+    }
+
+    .supplier-info-box {
+        display: flex;
+        align-items: flex-start;
+        gap: 13px;
+        padding: 16px 18px;
+        margin-top: 8px;
+        background-color: #f8fbff;
+        border: 1px solid #dbeafe;
+        border-radius: 10px;
+    }
+
+    .supplier-info-icon {
+        width: 35px;
+        min-width: 35px;
+        height: 35px;
+        border-radius: 8px;
+        background-color: #e7f1ff;
+        color: #0d6efd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .supplier-info-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #343a40;
+        margin-bottom: 3px;
+    }
+
+    .supplier-info-text {
+        font-size: 12px;
+        color: #6c757d;
+        margin-bottom: 0;
+        line-height: 1.6;
+    }
+
+    .supplier-validation-summary {
+        background-color: #fff5f5;
+        border: 1px solid #f5c2c7;
+        border-radius: 9px;
+        padding: 14px 17px;
+        margin-bottom: 22px;
+        color: #842029;
+    }
+
+        .supplier-validation-summary ul {
+            margin-bottom: 0;
+            padding-left: 20px;
+        }
+
+    .supplier-form-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        padding-top: 22px;
+        margin-top: 28px;
+        border-top: 1px solid #edf0f2;
+    }
+
+    .supplier-btn {
+        min-height: 42px;
+        padding: 9px 18px;
+        border-radius: 7px;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.2s ease;
+    }
+
+    .supplier-cancel-btn {
+        color: #495057;
+        background-color: #ffffff;
+        border: 1px solid #dee2e6;
+    }
+
+        .supplier-cancel-btn:hover {
+            color: #343a40;
+            background-color: #f8f9fa;
+            border-color: #ced4da;
+        }
+
+    .supplier-create-btn {
+        min-width: 160px;
+        color: #ffffff;
+        background-color: #0d6efd;
+        border: 1px solid #0d6efd;
+        cursor: pointer;
+    }
+
+        .supplier-create-btn:hover {
+            color: #ffffff;
+            background-color: #0b5ed7;
+            border-color: #0a58ca;
+        }
+
+    @@media (max-width: 767.98px) {
+
+        .create-supplier-page {
+            padding: 20px 15px;
+        }
+
+        .supplier-page-title {
+            font-size: 24px;
+        }
+
+        .supplier-card-body {
+            padding: 20px;
+        }
+
+        .supplier-card-header {
+            padding: 18px 20px;
+        }
+    }
+
+
+    @@media (max-width: 575.98px) {
+
+        .supplier-form-actions {
+            flex-direction: column-reverse;
+            align-items: stretch;
+        }
+
+        .supplier-btn {
+            width: 100%;
+        }
+
+        .supplier-create-btn {
+            width: 100%;
+        }
+    }
+
+</style>
+
+
+<div class="create-supplier-page">
+
+    <div class="d-flex flex-column flex-md-row
+                justify-content-between align-items-md-center mb-4">
+
+        <div>
+
+            <div class="supplier-breadcrumb">
+
+                <a asp-action="ManageSuppliers">
+                </a>
+
+            </div>
+
+            <h1 class="supplier-page-title">
+                <i class="bi bi-building-add me-2"></i>
+                Create Supplier
+            </h1>
+
+            <p class="supplier-page-subtitle">
+                Add a new supplier to the hospital supplier database.
+            </p>
+
+        </div>
+
+
+        <div class="mt-3 mt-md-0">
+
+            <a asp-action="ManageSuppliers"
+               class="supplier-btn supplier-cancel-btn">
+
+                <i class="bi bi-arrow-left me-2"></i>
+                Back to Suppliers
+
+            </a>
+
+        </div>
+
+    </div>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="supplier-validation-summary">
+
+            <div class="d-flex align-items-start gap-2">
+
+                <i class="bi bi-exclamation-triangle-fill mt-1"></i>
+
+                <div>
+
+                    <strong>
+                        Please correct the following errors:
+                    </strong>
+
+                    <div asp-validation-summary="ModelOnly"
+                         class="mt-1">
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+
+
+    <div class="supplier-card">
+
+        <div class="supplier-card-header">
+
+            <div class="d-flex align-items-center">
+
+
+                <div>
+
+                    <h2 class="supplier-card-title">
+                        Supplier Information
+                    </h2>
+
+                    <p class="supplier-card-description">
+                        Enter the supplier's business and contact details.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="supplier-card-body">
+
+            <form asp-action="CreateSupplier"
+                  method="post"
+                  autocomplete="off">
+
+                @Html.AntiForgeryToken()
+
+
+                <div class="supplier-section">
+
+                    <div class="supplier-section-header">
+
+                        <div>
+
+                            <h3 class="supplier-section-title">
+                                Basic Information
+                            </h3>
+
+                            <p class="supplier-section-subtitle">
+                                Enter the supplier's identification details.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="row g-4">
+                        <div class="col-md-6">
+
+                            <label asp-for="SupplierName"
+                                   class="supplier-form-label">
+
+                                Supplier Name
+                                <span class="supplier-required">*</span>
+
+                            </label>
+
+                            <div class="supplier-input-group">
+
+                                <div class="supplier-input-icon">
+                                    <i class="bi bi-building"></i>
+                                </div>
+
+                                <input asp-for="SupplierName"
+                                       class="supplier-input"
+                                       placeholder="Enter supplier name" />
+
+                            </div>
+
+                            <span asp-validation-for="SupplierName"
+                                  class="supplier-validation">
+                            </span>
+
+                            <small class="supplier-help-text">
+                                The supplier name must be unique.
+                            </small>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <label asp-for="ContactPerson"
+                                   class="supplier-form-label">
+
+                                Contact Person
+
+                            </label>
+
+                            <div class="supplier-input-group">
+
+                                <div class="supplier-input-icon">
+                                    <i class="bi bi-person"></i>
+                                </div>
+
+                                <input asp-for="ContactPerson"
+                                       class="supplier-input"
+                                       placeholder="Enter contact person's name" />
+
+                            </div>
+
+                            <span asp-validation-for="ContactPerson"
+                                  class="supplier-validation">
+                            </span>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <label asp-for="PhoneNumber"
+                                   class="supplier-form-label">
+
+                                Phone Number
+
+                            </label>
+
+                            <div class="supplier-input-group">
+
+                                <div class="supplier-input-icon">
+                                    <i class="bi bi-telephone"></i>
+                                </div>
+
+                                <input asp-for="PhoneNumber"
+                                       class="supplier-input"
+                                       type="tel"
+                                       placeholder="e.g. 041 123 4567" />
+
+                            </div>
+
+                            <span asp-validation-for="PhoneNumber"
+                                  class="supplier-validation">
+                            </span>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <label asp-for="Email"
+                                   class="supplier-form-label">
+
+                                Email Address
+
+                            </label>
+
+                            <div class="supplier-input-group">
+
+                                <div class="supplier-input-icon">
+                                    <i class="bi bi-envelope"></i>
+                                </div>
+
+                                <input asp-for="Email"
+                                       class="supplier-input"
+                                       type="email"
+                                       placeholder="supplier@example.com" />
+
+                            </div>
+
+                            <span asp-validation-for="Email"
+                                  class="supplier-validation">
+                            </span>
+
+                        </div>
+
+                        <div class="col-12">
+
+                            <label asp-for="Address"
+                                   class="supplier-form-label">
+
+                                Business Address
+
+                            </label>
+
+                            <div class="supplier-input-group">
+
+                                <div class="supplier-input-icon supplier-textarea-icon">
+                                    <i class="bi bi-geo-alt"></i>
+                                </div>
+
+                                <textarea asp-for="Address"
+                                          class="supplier-input supplier-textarea"
+                                          rows="4"
+                                          placeholder="Enter the supplier's business address"></textarea>
+
+                            </div>
+
+                            <span asp-validation-for="Address"
+                                  class="supplier-validation">
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="supplier-info-box">
+
+                    <div class="supplier-info-icon">
+                        <i class="bi bi-info-circle"></i>
+                    </div>
+
+                    <div>
+
+                        <h4 class="supplier-info-title">
+                            Supplier Status
+                        </h4>
+
+                        <p class="supplier-info-text">
+                            New suppliers are automatically created as
+                            <strong>active</strong>.
+                            You can manage the supplier's status later
+                            from the supplier management page.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="supplier-form-actions">
+
+                    <a asp-action="ManageSuppliers"
+                       class="supplier-btn supplier-cancel-btn">
+
+                        <i class="bi bi-x-lg me-2"></i>
+                        Cancel
+
+                    </a>
+
+                    <button type="submit"
+                            class="supplier-btn supplier-create-btn">
+
+                        <i class="bi bi-check-lg me-2"></i>
+                        Create Supplier
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@section Scripts
+{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

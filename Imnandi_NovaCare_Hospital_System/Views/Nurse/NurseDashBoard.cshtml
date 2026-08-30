@@ -1,0 +1,703 @@
+﻿@model NurseDashBoardViewModel
+
+@{
+    ViewData["Title"] = "Nurse Dashboard";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>@ViewData["Title"]</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+
+    <style>
+
+        body {
+            background-color: #f8f9fa;
+            overflow: auto;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .admin-sidebar {
+            background: linear-gradient(180deg,#1f2a38 0%,#2c3e50 100%);
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding-top: 1.5rem;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .admin-sidebar h3 {
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+            margin-bottom: 2rem;
+        }
+
+        .admin-sidebar a {
+            display: block;
+            padding: .85rem 1.5rem;
+            color: white;
+            text-decoration: none;
+            font-size: .95rem;
+            transition: all .2s ease;
+        }
+
+        .admin-sidebar a:hover {
+            background-color: #34495e;
+            padding-left: 2rem;
+        }
+
+        .admin-sidebar .section-title {
+            padding: .75rem 1.5rem;
+            text-transform: uppercase;
+            font-size: .8rem;
+            color: #adb5bd;
+            margin-top: 1.5rem;
+        }
+
+        .main {
+            margin-left: 250px;
+            padding: 2rem 3rem;
+            min-height: 100vh;
+        }
+
+        .dashboard-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: .5rem;
+        }
+
+
+        .dashboard-header p {
+            color: #6c757d;
+        }
+
+        .stat-card {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,.08);
+            transition: transform .2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .card {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,.08);
+        }
+
+        .section-heading {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #f1f3f5;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            font-weight: 600;
+        }
+
+        .badge {
+            font-size: .85rem;
+        }
+
+        .form-control {
+            border-radius: 8px;
+        }
+
+        .scrollable-table {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .scrollable-table::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .scrollable-table::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 4px;
+        }
+
+        .footer-text {
+            margin-top: 2rem;
+            text-align: center;
+            color: #6c757d;
+            font-size: .9rem;
+        }
+
+    </style>
+
+
+</head>
+
+
+<body>
+
+
+    <div class="admin-sidebar">
+
+
+        <h3 class="text-center fw-bold">
+            Nurse Panel
+        </h3>
+
+
+        <a asp-action="Wards" asp-controller="Nurse">
+            <i class="bi bi-hospital me-2"></i>
+            Manage Wards
+        </a>
+
+
+        <a asp-action="Instruction" asp-controller="Nurse">
+            <i class="bi bi-file-earmark-medical me-2"></i>
+            Doctor Instructions
+        </a>
+
+
+        <a asp-action="MedicationSchedule">
+            <i class="bi bi-capsule me-2"></i>
+            Medication Schedule
+        </a>
+
+
+        <a asp-controller="Nurse" asp-action="ViewAlerts">
+            <i class="bi bi-calendar-event me-2"></i>
+            View Alerts
+        </a>
+
+
+
+        <h6 class="section-title">
+            Settings
+        </h6>
+
+
+        <a asp-action="Profile">
+            <i class="bi bi-gear me-2"></i>
+            Profile
+        </a>
+
+
+        <a href="/Identity/Account/Logout">
+            <i class="bi bi-box-arrow-right me-2"></i>
+            Log Out
+        </a>
+
+
+    </div>
+
+
+
+
+
+    <div class="main">
+
+
+        <div class="dashboard-header mb-4">
+
+            <h2>
+                Welcome, @Model.FirstName @Model.LastName
+            </h2>
+
+            <p>
+                Monitor patient vitals, medications, and tasks all in one place.
+            </p>
+
+        </div>
+
+
+
+        <div class="row g-4 mb-4">
+
+
+            <div class="col-md-4">
+
+                <div class="card p-4 text-center bg-primary text-white stat-card">
+
+                    <h6>
+                        No. Patients To Attend
+                    </h6>
+
+                    <div class="stat-number">
+                        @Model.TotalPatients
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+
+            <div class="col-md-4">
+
+                <div class="card p-4 text-center bg-success text-white stat-card">
+
+                    <h6>
+                        Total No. Wards
+                    </h6>
+
+                    <div class="stat-number">
+                        @Model.TotalWards
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+
+
+            <div class="col-md-4">
+
+                <div class="card p-4 text-center bg-secondary text-white stat-card">
+
+                    <h6>
+                        Upcoming Medication Schedules
+                    </h6>
+
+
+                    <div class="stat-number">
+
+                        @Model.UpcomingSchedule.Count()
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="card p-4 mb-4">
+
+            <div class="d-flex align-items-center mb-3">
+                <div class="me-3">
+                    <i class="bi bi-person-badge fs-2 text-primary"></i>
+                </div>
+
+                <div>
+                    <h5 class="fw-bold mb-1">
+                    </h5>
+
+                    <span class="text-muted">
+                        @Model.Department Department
+                    </span>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-4">
+                    <strong>Name</strong>
+                    <p class="text-muted mb-0">
+                        @Model.FirstName @Model.LastName
+                    </p>
+                </div>
+
+                <div class="col-md-4">
+                    <strong>Job Title</strong>
+                    <p class="text-muted mb-0">
+                        @Model.JobTitle
+                    </p>
+                </div>
+
+                <div class="col-md-4">
+                    <strong>Email</strong>
+                    <p class="text-muted mb-0">
+                        @Model.Email
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <h4 class="section-heading">
+            Upcoming Medication Schedules
+        </h4>
+
+
+        <div class="card p-4 mb-4">
+
+
+            <div class="table-responsive">
+
+
+                <table class="table table-hover align-middle">
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Patient FullName</th>
+
+                            <th>Medication</th>
+
+                            <th>Time</th>
+
+                            <th>Status</th>
+
+                        </tr>
+
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                        @foreach (var item in Model.UpcomingSchedule)
+                        {
+
+
+                            <tr>
+
+
+                                <td>
+                                    @item.Patient.FirstName @item.Patient.LastName
+                                </td>
+
+
+                                <td>
+                                    @item.Medication.MedicationName
+                                </td>
+
+
+                                <td>
+                                    @item.Prescription.IssueTime.ToString("HH:mm")
+                                </td>
+
+
+                                <td>
+
+                                    <span class="badge @(item.IsSeen ? "bg-success" : "bg-warning text-dark")">
+
+                                        @(item.IsSeen ? "Done" : "Pending")
+
+                                    </span>
+
+
+                                </td>
+
+
+                            </tr>
+
+
+                        }
+
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </div>
+
+        <h4 class="section-heading">
+            Latest Vital Signs
+        </h4>
+
+
+        <div class="card p-4 mb-4">
+
+
+
+            <div class="mb-3 d-flex gap-3">
+
+
+                <div>
+
+                    <label class="form-label">
+                        Filter by Date
+                    </label>
+
+
+                    <input type="date"
+                           id="filterDate"
+                           class="form-control" />
+
+
+                </div>
+
+
+
+                <div>
+
+                    <label class="form-label">
+                        Filter by Temperature (°C)
+                    </label>
+
+
+                    <input type="number"
+                           id="filterTemp"
+                           class="form-control"
+                           placeholder="e.g. 37" />
+
+
+                </div>
+
+
+            </div>
+
+
+
+
+
+
+            <div class="table-responsive">
+
+
+                <table class="table table-hover align-middle" id="vitalsTable">
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Patient</th>
+
+                            <th>Temperature</th>
+
+                            <th>Oxygen Sat.</th>
+
+                            <th>Blood Pressure</th>
+
+                            <th>Pulse</th>
+
+                            <th>Resp. Rate</th>
+
+                            <th>Recorded At</th>
+
+                            <th>Ward</th>
+
+                            <th>Room</th>
+
+                            <th>Bed</th>
+
+                        </tr>
+
+                    </thead>
+
+
+
+                    <tbody>
+
+
+                        @foreach (var vital in Model.LatestVitals)
+                        {
+
+
+                            <tr>
+
+
+                                <td class="fw-semibold text-primary">
+
+                                    @vital.Patient.FirstName @vital.Patient.LastName
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="badge bg-danger-subtle text-danger">
+
+                                        @vital.BodyTemperature °C
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    @vital.OxygenSaturation
+
+                                </td>
+
+
+                                <td>
+
+                                    @vital.BloodPressure
+
+                                </td>
+
+
+                                <td>
+
+                                    @vital.PulseRate
+
+                                </td>
+
+
+                                <td>
+
+                                    @vital.RespiratoryRate
+
+                                </td>
+
+
+                                <td>
+
+                                    @vital.RecordedAt.ToString("yyyy-MM-dd HH:mm")
+
+                                </td>
+
+
+                                <td>
+
+                                    @vital.Patient.Room.Ward.WardName
+
+                                </td>
+
+
+                                <td>
+
+                                    @vital.Patient.Room.RoomName
+
+                                </td>
+
+
+                                <td>
+
+                                    @vital.Patient.Bed.BedNumber
+
+                                </td>
+
+
+                            </tr>
+
+
+                        }
+
+
+
+                    </tbody>
+
+
+
+                </table>
+
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <script>
+
+
+        const filterDateInput=document.getElementById("filterDate");
+
+        const filterTempInput=document.getElementById("filterTemp");
+
+        const table=document.getElementById("vitalsTable");
+
+        const tbody=table.querySelector("tbody");
+
+
+
+        function filterTable(){
+
+
+        let date=filterDateInput.value;
+
+        let temp=parseFloat(filterTempInput.value);
+
+
+
+        tbody.querySelectorAll("tr").forEach(row=>{
+
+
+        let rowDate=row.cells[6].innerText.split(" ")[0];
+
+        let rowTemp=parseFloat(row.cells[1].innerText);
+
+
+
+        let show=true;
+
+
+
+        if(date && rowDate!==date)
+        show=false;
+
+
+
+        if(!isNaN(temp) && rowTemp!==temp)
+        show=false;
+
+
+
+        row.style.display=show?"":"none";
+
+
+        });
+
+
+        }
+
+
+
+        filterDateInput.addEventListener("input",filterTable);
+
+        filterTempInput.addEventListener("input",filterTable);
+
+
+    </script>
+
+
+
+</body>
+</html>

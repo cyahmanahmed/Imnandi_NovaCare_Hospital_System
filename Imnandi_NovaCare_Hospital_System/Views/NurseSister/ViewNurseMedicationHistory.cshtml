@@ -1,0 +1,809 @@
+﻿@model IEnumerable<MedicationAdministration>
+
+@{
+    ViewData["Title"] = "Nurse Medication Monitoring";
+
+    var records = Model?.ToList()
+        ?? new List<MedicationAdministration>();
+
+    var nurseName = ViewBag.NurseName as string ?? "Nurse";
+    var wardName = ViewBag.WardName as string ?? "No Ward Assigned";
+    var nurseId = (int)ViewBag.NurseId;
+    var search = ViewBag.Search as string;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>@ViewData["Title"] - Nurse Sister</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          rel="stylesheet" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+          rel="stylesheet" />
+
+    <link href="~/css/Nurse.css" rel="stylesheet" />
+
+    <style>
+
+        body {
+            background: #f5f7fb;
+        }
+
+        .main {
+            margin-left: 250px;
+            padding: 30px;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            background: #ffffff;
+            border: 1px solid #e7ebf0;
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin-bottom: 22px;
+            box-shadow: 0 3px 12px rgba(0,0,0,.04);
+        }
+
+        .header-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background: #eef4ff;
+            color: #0d6efd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .page-header h2 {
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .page-header p {
+            margin: 0;
+            color: #6b7280;
+        }
+
+        .back-btn {
+            border-radius: 9px;
+            font-weight: 600;
+        }
+
+        .nurse-info-card {
+            background: #ffffff;
+            border: 1px solid #e7ebf0;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 22px;
+            box-shadow: 0 3px 12px rgba(0,0,0,.04);
+        }
+
+        .nurse-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background: #e8f1ff;
+            color: #0d6efd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 23px;
+        }
+
+        .nurse-name {
+            font-size: 19px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .nurse-meta {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .ward-badge {
+            background: #eef6ff;
+            color: #0d6efd;
+            padding: 7px 11px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .summary-card {
+            background: #ffffff;
+            border: 1px solid #e7ebf0;
+            border-radius: 14px;
+            padding: 18px;
+            height: 100%;
+            box-shadow: 0 3px 12px rgba(0,0,0,.04);
+        }
+
+        .summary-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .summary-label {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .summary-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 19px;
+        }
+
+        .monitor-card {
+            background: #ffffff;
+            border: 1px solid #e7ebf0;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 3px 12px rgba(0,0,0,.04);
+        }
+
+        .monitor-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #edf0f4;
+        }
+
+            .monitor-header h5 {
+                margin: 0;
+                font-weight: 700;
+                color: #1f2937;
+            }
+
+            .monitor-header p {
+                margin: 4px 0 0;
+                color: #6b7280;
+                font-size: 13px;
+            }
+
+        .search-box {
+            position: relative;
+        }
+
+            .search-box i {
+                position: absolute;
+                left: 13px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #94a3b8;
+            }
+
+            .search-box input {
+                padding-left: 38px;
+                border-radius: 9px;
+                border: 1px solid #dce1e7;
+                min-width: 260px;
+            }
+
+        .search-box input:focus {
+            box-shadow: 0 0 0 3px rgba(13,110,253,.1);
+        }
+
+        .medication-table {
+            margin: 0;
+        }
+
+        .medication-table thead th {
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            padding: 15px;
+            white-space: nowrap;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .medication-table tbody td {
+            padding: 16px 15px;
+            vertical-align: middle;
+            border-bottom: 1px solid #f0f2f5;
+        }
+
+        .medication-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .patient-name {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .location-text {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .medication-name {
+            font-weight: 600;
+            color: #198754;
+        }
+
+        .dosage {
+            background: #f1f5f9;
+            color: #334155;
+            padding: 6px 9px;
+            border-radius: 7px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-reviewed {
+            background: #ecfdf3;
+            color: #15803d;
+            padding: 7px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .status-pending {
+            background: #fff7ed;
+            color: #c2410c;
+            padding: 7px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .report-btn {
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 65px 20px;
+        }
+
+        .empty-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 18px;
+            background: #f1f5f9;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+            font-size: 30px;
+        }
+
+        .empty-state h5 {
+            font-weight: 700;
+            color: #374151;
+        }
+
+        .empty-state p {
+            color: #6b7280;
+        }
+
+        @@media (max-width: 991px) {
+
+            .main {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .medication-table {
+                min-width: 1200px;
+            }
+        }
+
+        @@media (max-width: 576px) {
+
+            .main {
+                padding: 15px;
+            }
+
+            .page-header {
+                padding: 18px;
+            }
+
+                .page-header h2 {
+                    font-size: 20px;
+                }
+
+            .nurse-info-card {
+                padding: 16px;
+            }
+
+            .search-box input {
+                min-width: 100%;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="main">
+
+        <div class="page-header">
+
+            <div class="d-flex justify-content-between align-items-center gap-3">
+
+                <div class="d-flex align-items-center">
+
+                    <div class="header-icon me-3">
+
+                        <i class="bi bi-capsule-pill"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h2>Nurse Medication Monitoring</h2>
+
+                        <p>
+                            Review medication administration activity and maintain accountability.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <a asp-action="ManageNurses"
+                   class="btn btn-outline-secondary back-btn">
+
+                    <i class="bi bi-arrow-left me-1"></i>
+
+                    Back
+
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="nurse-info-card">
+
+            <div class="d-flex justify-content-between align-items-center gap-3">
+
+                <div class="d-flex align-items-center">
+
+                    <div class="nurse-avatar me-3">
+
+                        <i class="bi bi-person-badge-fill"></i>
+
+                    </div>
+
+                    <div>
+
+                        <div class="nurse-name">
+
+                            @nurseName
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div>
+
+                    <span class="ward-badge">
+
+                        <i class="bi bi-hospital me-1"></i>
+
+                        @wardName
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="row g-3 mb-4">
+
+            <div class="col-md-4">
+
+                <div class="summary-card">
+
+                    <div class="d-flex align-items-center">
+
+                        <div class="summary-icon bg-primary bg-opacity-10 text-primary me-3">
+
+                            <i class="bi bi-clipboard2-pulse"></i>
+
+                        </div>
+
+                        <div>
+
+                            <div class="summary-label">
+                                Total Administrations
+                            </div>
+
+                            <div class="summary-number">
+                                @records.Count
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <div class="summary-card">
+
+                    <div class="d-flex align-items-center">
+
+                        <div class="summary-icon bg-success bg-opacity-10 text-success me-3">
+
+                            <i class="bi bi-check-circle"></i>
+
+                        </div>
+
+                        <div>
+
+                            <div class="summary-label">
+                                Reviewed
+                            </div>
+
+                            <div class="summary-number">
+                                @records.Count(r => r.IsSeen)
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <div class="summary-card">
+
+                    <div class="d-flex align-items-center">
+
+                        <div class="summary-icon bg-warning bg-opacity-10 text-warning me-3">
+
+                            <i class="bi bi-hourglass-split"></i>
+
+                        </div>
+
+                        <div>
+
+                            <div class="summary-label">
+                                Pending Review
+                            </div>
+
+                            <div class="summary-number">
+                                @records.Count(r => !r.IsSeen)
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="monitor-card">
+
+            <div class="monitor-header">
+
+                <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
+
+                    <div>
+
+                        <h5>
+
+                            <i class="bi bi-shield-check text-primary me-2"></i>
+
+                            Medication Administration History
+
+                        </h5>
+
+                        <p>
+                            Review medications administered by this nurse.
+                        </p>
+
+                    </div>
+
+                    <form asp-action="ViewNurseMedicationHistory"
+                          method="get"
+                          class="search-box">
+
+
+                        <i class="bi bi-search"></i>
+
+                        <input type="text"
+                               name="search"
+                               value="@search"
+                               class="form-control"
+                               placeholder="Search patient, medication, room..." />
+
+                    </form>
+
+                </div>
+
+            </div>
+
+
+            @if (!records.Any())
+            {
+
+                <div class="empty-state">
+
+                    <div class="empty-icon">
+
+                        <i class="bi bi-capsule"></i>
+
+                    </div>
+
+                    <h5>No Medication Records Found</h5>
+
+                    @if (!string.IsNullOrWhiteSpace(search))
+                    {
+                        <p>
+                            No medication records matched "<strong>@search</strong>".
+                        </p>
+                    }
+                    else
+                    {
+                        <p>
+                            This nurse has no medication administration records yet.
+                        </p>
+                    }
+
+                </div>
+
+            }
+            else
+            {
+
+                <div class="table-responsive">
+
+                    <table class="table medication-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Patient
+                                </th>
+
+                                <th>
+                                    Location
+                                </th>
+
+                                <th>
+                                    Medication
+                                </th>
+
+                                <th>
+                                    Dosage
+                                </th>
+
+                                <th>
+                                    Doctor
+                                </th>
+
+                                <th>
+                                    Administration Date
+                                </th>
+
+                                <th>
+                                    Review Status
+                                </th>
+
+                                <th>
+                                    Report
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var item in records)
+                            {
+
+                                <tr>
+
+                                    <td>
+
+                                        <div class="patient-name">
+
+                                            <i class="bi bi-person-fill text-primary me-1"></i>
+
+                                            @item.Patient.FirstName
+                                            @item.Patient.LastName
+
+                                        </div>
+
+                                    </td>
+
+                                    <td>
+
+                                        <div class="location-text">
+
+                                            <div>
+
+                                                <i class="bi bi-building me-1"></i>
+
+                                                @item.Patient.Room?.Ward?.WardName
+
+                                            </div>
+
+                                            <div>
+
+                                                <i class="bi bi-door-open me-1"></i>
+
+                                                @item.Patient.Room?.RoomName
+
+                                            </div>
+
+                                            <div>
+
+                                                <i class="bi bi-hospital me-1"></i>
+
+                                                @item.Patient.Bed?.BedNumber
+
+                                            </div>
+
+                                        </div>
+
+                                    </td>
+
+                                    <td>
+
+                                        <span class="medication-name">
+
+                                            <i class="bi bi-capsule me-1"></i>
+
+                                            @item.Medication?.MedicationName
+
+                                        </span>
+
+                                    </td>
+
+                                    <td>
+
+                                        <span class="dosage">
+
+                                            @item.Dosage
+
+                                        </span>
+
+                                    </td>
+
+                                    <td>
+
+                                        @if (item.Doctor != null)
+                                        {
+                                            <span>
+
+                                                <i class="bi bi-person-badge text-primary me-1"></i>
+
+                                                @item.Doctor.FirstName
+                                                @item.Doctor.LastName
+
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">
+                                                Not available
+                                            </span>
+                                        }
+
+                                    </td>
+
+                                    <td>
+
+                                        <span class="location-text">
+
+                                            <i class="bi bi-calendar3 me-1"></i>
+
+                                            @item.AdministrationTime.ToString("dd MMM yyyy")
+
+                                        </span>
+
+                                    </td>
+
+                                    <td>
+
+                                        @if (item.IsSeen)
+                                        {
+                                            <span class="status-reviewed">
+
+                                                <i class="bi bi-check-circle-fill me-1"></i>
+
+                                                Reviewed
+
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="status-pending">
+
+                                                <i class="bi bi-clock-history me-1"></i>
+
+                                                Pending Review
+
+                                            </span>
+                                        }
+
+                                    </td>
+
+                                    <td>
+
+                                        <a asp-action="ReportNurse"
+                                           asp-route-nurseId="@nurseId"
+                                           class="btn btn-outline-danger btn-sm report-btn">
+
+                                            <i class="bi bi-flag me-1"></i>
+
+                                            Report
+
+                                        </a>
+
+                                    </td>
+
+                                </tr>
+
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            }
+
+        </div>
+
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

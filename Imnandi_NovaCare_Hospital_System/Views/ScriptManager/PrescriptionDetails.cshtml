@@ -1,0 +1,180 @@
+﻿@model ScriptPrescription
+
+@{
+    ViewData["Title"] = "Prescription Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Prescription Details</h4>
+                </div>
+
+                <div class="card-body">
+                    @if (Model == null || Model.Prescription == null)
+                    {
+                        <div class="alert alert-danger">
+                            <h4>Error: Prescription Data Not Found or Incomplete</h4>
+                            <p>The requested prescription details could not be loaded due to missing core data.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="mb-4 p-3 bg-light rounded">
+                            <h5 class="fw-bold text-primary">Patient Information</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Patient Name:</strong> @(Model.Prescription.Patient?.FirstName + " " + Model.Prescription.Patient?.LastName ?? "N/A")</p>
+                                    <p><strong>Date of Birth:</strong> @(Model.Prescription.Patient?.DateOfBirth.ToString("dd/MM/yyyy") ?? "N/A")</p>
+                                    <p><strong>Gender:</strong> @(Model.Prescription.Patient?.Gender ?? "N/A")</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Ward:</strong> @(Model.Prescription.Patient?.Room?.Ward?.WardName ?? "N/A")</p>
+                                    <p><strong>Room:</strong> @(Model.Prescription.Patient?.Room?.RoomNumber ?? "N/A")</p>
+                                    <p><strong>Bed Number:</strong> @(Model.Prescription.Patient?.Bed?.BedNumber ?? "N/A")</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4 p-3 bg-light rounded">
+                            <h5 class="fw-bold text-primary">Prescribing Doctor</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Doctor Name:</strong> @(Model.Prescription.Doctor?.FirstName + " " + Model.Prescription.Doctor?.LastName ?? "N/A")</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Department:</strong> @(Model.Prescription.Doctor?.Department ?? "N/A")</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4 p-3 bg-light rounded">
+                            <h5 class="fw-bold text-primary">Medication Details</h5>
+                            @if (Model.Medications != null && Model.Medications.Any())
+                            {
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Medication Name</th>
+                                                <th>Dosage Form</th>
+                                                <th>Quantity</th>
+                                                <th>Manufacturer</th>
+                                                <th>Expiry Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var medication in Model.Medications)
+                                            {
+                                                <tr>
+                                                    <td>@(medication.Medication?.MedicationName ?? "N/A")</td>
+                                                    <td>@(medication.Medication?.DosageForm ?? "N/A")</td>
+                                                    <td>@medication.Quantity</td>
+                                                    <td>@(medication.Medication?.Manufacturer ?? "N/A")</td>
+                                                    <td>@(medication.Medication?.ExpiryDate?.ToString("dd/MM/yyyy") ?? "N/A")</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                            else
+                            {
+                                <p>No medications associated with this prescription.</p>
+                            }
+                    </div>
+
+                    <div class="mb-4 p-3 bg-light rounded">
+                        <h5 class="fw-bold text-primary">Prescription Information</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Issue Date:</strong> @(Model.Prescription.IssueDate.ToString("dd/MM/yyyy"))</p>
+                                <p><strong>Issue Time:</strong> @(Model.Prescription.IssueTime.ToString("HH:mm"))</p>
+                                <p><strong>Dosage Instructions:</strong> @(Model.Prescription.DosageInstructions ?? "N/A")</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Original Status:</strong> @(Model.Prescription.Status ?? "N/A")</p>
+                                <p><strong>Level:</strong> @(Model.Prescription.Level?.ToString() ?? "N/A")</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4 p-3 bg-light rounded">
+                        <h5 class="fw-bold text-primary">Script Manager Information</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Assigned Script Manager:</strong> @(Model.ScriptManager?.Employee?.FirstName + " " + Model.ScriptManager?.Employee?.LastName ?? "N/A")</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4 p-3 bg-light rounded">
+                        <h5 class="fw-bold text-primary">Processing Information</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p>
+                                    <strong>Current Status:</strong>
+                                    <span class="badge
+                                            @(Model.Status == "Pending" ? "bg-warning" :
+                                                                                        Model.Status == "Processed" ? "bg-info" :
+                                                                                        Model.Status == "Completed" ? "bg-success" : "bg-secondary")">
+                                        @Model.Status
+                                    </span>
+                                </p>
+                                @if (Model.ProcessedDate.HasValue)
+                                    {
+                                        <p><strong>Processed Date:</strong> @Model.ProcessedDate?.ToString("dd/MM/yyyy HH:mm")</p>
+                                    }
+                                    @if (Model.ReceivedDate.HasValue)
+                                    {
+                                        <p><strong>Received Date:</strong> @Model.ReceivedDate?.ToString("dd/MM/yyyy HH:mm")</p>
+                                    }
+                                </div>
+                                <div class="col-md-6">
+                                    @if (Model.ReceivedFrom != null)
+                                    {
+                                        <p><strong>Received From:</strong> @(Model.ReceivedFrom.FirstName + " " + Model.ReceivedFrom.LastName)</p>
+                                    }
+                                    @if (Model.IsVerified)
+                                    {
+                                        <p><strong>Verified By:</strong> @Model.VerifiedBy</p>
+                                        <p><strong>Verified Date:</strong> @Model.VerifiedDate.ToString("dd/MM/yyyy HH:mm")</p>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(Model.Notes))
+                        {
+                            <div class="mb-4 p-3 bg-info bg-opacity-10 border border-info rounded">
+                                <h5 class="fw-bold text-info">Notes</h5>
+                                <p class="mb-0">@Model.Notes</p>
+                            </div>
+                        }
+
+                        <div class="d-flex gap-3 mt-4">
+                            <a asp-action="ManagePrescriptions" class="btn btn-outline-secondary">
+                                Back to Prescriptions
+                            </a>
+                            @if (Model.Status == "Pending")
+                            {
+                                <a asp-action="ProcessPrescription" asp-route-id="@Model.ScriptPrescriptionId" class="btn btn-primary">
+                                    Process Prescription
+                                </a>
+                            }
+                            @if (Model.Status == "Processed")
+                            {
+                                <a asp-action="ReceivePrescription" asp-route-id="@Model.ScriptPrescriptionId" class="btn btn-success">
+                                    Receive
+                                </a>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,120 @@
+﻿@model Imnandi_NovaCare_Hospital_System.ViewModels.CreateFirstAdminViewModel
+
+@{
+    ViewData["Title"] = "Create Administrator";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+
+            <div class="card shadow">
+                <div class="card-body p-4">
+
+                    <div class="text-center mb-4">
+                        <h2>Create Administrator</h2>
+                        <p class="text-muted">
+                            Create the first administrator account for the hospital management system.
+                        </p>
+                    </div>
+
+                    <form asp-action="CreateAdmin" method="post">
+
+                        <div asp-validation-summary="ModelOnly"
+                             class="text-danger mb-3">
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="FirstName" class="form-label"></label>
+                                <input asp-for="FirstName"
+                                       class="form-control"
+                                       placeholder="Enter first name" />
+                                <span asp-validation-for="FirstName"
+                                      class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="LastName" class="form-label"></label>
+                                <input asp-for="LastName"
+                                       class="form-control"
+                                       placeholder="Enter last name" />
+                                <span asp-validation-for="LastName"
+                                      class="text-danger"></span>
+                            </div>
+
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="UserName" class="form-label"></label>
+                            <input asp-for="UserName"
+                                   class="form-control"
+                                   placeholder="Enter username" />
+                            <span asp-validation-for="UserName"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email"
+                                   class="form-control"
+                                   placeholder="Enter email address" />
+                            <span asp-validation-for="Email"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="PhoneNumber" class="form-label"></label>
+                            <input asp-for="PhoneNumber"
+                                   class="form-control"
+                                   placeholder="Enter phone number" />
+                            <span asp-validation-for="PhoneNumber"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="JobTitle" class="form-label"></label>
+                            <input asp-for="JobTitle"
+                                   class="form-control"
+                                   value="Administrator"
+                                   placeholder="Enter job title" />
+                            <span asp-validation-for="JobTitle"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label"></label>
+                            <input asp-for="Password"
+                                   class="form-control"
+                                   placeholder="Enter password" />
+                            <span asp-validation-for="Password"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="ConfirmPassword" class="form-label"></label>
+                            <input asp-for="ConfirmPassword"
+                                   class="form-control"
+                                   placeholder="Confirm password" />
+                            <span asp-validation-for="ConfirmPassword"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <button type="submit"
+                                class="btn btn-primary w-100">
+                            Create Administrator
+                        </button>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

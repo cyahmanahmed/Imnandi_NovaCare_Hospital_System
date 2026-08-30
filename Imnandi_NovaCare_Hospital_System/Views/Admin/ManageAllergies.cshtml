@@ -1,0 +1,108 @@
+﻿@model IEnumerable<Allergies>
+@{
+    ViewData["Title"] = "Manage Allergies";
+    var search = ViewData["Search"]?.ToString() ?? "";
+}
+
+<div class="container-fluid py-5">
+
+    <div class="col-12 mb-3">
+        <a asp-controller="Admin" asp-action="AdminDashboard"
+           class="btn btn-outline-primary btn-sm px-3 d-flex align-items-center shadow-sm"
+           style="border-radius: 80px;">
+            <i class="bi bi-house-door-fill me-2"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-8">
+            <h1 class="display-6 fw-bold text-primary">
+                <i class="bi bi-clipboard-heart me-2"></i> Allergy Management
+            </h1>
+            <p class="text-muted mb-0">View all patient allergies in the ward.</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-10 col-lg-8">
+            <form method="get" class="input-group input-group-lg shadow-sm rounded">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="bi bi-search text-muted"></i>
+                </span>
+                <input type="text" name="search" class="form-control border-start-0 ps-0"
+                       placeholder="Search by patient name or allergen..." value="@search" />
+
+                <button type="submit" class="btn btn-primary">Search</button>
+                @if (!string.IsNullOrEmpty(search))
+                {
+                    <a asp-action="ManageAllergies" class="btn btn-outline-secondary">Clear</a>
+                }
+            </form>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        @if (!Model.Any())
+        {
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-clipboard-heart text-muted" style="font-size: 4rem;"></i>
+                <h4 class="text-muted mt-3">No allergies found</h4>
+                <p class="text-secondary">Adjust your search to see results.</p>
+            </div>
+        }
+        else
+        {
+            foreach (var allergy in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm border-0 hover-lift" style="border-radius: 16px;">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h5 class="mb-0 text-dark">
+                                    <i class="bi bi-emoji-sick text-primary me-2"></i>
+                                    @allergy.Allergen
+                                </h5>
+                            </div>
+
+                            <ul class="list-unstyled small mb-3">
+                                <li><strong>Patient:</strong> @(allergy.Patient != null ? $"{allergy.Patient.FirstName} {allergy.Patient.LastName}" : "Unknown")</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+    body {
+        background: linear-gradient(135deg, #f9fbfd 0%, #f0f4f8 100%);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .hover-lift {
+        transition: all 0.3s ease;
+        border: 1px solid #e0e7ff;
+    }
+
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-color: #a5b4fc;
+        }
+
+    .btn-outline-primary {
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .display-6 {
+        font-size: 2rem;
+        font-weight: 700;
+    }
+</style>

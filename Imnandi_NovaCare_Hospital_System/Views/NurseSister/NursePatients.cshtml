@@ -1,0 +1,156 @@
+﻿@model IEnumerable<Patient>
+
+<div class="row mt-4">
+    <div class="col-12 mb-4">
+        <a asp-controller="NurseSister" asp-action="NurseSisterDashBoard"
+           class="btn btn-outline-primary btn-sm px-3 d-flex align-items-center shadow-sm"
+           style="border-radius: 80px;">
+            <i class="bi bi-house-door-fill me-2"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12 table-responsive">
+        @if (!Model.Any())
+        {
+            <div class="card bg-light border-0 shadow-sm">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-person-x fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Patients Found</h4>
+                    <p class="text-secondary">There are currently no patients admitted.</p>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="card shadow-sm rounded-4">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Patients List</h5>
+                    <small>@Model.Count() patient(s)</small>
+                </div>
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-primary text-center">
+                            <tr>
+                                <th><i class="fa-solid fa-user me-2"></i>Name</th>
+                                <th><i class="fa-solid fa-venus-mars me-2 text-pink"></i>Gender</th>
+                                <th><i class="fa-solid fa-calendar-day me-2 text-info"></i>Date Admitted</th>
+                                <th><i class="fa-solid fa-user-nurse me-2 text-success"></i>Assigned Nurse</th>
+                                <th><i class="fa-solid fa-gears me-2 text-secondary"></i>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-center">
+                            @if (!Model.Any())
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-muted py-4">
+                                        <i class="fa-solid fa-circle-info me-2"></i>
+                                        No patient records found.
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                foreach (var patient in Model)
+                                {
+                                    <tr>
+                                        <td class="fw-semibold text-primary">
+                                            <i class="fa-solid fa-user me-1 text-secondary"></i>
+                                            <strong>@patient.FirstName</strong> @patient.LastName
+                                        </td>
+                                        <td>
+                                            @if (patient.Gender == "Male")
+                                            {
+                                                <span class="badge bg-primary-subtle btn-primary">
+                                                    <i class="fa-solid fa-mars me-1"></i>Male
+                                                </span>
+                                            }
+                                            else if (patient.Gender == "Female")
+                                            {
+                                                <span class="badge bg-pink btn-secondary">
+                                                    <i class="fa-solid fa-venus me-1"></i>Female
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary-subtle text-dark">
+                                                    <i class="fa-solid fa-genderless me-1"></i>@patient.Gender
+                                                </span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <i class="fa-solid fa-calendar-days text-info me-1"></i>
+                                            @patient.DateAdmitted.ToString("dd MMM yyyy")
+                                        </td>
+                                        <td>
+                                            <i class="fa-solid fa-user-nurse text-success me-1"></i>
+                                            @patient.Nurse.FirstName @patient.Nurse.LastName
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="d-flex justify-content-center flex-wrap gap-2">
+                                                <a class="btn btn-sm btn-primary"
+                                                   asp-action="ViewDoctorInstruction"
+                                                   asp-route-patientId="@patient.Id">
+                                                    <i class="fa-solid fa-file-medical me-1"></i>Doctor Instruction
+                                                </a>
+                                                <a class="btn btn-sm btn-secondary"
+                                                   asp-action="ViewVitalSigns"
+                                                   asp-route-patientId="@patient.Id">
+                                                    <i class="fa-solid fa-heart-pulse me-1"></i>Vital Info
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 12px;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f1f3f5;
+    }
+
+    .btn-primary, .btn-secondary {
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: transform 0.2s;
+    }
+
+    .btn-primary:hover, .btn-secondary:hover {
+        transform: translateY(-2px);
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: #6c757d;
+    }
+
+    .table-danger {
+        background-color: #f8d7da !important;
+    }
+
+    .table-primary {
+        background-color: #cfe2ff !important;
+    }
+
+    .table th, .table td {
+        font-size: 0.85rem;
+    }
+
+    }
+</style>

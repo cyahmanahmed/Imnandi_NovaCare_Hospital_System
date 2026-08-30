@@ -1,0 +1,116 @@
+﻿@model OrderItem
+
+@{
+    ViewData["Title"] = "Delete Order Item";
+}
+
+<div class="container-fluid p-0">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+
+                <div class="bg-danger text-white py-4 px-5 d-flex align-items-center justify-content-between">
+                    <div>
+                        <h3 class="mb-0">
+                            <i class="bi bi-trash-fill me-2"></i> Delete Order Item
+                        </h3>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <div class="alert alert-warning shadow-sm mb-4" role="alert">
+                        <h5 class="alert-heading">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i> Warning!
+                        </h5>
+                        <p class="mb-0">
+                            This action will <strong>permanently delete</strong> this order item from the order.
+                        </p>
+                    </div>
+
+                    <dl class="row mb-4">
+                        <dt class="col-sm-4 fw-semibold text-secondary">Order</dt>
+                        <dd class="col-sm-8">@Model.Order?.OrderName (@Model.Order?.OrderNumber)</dd>
+
+                        <dt class="col-sm-4 fw-semibold text-secondary">Consumable</dt>
+                        <dd class="col-sm-8">@Model.Consumable?.ConsumableName</dd>
+
+                        <dt class="col-sm-4 fw-semibold text-secondary">Quantity Requested</dt>
+                        <dd class="col-sm-8">@Model.QuantityRequested</dd>
+
+                        <dt class="col-sm-4 fw-semibold text-secondary">Quantity Received</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.QuantityReceived.HasValue)
+                            {
+                                @Model.QuantityReceived
+                            }
+                            else
+                            {
+                                <span class="text-muted">Not yet received</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4 fw-semibold text-secondary">Status</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.QuantityReceived.HasValue && Model.QuantityReceived >= Model.QuantityRequested)
+                            {
+                                <span class="badge bg-success">Completed</span>
+                            }
+                            else if (Model.QuantityReceived.HasValue && Model.QuantityReceived < Model.QuantityRequested)
+                            {
+                                <span class="badge bg-warning text-dark">Partially Received</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Pending</span>
+                            }
+                        </dd>
+                    </dl>
+
+                    <div class="d-flex gap-3 pt-3">
+                        <form asp-action="DeleteOrderItem" asp-controller="StockManager" asp-route-id="@Model.Id" method="post" class="d-inline">
+                            <input type="hidden" asp-for="Id" />
+                            <button type="submit" class="btn btn-danger btn-sm px-4">
+                                <i class="bi bi-trash-fill me-1"></i> Confirm Delete
+                            </button>
+                        </form>
+
+                        <a asp-action="ManageOrderItems" asp-controller="StockManager" class="btn btn-secondary btn-sm px-4">
+                            <i class="bi bi-arrow-left-circle-fill me-1"></i> Cancel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .alert-heading i {
+        color: #856404;
+    }
+
+    dt, dd {
+        font-size: 0.95rem;
+    }
+
+    .btn-sm {
+        border-radius: 50px;
+    }
+
+    .badge {
+        font-size: 0.85rem;
+    }
+
+    .bg-danger {
+        background: linear-gradient(135deg, #dc3545, #b52a37);
+    }
+</style>

@@ -1,0 +1,1178 @@
+﻿@model List<WardStock>
+
+@{
+    ViewData["Title"] = "Manage Ward Stock";
+
+    var wards = ViewBag.Wards as List<Ward>
+                 ?? new List<Ward>();
+
+    int? selectedWardId = ViewBag.SelectedWardId;
+    string selectedWardName = ViewBag.SelectedWardName as string ?? "";
+
+    int totalConsumables = Model.Count;
+    int totalQuantity = Model.Sum(x => x.QuantityInWard);
+
+    int lowStockCount = Model.Count(x =>
+        x.Consumable != null &&
+        x.QuantityInWard > 0 &&
+        x.QuantityInWard <= x.Consumable.MinimumConsumables);
+
+    int outOfStockCount = Model.Count(x =>
+        x.QuantityInWard <= 0);
+}
+
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div class="d-flex align-items-center">
+
+            <div class="page-icon me-3">
+                <i class="bi bi-box-seam"></i>
+            </div>
+
+            <div>
+
+                <h2 class="fw-bold mb-1">
+                    Manage Ward Stock
+                </h2>
+
+                <p class="text-muted mb-0">
+                    View and monitor consumables currently allocated to each ward.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <a asp-controller="StockManager"
+           asp-action="StockManagerDashboard"
+           class="btn btn-outline-primary rounded-pill px-4 shadow-sm">
+
+            <i class="bi bi-house-door-fill me-2"></i>
+            Back to Dashboard
+
+        </a>
+
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm"
+             role="alert">
+
+            <i class="bi bi-check-circle-fill me-2"></i>
+
+            @TempData["Success"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+    }
+
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show rounded-4 shadow-sm"
+             role="alert">
+
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
+            @TempData["Error"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+    }
+
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+
+        <div class="card-body p-4">
+
+            <div class="row align-items-end">
+
+                <div class="col-md-8">
+
+                    <label for="wardSelector"
+                           class="form-label fw-semibold">
+
+                        <i class="bi bi-hospital text-primary me-2"></i>
+                        Select Ward
+
+                    </label>
+
+
+                    <form asp-controller="StockManager"
+                          asp-action="ManageWardStock"
+                          method="get">
+
+                        <select id="wardSelector"
+                                name="wardId"
+                                class="form-select form-select-lg"
+                                onchange="this.form.submit()">
+
+                            <option value="">
+                                -- Select a ward --
+                            </option>
+
+                            @foreach (var ward in wards)
+                            {
+                                if (selectedWardId.HasValue &&
+                                    selectedWardId.Value == ward.WardId)
+                                {
+                                    <option value="@ward.WardId" selected>
+                                        @ward.WardName
+                                    </option>
+                                }
+                                else
+                                {
+                                    <option value="@ward.WardId">
+                                        @ward.WardName
+                                    </option>
+                                }
+                            }
+
+                        </select>
+
+                    </form>
+
+
+                    <small class="text-muted d-block mt-2">
+                        Select a ward to view its current consumable stock.
+                    </small>
+
+                </div>
+
+
+                <div class="col-md-4 mt-3">
+
+                    @if (selectedWardId.HasValue)
+                    {
+                        <div class="selected-ward">
+
+                            <div class="small text-muted">
+                                Currently Viewing
+                            </div>
+
+                            <div class="fw-bold fs-5 mt-1">
+
+                                <i class="bi bi-building text-primary me-2"></i>
+
+                                @selectedWardName
+
+                            </div>
+
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="selected-ward">
+
+                            <div class="small text-muted">
+                                Currently Viewing
+                            </div>
+
+                            <div class="fw-semibold text-muted mt-1">
+                                No ward selected
+                            </div>
+
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    @if (selectedWardId.HasValue)
+    {
+        <div class="row g-3 mb-4">
+            <div class="col-lg-3 col-md-6">
+
+                <div class="summary-card">
+
+                    <div class="summary-icon blue">
+                        <i class="bi bi-boxes"></i>
+                    </div>
+
+                    <div>
+
+                        <div class="summary-title">
+                            Consumable Types
+                        </div>
+
+                        <div class="summary-number">
+                            @totalConsumables
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+
+                <div class="summary-card">
+
+                    <div class="summary-icon green">
+                        <i class="bi bi-stack"></i>
+                    </div>
+
+                    <div>
+
+                        <div class="summary-title">
+                            Total Quantity
+                        </div>
+
+                        <div class="summary-number">
+                            @totalQuantity.ToString("N0")
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+
+                <div class="summary-card">
+
+                    <div class="summary-icon orange">
+                        <i class="bi bi-exclamation-triangle"></i>
+                    </div>
+
+                    <div>
+
+                        <div class="summary-title">
+                            Low Stock
+                        </div>
+
+                        <div class="summary-number">
+                            @lowStockCount
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+
+                <div class="summary-card">
+
+                    <div class="summary-icon red">
+                        <i class="bi bi-x-circle"></i>
+                    </div>
+
+                    <div>
+
+                        <div class="summary-title">
+                            Out of Stock
+                        </div>
+
+                        <div class="summary-number">
+                            @outOfStockCount
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4">
+
+            <div class="card-header bg-white border-0 p-4">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <h4 class="fw-bold mb-1">
+
+                            <i class="bi bi-clipboard-data text-primary me-2"></i>
+
+                            @selectedWardName Stock
+
+                        </h4>
+
+                        <p class="text-muted mb-0">
+                            Current consumable quantities recorded for this ward.
+                        </p>
+
+                    </div>
+
+
+                    <div class="ward-count">
+
+                        <i class="bi bi-box-seam me-1"></i>
+
+                        @totalConsumables Items
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="card-body p-0">
+
+                @if (Model.Any())
+                {
+
+                    <div class="table-responsive">
+
+                        <table class="table table-hover align-middle mb-0">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th class="ps-4">
+                                        #
+                                    </th>
+
+                                    <th>
+                                        Consumable
+                                    </th>
+
+                                    <th>
+                                        Description
+                                    </th>
+
+                                    <th>
+                                        Unit
+                                    </th>
+
+                                    <th class="text-center">
+                                        Quantity
+                                    </th>
+
+                                    <th class="text-center">
+                                        Minimum
+                                    </th>
+
+                                    <th class="text-center">
+                                        Status
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                @{
+                                    int counter = 1;
+                                }
+
+
+                                @foreach (var stock in Model)
+                                {
+
+                                    var consumable = stock.Consumable;
+
+                                    int minimum =
+                                        consumable?.MinimumConsumables ?? 0;
+
+
+                                    string status;
+                                    string statusClass;
+                                    string statusIcon;
+
+
+                                    if (stock.QuantityInWard <= 0)
+                                    {
+                                        status = "Out of Stock";
+                                        statusClass = "status-danger";
+                                        statusIcon = "bi-x-circle-fill";
+                                    }
+                                    else if (stock.QuantityInWard <= minimum)
+                                    {
+                                        status = "Low Stock";
+                                        statusClass = "status-warning";
+                                        statusIcon = "bi-exclamation-triangle-fill";
+                                    }
+                                    else
+                                    {
+                                        status = "In Stock";
+                                        statusClass = "status-success";
+                                        statusIcon = "bi-check-circle-fill";
+                                    }
+
+
+                                    <tr>
+                                        <td class="ps-4">
+
+                                            <span class="row-number">
+                                                @counter
+                                            </span>
+
+                                        </td>
+
+                                        <td>
+
+                                            <div class="d-flex align-items-center">
+
+                                                <div class="consumable-icon me-3">
+
+                                                    <i class="bi bi-box"></i>
+
+                                                </div>
+
+
+                                                <div>
+
+                                                    <div class="fw-semibold">
+
+                                                        @(consumable?.ConsumableName
+                                                            ?? "Unknown Consumable")
+
+                                                    </div>
+
+                                                    <small class="text-muted">
+                                                        Consumable #@stock.ConsumableId
+                                                    </small>
+
+                                                </div>
+
+                                            </div>
+
+                                        </td>
+
+                                        <td>
+
+                                            @if (consumable != null &&
+                                                 !string.IsNullOrWhiteSpace(
+                                                     consumable.Description))
+                                            {
+                                                <span class="text-muted">
+                                                    @consumable.Description
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">
+                                                    No description
+                                                </span>
+                                            }
+
+                                        </td>
+
+                                        <td>
+
+                                            @if (consumable != null &&
+                                                 !string.IsNullOrWhiteSpace(
+                                                     consumable.Unit))
+                                            {
+                                                <span class="unit-badge">
+                                                    @consumable.Unit
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">
+                                                    -
+                                                </span>
+                                            }
+
+                                        </td>
+
+                                        <td class="text-center">
+
+                                            <span class="quantity-badge
+                                                @(stock.QuantityInWard <= 0
+                                                    ? "quantity-danger"
+                                                    : stock.QuantityInWard <= minimum
+                                                        ? "quantity-warning"
+                                                        : "quantity-good")">
+
+                                                @stock.QuantityInWard.ToString("N0")
+
+                                            </span>
+
+                                        </td>
+
+                                        <td class="text-center">
+
+                                            <span class="minimum-value">
+
+                                                @minimum.ToString("N0")
+
+                                            </span>
+
+                                        </td>
+
+                                        <td class="text-center">
+
+                                            <span class="stock-status @statusClass">
+
+                                                <i class="bi @statusIcon me-1"></i>
+
+                                                @status
+
+                                            </span>
+
+                                        </td>
+
+                                    </tr>
+
+
+                                    counter++;
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                }
+                else
+                {
+                    <div class="empty-state">
+
+                        <div class="empty-icon">
+
+                            <i class="bi bi-box-seam"></i>
+
+                        </div>
+
+
+                        <h5 class="fw-bold mt-3">
+                            No Ward Stock Recorded
+                        </h5>
+
+
+                        <p class="text-muted mb-0">
+
+                            There are currently no consumables recorded
+                            for <strong>@selectedWardName</strong>.
+
+                        </p>
+
+                    </div>
+
+                }
+
+            </div>
+
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4 mt-4">
+
+            <div class="card-header bg-white border-0 p-4">
+
+                <div class="d-flex align-items-center">
+
+                    <div class="shortage-header-icon me-3">
+
+                        <i class="bi bi-bell-fill"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h4 class="fw-bold mb-1">
+                            Report Stock Shortage
+                        </h4>
+
+                        <p class="text-muted mb-0">
+                            Notify the Stock Manager when a consumable is
+                            running low or unavailable in this ward.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="card-body p-4">
+
+                <form asp-controller="StockManager"
+                      asp-action="NotifyStockShortage"
+                      method="post">
+
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden"
+                           name="wardId"
+                           value="@selectedWardId" />
+
+
+                    <div class="row g-4">
+                        <div class="col-md-6">
+
+                            <label for="consumableId"
+                                   class="form-label fw-semibold">
+
+                                <i class="bi bi-box-seam text-primary me-2"></i>
+
+                                Consumable
+
+                            </label>
+
+
+                            <select id="consumableId"
+                                    name="consumableId"
+                                    class="form-select form-select-lg"
+                                    required>
+
+                                <option value="">
+                                    -- Select consumable --
+                                </option>
+
+
+                                @foreach (var stock in Model.OrderBy(
+                                    x => x.Consumable?.ConsumableName))
+                                {
+                                    if (stock.Consumable != null)
+                                    {
+                                        <option value="@stock.ConsumableId">
+
+                                            @stock.Consumable.ConsumableName
+                                            — Current:
+                                            @stock.QuantityInWard
+
+                                        </option>
+                                    }
+                                }
+
+                            </select>
+
+
+                            <small class="text-muted d-block mt-2">
+                                Select the consumable that requires attention.
+                            </small>
+
+                        </div>
+
+
+                        <div class="col-md-3">
+
+                            <label class="form-label fw-semibold">
+
+                                <i class="bi bi-boxes text-primary me-2"></i>
+
+                                Current Quantity
+
+                            </label>
+
+
+                            <div class="current-stock-display">
+
+                                <span id="selectedQuantity">
+                                    —
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-3">
+
+                            <label class="form-label fw-semibold">
+
+                                <i class="bi bi-exclamation-triangle text-warning me-2"></i>
+
+                                Minimum Required
+
+                            </label>
+
+
+                            <div class="current-stock-display">
+
+                                <span id="selectedMinimum">
+                                    —
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-12">
+
+                            <label for="message"
+                                   class="form-label fw-semibold">
+
+                                <i class="bi bi-chat-left-text text-primary me-2"></i>
+
+                                Shortage Details
+
+                            </label>
+
+
+                            <textarea id="message"
+                                      name="message"
+                                      class="form-control"
+                                      rows="4"
+                                      maxlength="500"
+                                      placeholder="Explain what is needed or why the stock is short..."
+                                      required></textarea>
+
+
+                            <div class="d-flex justify-content-between mt-2">
+
+                                <small class="text-muted">
+                                    This message will be sent to the Stock Manager.
+                                </small>
+
+                                <small class="text-muted">
+                                    Maximum 500 characters
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-12">
+
+                            <div class="shortage-submit-area">
+
+                                <div>
+
+                                    <div class="fw-semibold">
+                                        Notify Stock Manager
+                                    </div>
+
+                                    <small class="text-muted">
+                                        The Stock Manager will receive this
+                                        as a new notification.
+                                    </small>
+
+                                </div>
+
+
+                                <button type="submit"
+                                        class="btn btn-primary rounded-pill px-4">
+
+                                    <i class="bi bi-bell-fill me-2"></i>
+
+                                    Send Notification
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    }
+    else
+    {
+        <div class="card border-0 shadow-sm rounded-4">
+
+            <div class="card-body">
+
+                <div class="empty-state">
+
+                    <div class="empty-icon">
+
+                        <i class="bi bi-hospital"></i>
+
+                    </div>
+
+
+                    <h4 class="fw-bold mt-3">
+                        Select a Ward
+                    </h4>
+
+
+                    <p class="text-muted mb-0">
+
+                        Select a ward from the dropdown above
+                        to view its consumable stock.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    }
+
+</div>
+
+
+<style>
+    .page-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 15px;
+        background: #eef5ff;
+        color: #0d6efd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 23px;
+    }
+
+    .selected-ward {
+        background: #f7f9fc;
+        border: 1px solid #e7ebf0;
+        border-radius: 14px;
+        padding: 15px 18px;
+    }
+
+    .summary-card {
+        background: #ffffff;
+        border: 1px solid #e9edf2;
+        border-radius: 17px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        height: 100%;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+    }
+
+    .summary-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+    }
+
+
+    .summary-icon.blue {
+        background: #eef5ff;
+        color: #0d6efd;
+    }
+
+
+    .summary-icon.green {
+        background: #edf8f1;
+        color: #198754;
+    }
+
+
+    .summary-icon.orange {
+        background: #fff7e6;
+        color: #f59f00;
+    }
+
+
+    .summary-icon.red {
+        background: #fff0f0;
+        color: #dc3545;
+    }
+
+
+    .summary-title {
+        color: #6c757d;
+        font-size: 13px;
+        margin-bottom: 3px;
+    }
+
+
+    .summary-number {
+        color: #212529;
+        font-size: 24px;
+        font-weight: 700;
+    }
+
+    .ward-count {
+        background: #eef5ff;
+        color: #0d6efd;
+        padding: 8px 14px;
+        border-radius: 50px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .table thead th {
+        background: #f8f9fb;
+        border-bottom: 1px solid #e9ecef;
+        color: #495057;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .3px;
+        padding-top: 15px;
+        padding-bottom: 15px;
+        white-space: nowrap;
+    }
+
+
+    .table tbody td {
+        border-color: #f0f2f5;
+        padding-top: 16px;
+        padding-bottom: 16px;
+    }
+
+
+    .table tbody tr {
+        transition: background-color .15s ease;
+    }
+
+    .row-number {
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        background: #f3f5f8;
+        color: #6c757d;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .consumable-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: #f0f6ff;
+        color: #0d6efd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    .unit-badge {
+        background: #f4f5f7;
+        color: #495057;
+        padding: 5px 10px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .quantity-badge {
+        display: inline-flex;
+        min-width: 55px;
+        justify-content: center;
+        padding: 7px 12px;
+        border-radius: 9px;
+        font-weight: 700;
+    }
+
+
+    .quantity-good {
+        background: #eaf7ef;
+        color: #198754;
+    }
+
+
+    .quantity-warning {
+        background: #fff7e6;
+        color: #d98b00;
+    }
+
+
+    .quantity-danger {
+        background: #fff0f0;
+        color: #dc3545;
+    }
+
+    .minimum-value {
+        color: #6c757d;
+        font-weight: 600;
+    }
+
+    .stock-status {
+        display: inline-flex;
+        align-items: center;
+        padding: 7px 12px;
+        border-radius: 50px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+
+    .status-success {
+        background: #eaf7ef;
+        color: #198754;
+    }
+
+
+    .status-warning {
+        background: #fff7e6;
+        color: #d98b00;
+    }
+
+
+    .status-danger {
+        background: #fff0f0;
+        color: #dc3545;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 70px 20px;
+    }
+
+
+    .empty-icon {
+        width: 72px;
+        height: 72px;
+        margin: 0 auto;
+        border-radius: 20px;
+        background: #f3f5f8;
+        color: #8a94a6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+    }
+
+    .form-select {
+        border: 1px solid #dfe3e8;
+        border-radius: 12px;
+        box-shadow: none;
+    }
+
+
+    .form-select:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 .2rem rgba(13,110,253,.10);
+    }
+
+    .shortage-header-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        background: #fff7e6;
+        color: #f59f00;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 19px;
+        flex-shrink: 0;
+    }
+
+
+    .current-stock-display {
+        min-height: 48px;
+        background: #f8f9fb;
+        border: 1px solid #e1e5ea;
+        border-radius: 12px;
+        padding: 11px 15px;
+        display: flex;
+        align-items: center;
+        font-size: 18px;
+        font-weight: 700;
+        color: #212529;
+    }
+
+
+    .shortage-submit-area {
+        background: #f8f9fb;
+        border: 1px solid #e9edf2;
+        border-radius: 14px;
+        padding: 18px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+
+    .shortage-submit-area .btn {
+        white-space: nowrap;
+    }
+
+
+</style>
+
+
+<script>
+
+    const consumableData = {
+
+        @foreach (var stock in Model)
+        {
+            if (stock.Consumable != null)
+            {
+                <text>
+                "@stock.ConsumableId": {
+                    quantity: @stock.QuantityInWard,
+                    minimum: @stock.Consumable.MinimumConsumables
+                },
+                </text>
+            }
+        }
+
+    };
+
+
+    const consumableSelector =
+        document.getElementById("consumableId");
+
+    if (consumableSelector) {
+
+        consumableSelector.addEventListener("change", function () {
+
+            const selectedId = this.value;
+
+            const quantityElement =
+                document.getElementById("selectedQuantity");
+
+            const minimumElement =
+                document.getElementById("selectedMinimum");
+
+
+            if (!selectedId ||
+                !consumableData[selectedId]) {
+
+                quantityElement.textContent = "—";
+                minimumElement.textContent = "—";
+
+                return;
+            }
+
+
+            const data = consumableData[selectedId];
+
+
+            quantityElement.textContent =
+                Number(data.quantity).toLocaleString();
+
+
+            minimumElement.textContent =
+                Number(data.minimum).toLocaleString();
+
+        });
+
+    }
+
+</script>

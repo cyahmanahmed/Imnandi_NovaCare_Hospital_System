@@ -1,0 +1,71 @@
+﻿@model StockTake
+
+@{
+    ViewData["Title"] = "Create Stock Take";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+
+    <div class="col-12 mb-3">
+        <a asp-action="ManageStock" asp-controller="StockManager"
+           class="btn btn-outline-primary btn-sm px-3 d-flex align-items-center shadow-sm"
+           style="border-radius: 80px;">
+            <i class="bi bi-arrow-left me-2"></i> Back to Stock
+        </a>
+    </div>
+
+    <h2>Create New Stock Take</h2>
+
+    <form asp-action="CreateStockTake" method="post">
+        <div class="mb-3">
+            <label asp-for="Date" class="form-label">Date</label>
+            <input asp-for="Date" class="form-control" type="date" />
+            <span asp-validation-for="Date" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="QuantityCountered" class="form-label">Quantity Countered</label>
+            <input asp-for="QuantityCountered" class="form-control" type="number" min="0" />
+            <span asp-validation-for="QuantityCountered" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="WardId" class="form-label">Select Ward</label>
+            <select asp-for="WardId" class="form-select" asp-items="@(new SelectList(ViewBag.Wards, "WardId", "WardName"))">
+                <option value="">-- Select Ward --</option>
+            </select>
+            <span asp-validation-for="WardId" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Select Consumables</label>
+            <select name="selectedConsumableIds" class="form-select" multiple size="5">
+                @foreach (var consumable in ViewBag.Consumables)
+                {
+                    <option value="@consumable.ConsumableId">@consumable.ConsumableName</option>
+                }
+            </select>
+            <small class="form-text text-muted">Hold Ctrl (Cmd on Mac) to select multiple consumables.</small>
+        </div>
+
+        <button type="submit" class="btn btn-success">
+            <i class="bi bi-check-circle me-1"></i> Create Stock Take
+        </button>
+        <a asp-action="ManageStock" class="btn btn-secondary ms-2">
+            <i class="bi bi-x-circle me-1"></i> Cancel
+        </a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<style>
+    .btn-outline-primary {
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+</style>

@@ -1,0 +1,253 @@
+﻿@model IEnumerable<Patient>
+
+@{
+    ViewData["Title"] = "Patients";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet" />
+<link href="~/css/Nurse.css" rel="stylesheet" />
+
+<style>
+    body {
+        background: linear-gradient(135deg, #f6f9fc 0%, #e8f0fe 100%);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+        .page-header h3 {
+            font-weight: 600;
+            color: #007bff;
+        }
+
+    .patient-card {
+        background: #fff;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0,0,0,.08);
+        transition: all .3s ease;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+
+        .patient-card::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 6px;
+            height: 100%;
+            background: linear-gradient(180deg,#00b4d8,#0077b6);
+        }
+
+        .patient-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 22px rgba(0,0,0,.15);
+        }
+
+    .patient-avatar {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: linear-gradient(135deg,#007bff,#00b4d8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+        margin: 0 auto 15px;
+    }
+
+    .patient-name {
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: #212529;
+        margin-bottom: 20px;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+        font-size: .95rem;
+    }
+
+    .info-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: #eef6ff;
+        color: #0d6efd;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-right: 12px;
+        flex-shrink: 0;
+    }
+
+    .info-item strong {
+        color: #495057;
+    }
+
+    .btn-view {
+        border-radius: 30px;
+        font-weight: 500;
+        padding: .6rem 1.4rem;
+        transition: .3s;
+    }
+
+        .btn-view:hover {
+            background: #0d6efd;
+            color: white;
+        }
+
+    .no-data {
+        text-align: center;
+        padding: 5rem 2rem;
+        color: #6c757d;
+    }
+
+        .no-data i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+</style>
+
+<div class="content" style="margin-left:13rem;">
+    <div class="container py-5">
+
+        <div class="page-header">
+
+            <h3>
+                <i class="bi bi-person-heart me-2"></i>
+                Patients
+            </h3>
+
+            @if (Model.Any())
+            {
+                <a asp-action="Rooms"
+                   asp-controller="Nurse"
+                   asp-route-wardId="@Model.First().Bed.Room.WardId"
+                   class="btn btn-outline-primary px-4 py-2 d-flex align-items-center shadow-sm"
+                   style="border-radius:50px;">
+                    <i class="bi bi-arrow-left me-2"></i>
+                    Back to Rooms
+                </a>
+            }
+
+        </div>
+
+        <div class="row g-4">
+
+            @if (!Model.Any())
+            {
+                <div class="col-12 no-data">
+                    <i class="bi bi-person-x"></i>
+                    <h4>No Patients Found</h4>
+                    <p>There are currently no patients assigned to this room.</p>
+                </div>
+            }
+            else
+            {
+                @foreach (var patient in Model)
+                {
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+
+                        <div class="patient-card p-4 text-center">
+
+                            <div class="patient-avatar">
+                                <i class="bi bi-person-fill"></i>
+                            </div>
+
+                            <div class="patient-name">
+                                @patient.FirstName @patient.LastName
+                            </div>
+
+                            <div class="text-start">
+
+                                <div class="info-item">
+                                    <div class="info-icon">
+                                        <i class="bi bi-gender-ambiguous"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Gender</strong><br />
+                                        @patient.Gender
+                                    </div>
+                                </div>
+
+                                <div class="info-item">
+                                    <div class="info-icon">
+                                        <i class="bi bi-calendar-heart"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Date of Birth</strong><br />
+                                        @patient.DateOfBirth
+                                    </div>
+                                </div>
+
+                                <div class="info-item">
+                                    <div class="info-icon">
+                                        <i class="bi bi-hospital"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Ward</strong><br />
+                                        @patient.Bed.Room.Ward.WardName
+                                    </div>
+                                </div>
+
+                                <div class="info-item">
+                                    <div class="info-icon">
+                                        <i class="bi bi-door-open"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Room</strong><br />
+                                        @patient.Bed.Room.RoomNumber
+                                    </div>
+                                </div>
+
+                                <div class="info-item">
+                                    <div class="info-icon">
+                                        <i class="bi bi-bed"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Bed</strong><br />
+                                        @patient.Bed.BedNumber
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="mt-4">
+
+                                <a asp-action="PatientFile"
+                                   asp-controller="Nurse"
+                                   asp-route-patientId="@patient.Id"
+                                   class="btn btn-outline-primary btn-view">
+
+                                    <i class="bi bi-folder2-open me-2"></i>
+                                    View Patient File
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+            }
+
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

@@ -1,0 +1,114 @@
+﻿@using Imnandi_NovaCare_Hospital_System.Models
+@model Doctor
+@{
+    ViewData["Title"] = "Doctor Details";
+    var schedules = ViewData["Schedules"] as List<Schedule> ?? new List<Schedule>();
+    var unassignedPatients = ViewData["UnassignedPatients"] as List<Patient> ?? new List<Patient>();
+}
+
+<div class="container mt-5">
+    <a href="/WardAdmin/WardAdminDashboard" class="btn btn-outline-primary mb-3">
+        <i class="bi bi-arrow-left"></i> Back
+    </a>
+
+    <h3>Dr. @Model.FirstName @Model.LastName</h3>
+    <p><strong>Department:</strong> @Model.Department</p>
+    <p><strong>Email:</strong> @Model.Employee?.Email</p>
+    <p><strong>Phone:</strong> @Model.Employee?.PhoneNumber</p>
+
+    <h4 class="mt-4">Current Schedule</h4>
+    <table class="table table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Patient</th>
+                <th>Visit Type</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var s in schedules)
+            {
+                <tr>
+                    <td>@s.ScheduledDate.ToString("yyyy-MM-dd")</td>
+                    <td>@s.ScheduledDate.ToString("HH:mm")</td>
+                    <td>@s.Patient?.FirstName @s.Patient?.LastName</td>
+                    <td>@s.VisitType</td>
+                    <td>@(s.IsCompleted ? "Completed" : "Pending")</td>
+                    <td>
+                        <form asp-action="UnassignDoctorsPatient" method="post" class="d-inline">
+                            <input type="hidden" name="doctorId" value="@s.DoctorId" />
+                            <input type="hidden" name="patientId" value="@s.PatientId" />
+                            <button class="btn btn-sm btn-danger"><i class="bi bi-x-lg"></i> Unassign</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <hr />
+    <h4>Assign Patient to Doctor</h4>
+    <form asp-action="AssignPatient" method="post" class="row g-2">
+        <input type="hidden" name="doctorId" value="@Model.DoctorId" />
+        <div class="col-md-4">
+            <select name="patientId" class="form-select" required>
+                <option value="">-- Select Patient --</option>
+                @foreach (var p in unassignedPatients)
+                {
+                    <option value="@p.Id">@p.FirstName @p.LastName</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="visitType" class="form-select" required>
+                <option value="">-- Visit Type --</option>
+                <option>Checkup</option>
+                <option>Consultation</option>
+                <option>Follow-up</option>
+                <option>Emergency</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <input type="datetime-local" name="scheduledDate" class="form-control" required />
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-success w-100">Assign</button>
+        </div>
+    </form>
+
+    <hr />
+    <h4>Create Manual Schedule</h4>
+    <form asp-action="CreateSchedule" method="post" class="row g-2">
+        <input type="hidden" name="doctorId" value="@Model.DoctorId" />
+        <div class="col-md-4">
+            <select name="patientId" class="form-select" required>
+                <option value="">-- Select Patient --</option>
+                @if (Model.Patients != null)
+                {
+                    foreach (var p in Model.Patients.Where(p => !p.IsDeleted && !p.IsDischarged))
+                    {
+                        <option value="@p.Id">@p.FirstName @p.LastName</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="visitType" class="form-select" required>
+                <option value="">-- Visit Type --</option>
+                <option>Checkup</option>
+                <option>Follow-up</option>
+                <option>Consultation</option>
+                <option>Emergency</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <input type="datetime-local" name="scheduledDate" class="form-control" required />
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Create</button>
+        </div>
+    </form>
+</div>

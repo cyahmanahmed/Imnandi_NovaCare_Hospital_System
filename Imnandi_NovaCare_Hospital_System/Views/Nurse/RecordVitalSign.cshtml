@@ -1,0 +1,146 @@
+﻿@model VitalSign
+
+<div class="card-body">
+    <form asp-action="RecordVitalSign" method="post">
+
+        <input type="hidden" name="patientId" asp-for="PatientId" />
+        <input asp-for="PatientId" type="hidden" />
+        <input asp-for="NurseId" type="hidden" />
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Patient</label>
+                <select asp-items="ViewBag.patient"
+                        asp-for="PatientId"
+                        class="form-control"
+                        disabled>
+                </select>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+
+            <div class="col-md-6">
+                <label asp-for="BodyTemperature" class="form-label fw-semibold">
+                    <i class="bi bi-thermometer-half text-danger me-1"></i>
+                    Body Temperature (°C)
+                </label>
+
+                <input asp-for="BodyTemperature"
+                       type="number"
+                       step="0.1"
+                       min="30"
+                       max="45"
+                       class="form-control"
+                       placeholder=" " />
+
+                <span asp-validation-for="BodyTemperature" class="text-danger"></span>
+                <small class="text-muted">Normal: 36.1 – 37.2 °C</small>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="HeartRate" class="form-label fw-semibold">
+                    <i class="bi bi-heart-pulse text-danger me-1"></i>
+                    Heart Rate (bpm)
+                </label>
+
+                <input asp-for="HeartRate"
+                       type="number"
+                       min="20"
+                       max="250"
+                       class="form-control"
+                       placeholder=" " />
+
+                <span asp-validation-for="HeartRate" class="text-danger"></span>
+                <small class="text-muted">Normal: 60 – 100 bpm</small>
+            </div>
+
+        </div>
+
+        <div class="row mb-3">
+
+            <div class="col-md-6">
+                <label asp-for="PulseRate" class="form-label fw-semibold">
+                    <i class="bi bi-heart text-danger me-1"></i>
+                    Pulse Rate
+                </label>
+
+                <input asp-for="PulseRate"
+                       class="form-control"
+                       placeholder=" " />
+
+                <span asp-validation-for="PulseRate" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="RespiratoryRate" class="form-label fw-semibold">
+                    <i class="bi bi-lungs me-1"></i>
+                    Respiratory Rate
+                </label>
+
+                <input asp-for="RespiratoryRate"
+                       class="form-control"
+                       placeholder=" " />
+
+                <span asp-validation-for="RespiratoryRate" class="text-danger"></span>
+                <small class="text-muted">Normal: 12 – 20 bpm</small>
+            </div>
+
+        </div>
+
+        <div class="row mb-3">
+
+            <div class="col-md-6">
+                <label asp-for="BloodPressure" class="form-label fw-semibold">
+                    <i class="bi bi-gauge-high me-1"></i>
+                    Blood Pressure
+                </label>
+
+                <input asp-for="BloodPressure"
+                       class="form-control"
+                       placeholder=" " />
+
+                <span asp-validation-for="BloodPressure" class="text-danger"></span>
+                <small class="text-muted">Normal: 120/80 mmHg</small>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="OxygenSaturation" class="form-label fw-semibold">
+                    <i class="bi bi-droplet-half me-1"></i>
+                    Oxygen Saturation (SpO₂)
+                </label>
+
+                <input asp-for="OxygenSaturation"
+                       class="form-control"
+                       placeholder=" " />
+
+                <span asp-validation-for="OxygenSaturation" class="text-danger"></span>
+                <small class="text-muted">Normal: 95 – 100%</small>
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 d-flex justify-content-end gap-2">
+
+                <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                    <i class="bi bi-check-circle me-1"></i>
+                    Record
+                </button>
+
+                <a asp-action="NurseDashBoard"
+                   class="btn btn-outline-danger px-4 shadow-sm">
+                    <i class="bi bi-x-circle me-1"></i>
+                    Cancel
+                </a>
+
+            </div>
+        </div>
+
+    </form>
+</div>
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,75 @@
+﻿@model IEnumerable<MedicationAdministration>
+
+<div class="container-fluid py-4">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-gradient bg-primary text-white d-flex justify-content-between align-items-center py-3">
+            <h4 class="mb-0 fw-bold">
+                <i class="bi bi-capsule me-2"></i>Medication Administration
+            </h4>
+            <a asp-action="MedicationSchedule" asp-controller="Nurse" class="btn btn-outline-light">
+                <i class="bi bi-arrow-left-circle"></i> Back
+            </a>
+        </div>
+
+        <div class="card-body bg-light">
+            <div class="row">
+                <div class="col-12">
+                    @if (!Model.Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-clipboard-x display-3 text-muted mb-3"></i>
+                            <h4 class="text-secondary fw-bold">No Medication Records Found</h4>
+                            <p class="text-muted">All patient medications have been completed or no data available.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle shadow-sm rounded-3 overflow-hidden">
+                                <thead class="table-primary text-center">
+                                    <tr>
+                                        <th><i class="bi bi-person-circle me-1"></i>Patient Name</th>
+                                        <th><i class="bi bi-activity me-1"></i>Medication Level</th>
+                                        <th><i class="bi bi-info-circle me-1"></i>Description</th>
+                                        <th><i class="bi bi-clock-history me-1"></i>Administration Time</th>
+                                        <th><i class="bi bi-gear me-1"></i>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white">
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr class="text-center">
+                                            <td>
+                                                <div class="fw-semibold text-primary">@item.Patient.FirstName @item.Patient.LastName</div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info text-dark">@item.Prescription.Level</span>
+                                            </td>
+                                            <td>@item.Purpose</td>
+                                            <td>
+                                                <span class="text-secondary">
+                                                    <i class="bi bi-clock"></i> @item.AdministrationTime
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <a asp-action="SeenMedicationSchedule"
+                                                   asp-route-MedicationAdministrationId="@item.MedicationAdministrationId"
+                                                   class="btn btn-success btn-sm px-3 shadow-sm">
+                                                    <i class="bi bi-check-circle me-1"></i>Done
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

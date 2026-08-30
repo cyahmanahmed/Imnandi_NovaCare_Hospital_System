@@ -1,0 +1,821 @@
+﻿
+@model IEnumerable<Order>
+
+@{
+    ViewData["Title"] = "Track Deliveries";
+
+    var orders = Model?.ToList() ?? new List<Order>();
+
+    var totalOrders = orders.Count;
+    var receivedOrders = orders.Count(o => o.IsReceived);
+    var pendingOrders = orders.Count(o => !o.IsReceived);
+
+    var receivedPercentage = totalOrders > 0
+        ? Math.Round((double)receivedOrders / totalOrders * 100)
+        : 0;
+}
+
+
+<style>
+
+    .delivery-page {
+        padding: 30px;
+        background-color: #f8f9fa;
+        min-height: calc(100vh - 70px);
+    }
+
+
+    .delivery-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+        .delivery-breadcrumb a {
+            color: #6c757d;
+            text-decoration: none;
+            transition: 0.2s ease;
+        }
+
+            .delivery-breadcrumb a:hover {
+                color: #0d6efd;
+            }
+
+        .delivery-breadcrumb .separator {
+            color: #adb5bd;
+        }
+
+        .delivery-breadcrumb .current {
+            color: #6c757d;
+        }
+
+    .delivery-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #212529;
+        margin-bottom: 5px;
+    }
+
+        .delivery-title i {
+            color: #0d6efd;
+        }
+
+    .delivery-subtitle {
+        color: #6c757d;
+        font-size: 14px;
+        margin-bottom: 0;
+    }
+
+
+    .dashboard-btn {
+        border-radius: 80px;
+        padding: 7px 15px;
+        display: inline-flex;
+        align-items: center;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+
+    .delivery-stat-card {
+        background: #ffffff;
+        border: none;
+        border-radius: 12px;
+        padding: 20px;
+        height: 100%;
+        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .delivery-stat-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .delivery-stat-label {
+        color: #6c757d;
+        font-size: 13px;
+        font-weight: 500;
+        margin-bottom: 6px;
+    }
+
+    .delivery-stat-number {
+        font-size: 27px;
+        font-weight: 700;
+        color: #212529;
+        margin: 0;
+    }
+
+    .delivery-stat-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 19px;
+    }
+
+        .delivery-stat-icon.total {
+            background-color: #e7f1ff;
+            color: #0d6efd;
+        }
+
+        .delivery-stat-icon.received {
+            background-color: #e8f7ef;
+            color: #198754;
+        }
+
+        .delivery-stat-icon.pending {
+            background-color: #fff4e5;
+            color: #fd7e14;
+        }
+
+        .delivery-stat-icon.progress {
+            background-color: #f0eafa;
+            color: #6f42c1;
+        }
+
+
+    .delivery-card {
+        background: #ffffff;
+        border: none;
+        border-radius: 14px;
+        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+    }
+
+    .delivery-card-header {
+        padding: 21px 24px;
+        border-bottom: 1px solid #edf0f2;
+        background-color: #ffffff;
+    }
+
+    .delivery-card-title {
+        font-size: 17px;
+        font-weight: 600;
+        color: #212529;
+        margin-bottom: 3px;
+    }
+
+    .delivery-card-subtitle {
+        font-size: 13px;
+        color: #6c757d;
+        margin-bottom: 0;
+    }
+
+
+    .delivery-table-wrapper {
+        overflow-x: auto;
+    }
+
+    .delivery-table {
+        width: 100%;
+        margin-bottom: 0;
+        border-collapse: collapse;
+    }
+
+        .delivery-table thead th {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            padding: 14px 18px;
+            border-bottom: 1px solid #e9ecef;
+            white-space: nowrap;
+        }
+
+        .delivery-table tbody td {
+            padding: 16px 18px;
+            vertical-align: middle;
+            border-bottom: 1px solid #f0f1f2;
+            font-size: 13px;
+            color: #495057;
+        }
+
+        .delivery-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .delivery-table tbody tr:hover {
+            background-color: #fafcff;
+        }
+
+
+    .order-number {
+        font-weight: 600;
+        color: #0d6efd;
+        white-space: nowrap;
+    }
+
+    .order-name {
+        font-weight: 600;
+        color: #343a40;
+        margin-bottom: 3px;
+    }
+
+    .order-description {
+        color: #8a9299;
+        font-size: 12px;
+        max-width: 230px;
+    }
+
+
+    .supplier-info {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+    }
+
+    .supplier-icon {
+        width: 34px;
+        min-width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background-color: #f0f6ff;
+        color: #0d6efd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .supplier-name {
+        font-weight: 500;
+        color: #343a40;
+    }
+
+
+    .destination-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .destination-info i {
+            color: #6c757d;
+        }
+
+
+    .delivery-date {
+        white-space: nowrap;
+        color: #495057;
+    }
+
+
+    .delivery-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 30px;
+        font-size: 11px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+        .delivery-status.received {
+            background-color: #e8f7ef;
+            color: #198754;
+        }
+
+        .delivery-status.pending {
+            background-color: #fff4e5;
+            color: #fd7e14;
+        }
+
+    .delivery-empty-state {
+        text-align: center;
+        padding: 65px 20px;
+    }
+
+    .delivery-empty-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background-color: #f0f6ff;
+        color: #0d6efd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 18px;
+        font-size: 27px;
+    }
+
+    .delivery-empty-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #343a40;
+        margin-bottom: 7px;
+    }
+
+    .delivery-empty-text {
+        font-size: 13px;
+        color: #6c757d;
+        margin-bottom: 0;
+    }
+
+
+    .delivery-progress-wrapper {
+        min-width: 100px;
+    }
+
+    .delivery-progress {
+        height: 6px;
+        background-color: #e9ecef;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .delivery-progress-bar {
+        height: 100%;
+        background-color: #198754;
+        border-radius: 10px;
+    }
+
+    .delivery-progress-text {
+        font-size: 11px;
+        color: #6c757d;
+        margin-top: 4px;
+    }
+
+
+    @@media (max-width: 991.98px) {
+
+        .delivery-page {
+            padding: 25px 20px;
+        }
+
+        .delivery-table {
+            min-width: 950px;
+        }
+    }
+
+
+    @@media (max-width: 767.98px) {
+
+        .delivery-page {
+            padding: 20px 15px;
+        }
+
+        .delivery-title {
+            font-size: 24px;
+        }
+
+        .dashboard-btn {
+            margin-top: 15px;
+        }
+    }
+
+
+    @@media (max-width: 575.98px) {
+
+        .delivery-stat-card {
+            padding: 17px;
+        }
+
+        .delivery-stat-number {
+            font-size: 23px;
+        }
+    }
+
+</style>
+
+
+<div class="delivery-page">
+
+
+    <div class="row align-items-center mb-4">
+
+        <div class="col-md-8">
+
+            <div class="delivery-breadcrumb">
+
+                <a asp-controller="StockManager"
+                   asp-action="StockManagerDashboard">
+
+                    <i class="bi bi-house-door me-1"></i>
+                    Dashboard
+
+                </a>
+
+                <span class="separator">/</span>
+
+                <span class="current">
+                    Track Deliveries
+                </span>
+
+            </div>
+
+
+            <h1 class="delivery-title">
+
+                <i class="bi bi-truck me-2"></i>
+                Track Deliveries
+
+            </h1>
+
+
+            <p class="delivery-subtitle">
+                Monitor supplier orders and track their receiving status.
+            </p>
+
+        </div>
+
+
+        <div class="col-md-4 text-md-end">
+
+            <a asp-controller="StockManager"
+               asp-action="StockManagerDashboard"
+               class="btn btn-outline-primary btn-sm dashboard-btn">
+
+                <i class="bi bi-house-door-fill me-2"></i>
+                Back to Dashboard
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="delivery-stat-card">
+
+                <div class="delivery-stat-content">
+
+                    <div>
+
+                        <div class="delivery-stat-label">
+                            Total Orders
+                        </div>
+
+                        <h3 class="delivery-stat-number">
+                            @totalOrders
+                        </h3>
+
+                    </div>
+
+                    <div class="delivery-stat-icon total">
+                        <i class="bi bi-box-seam"></i>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="delivery-stat-card">
+
+                <div class="delivery-stat-content">
+
+                    <div>
+
+                        <div class="delivery-stat-label">
+                            Received
+                        </div>
+
+                        <h3 class="delivery-stat-number">
+                            @receivedOrders
+                        </h3>
+
+                    </div>
+
+                    <div class="delivery-stat-icon received">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="delivery-stat-card">
+
+                <div class="delivery-stat-content">
+
+                    <div>
+
+                        <div class="delivery-stat-label">
+                            Pending
+                        </div>
+
+                        <h3 class="delivery-stat-number">
+                            @pendingOrders
+                        </h3>
+
+                    </div>
+
+                    <div class="delivery-stat-icon pending">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="delivery-stat-card">
+
+                <div class="delivery-stat-content">
+
+                    <div>
+
+                        <div class="delivery-stat-label">
+                            Received Rate
+                        </div>
+
+                        <h3 class="delivery-stat-number">
+                            @receivedPercentage%
+                        </h3>
+
+                    </div>
+
+                    <div class="delivery-stat-icon progress">
+                        <i class="bi bi-bar-chart-line"></i>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="delivery-card">
+
+        <div class="delivery-card-header">
+
+            <div class="d-flex justify-content-between
+                        align-items-center flex-wrap gap-2">
+
+                <div>
+
+                    <h2 class="delivery-card-title">
+                        Supplier Orders
+                    </h2>
+
+                    <p class="delivery-card-subtitle">
+                        View and monitor the status of your orders.
+                    </p>
+
+                </div>
+
+
+                <span class="badge bg-light text-dark border">
+                    @totalOrders Order@(totalOrders == 1 ? "" : "s")
+                </span>
+
+            </div>
+
+        </div>
+
+
+        @if (orders.Any())
+        {
+
+            <div class="delivery-table-wrapper">
+
+                <table class="delivery-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Order
+                            </th>
+
+                            <th>
+                                Supplier
+                            </th>
+
+                            <th>
+                                Order Date
+                            </th>
+
+                            <th>
+                                Destination
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Progress
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @foreach (var order in orders)
+                        {
+
+                            <tr>
+                                <td>
+
+                                    <div class="order-number">
+                                        @order.OrderNumber
+                                    </div>
+
+                                    <div class="order-name">
+                                        @order.OrderName
+                                    </div>
+
+                                    @if (!string.IsNullOrWhiteSpace(order.Description))
+                                    {
+                                        <div class="order-description">
+
+                                            @(order.Description.Length > 55
+                                                                            ? order.Description.Substring(0, 55) + "..."
+                                                                            : order.Description)
+
+                            </div>
+                                                        }
+
+                                </td>
+
+                                <td>
+
+                                    @if (order.Supplier != null)
+                                    {
+
+                                        <div class="supplier-info">
+
+                                            <div class="supplier-icon">
+                                                <i class="bi bi-building"></i>
+                                            </div>
+
+                                            <div class="supplier-name">
+                                                @order.Supplier.SupplierName
+                                            </div>
+
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            No supplier
+                                        </span>
+                                    }
+
+                                </td>
+
+                                <td>
+
+                                    <div class="delivery-date">
+
+                                        <i class="bi bi-calendar3 me-1"></i>
+
+                                        @order.Date.ToString("dd MMM yyyy")
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="destination-info">
+
+                                        <i class="bi bi-geo-alt"></i>
+
+                                        <span>
+
+                                            @if (order.HospitalStore != null)
+                                            {
+                                                @order.HospitalStore.HospitalStoreName
+                                            }
+                                            else if (order.Ward != null)
+                                            {
+                                                @order.Ward.WardName
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">
+                                                    Not specified
+                                                </span>
+                                            }
+
+                                        </span>
+
+                                    </div>
+
+                                </td>
+
+                                <td>
+
+                                    @if (order.IsReceived)
+                                    {
+
+                                        <span class="delivery-status received">
+
+                                            <i class="bi bi-check-circle-fill"></i>
+                                            Received
+
+                                        </span>
+
+                                    }
+                                    else
+                                    {
+
+                                        <span class="delivery-status pending">
+
+                                            <i class="bi bi-clock-fill"></i>
+                                            Pending
+
+                                        </span>
+
+                                    }
+
+                                </td>
+
+                                <td>
+
+                                    <div class="delivery-progress-wrapper">
+
+                                        <div class="delivery-progress">
+
+                                            <div class="delivery-progress-bar"
+                                                 style="width: @(order.IsReceived ? 100 : 35)%;">
+                                            </div>
+
+                                        </div>
+
+                                        <div class="delivery-progress-text">
+
+                                            @(order.IsReceived ? "100% received" : "Awaiting delivery")
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        }
+        else
+        {
+
+            <div class="delivery-empty-state">
+
+                <div class="delivery-empty-icon">
+                    <i class="bi bi-truck"></i>
+                </div>
+
+                <h3 class="delivery-empty-title">
+                    No Orders to Track
+                </h3>
+
+                <p class="delivery-empty-text">
+                    There are currently no active supplier orders
+                    available for delivery tracking.
+                </p>
+
+            </div>
+
+        }
+
+    </div>
+
+</div>
+
+
+@section Scripts
+{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,270 @@
+﻿@model IEnumerable<Employee>
+@{
+    ViewData["Title"] = "Manage Employees";
+    var searchString = Context.Request.Query["searchString"].ToString();
+}
+
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <a asp-controller="Admin" asp-action="AdminDashBoard"
+               class="btn btn-outline-primary btn-sm px-3 d-flex align-items-center shadow-sm"
+               style="border-radius: 80px;">
+                <i class="bi bi-house-door-fill me-2"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-8">
+            <h1 class="header-title">Manage Employees</h1>
+            <p class="sub-title">View and manage employee records across departments.</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-controller="Admin" asp-action="CreateEmployee"
+               class="btn btn-lg btn-success shadow-sm d-flex align-items-center justify-content-center">
+                <i class="bi bi-person-plus-fill me-2"></i> Add Employee
+            </a>
+        </div>
+
+        <a asp-controller="Reports" asp-action="EmployeeReport"
+           class="btn btn-lg btn-info shadow-sm d-flex align-items-center justify-content-center ms-2">
+            <i class="bi bi-file-earmark-pdf-fill me-2"></i> Generate Report (All Employees)
+        </a>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6 col-lg-4">
+            <form asp-action="ManageEmployees" method="get" class="input-group">
+                <input type="text"
+                       name="searchString"
+                       class="form-control form-control-lg"
+                       placeholder="Search by name, surname, email, phone..."
+                       value="@ViewBag.SearchString" />
+
+                <button type="submit" class="btn btn-outline-primary">
+                    <i class="bi bi-search me-1"></i>
+                    Search
+                </button>
+            </form>
+        </div>
+
+        <div class="col-md-6 col-lg-4 ms-auto text-end">
+            <a asp-action="PasswordResetRequests"
+               asp-controller="Admin"
+               class="btn btn-warning px-4 shadow-sm">
+
+                <i class="bi bi-key-fill me-2"></i>
+                Password Reset Requests
+
+            </a>
+        </div>
+
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <a asp-action="ManageDeletedEmployees"
+               class="btn btn-restore fw-semibold shadow-sm w-100 text-center"
+               style="padding: 0.6rem 1.2rem; border-radius: 0.5rem;">
+                <i class="bi bi-arrow-counterclockwise me-1"></i> View Deleted Employees
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 table-responsive">
+            @if (!Model.Any())
+            {
+                <div class="card bg-light border-0">
+                    <div class="card-body text-center empty-state">
+                        <i class="fas fa-users-slash fa-3x text-muted mb-3"></i>
+                        <h4>No employees found</h4>
+                        <p class="mb-0">Use the <strong>Add Employee</strong> button to add new records.</p>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Employee List</h5>
+                        <small>@Model.Count() employees</small>
+                    </div>
+                    <div class="">
+                        <table class="table table-striped table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th>Name</th>
+                                    <th>Phone</th>
+                                    <th>Role</th>
+                                    <th class="text-center"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var counter = 1;
+                                }
+                                @foreach (var item in Model)
+                                {
+                                    <tr class="@(item.IsDeleted ? "table-danger" : "")">
+                                        <td class="text-center">@counter</td>
+                                        <td>
+                                            <strong>@item.FirstName</strong> @item.LastName
+                                            @if (item.IsDeleted)
+                                            {
+                                                <span class="badge bg-danger ms-2">Deleted</span>
+                                            }
+                                        </td>
+                                        <td>@item.PhoneNumber</td>
+                                        <td>
+                                            @if (item.User != null)
+                                            {
+                                                <span class="badge badge-job badge-job-success">@item.User.Role</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Not assigned</span>
+                                            }
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="btn-group" role="group">
+                                                @using System.Security.Claims
+                                            @{
+                                                    var loggedInEmail = User.FindFirstValue(ClaimTypes.Email);
+                                                }
+
+                                                @if (!item.IsDeleted)
+                                                {
+                                                    <a asp-action="EditEmployee" asp-route-employeeId="@item.Id"
+                                                       class="btn btn-outline-primary px-3 me-2">
+                                                        <i class="bi bi-pencil-square me-1"></i> Edit
+                                                    </a>
+                                                    @if (item.User?.Email != "admin@gmail.com")
+                                                    {
+                                                        <a asp-controller="Admin" asp-action="DeleteEmployee" asp-route-id="@item.Id"
+                                                           class="btn btn-outline-danger px-3" title="Delete">
+                                                            <i class="bi bi-trash me-1"></i> Delete
+                                                        </a>
+                                                        
+                                                        @if (loggedInEmail == "admin@gmail.com")
+                                                        {
+                                                            <a asp-controller="Admin" asp-action="ResetUserPassword" asp-route-id="@item.User.Id"
+                                                               class="btn btn-outline-warning px-3 ms-2" title="Reset Password">
+                                                                <i class="bi bi-key-fill me-1"></i> Reset Password
+                                                            </a>
+                                                        }
+                                                    }
+                                                }
+                                                else if (item.User?.Email == "admin@gmail.com")
+                                                {
+                                                    <span class="badge bg-secondary">Main Admin</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Deleted</span>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    counter++;
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .header-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1e40af;
+    }
+
+    .sub-title {
+        color: #6b7280;
+        font-size: 1rem;
+    }
+
+    .badge-job {
+        font-size: 0.85em;
+        padding: 0.4em 0.8em;
+        border-radius: 50px;
+        font-weight: 500;
+    }
+
+    .badge-job-primary {
+        background-color: #dbeafe;
+        color: #2563eb;
+    }
+
+    .badge-job-success {
+        background-color: #dcfce7;
+        color: #10b981;
+    }
+
+    .empty-state {
+        padding: 4rem 1rem;
+        color: #6b7280;
+    }
+
+    .table-danger {
+        background-color: #ffeaea !important;
+    }
+
+        .table-danger:hover {
+            background-color: #ffd5d5 !important;
+        }
+
+    .btn-restore {
+        background-color: #fff !important;
+        color: #dc3545 !important;
+        border: 1px solid #dc3545 !important;
+        font-weight: 600;
+    }
+
+        .btn-restore:hover {
+            background-color: #f8d7da !important;
+            color: #a71d2a !important;
+            border-color: #a71d2a !important;
+        }
+
+    .btn-password-requests {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: #fff !important;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all .25s ease;
+        box-shadow: 0 6px 18px rgba(37,99,235,.18);
+        min-width: 250px;
+    }
+
+    .btn-password-requests:hover {
+        background: linear-gradient(135deg, #1d4ed8, #1e3a8a);
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 24px rgba(37,99,235,.28);
+    }
+
+    .btn-password-requests i {
+        font-size: 1.05rem;
+    }
+    a.text-decoration-none:hover {
+        text-decoration: underline;
+    }
+</style>

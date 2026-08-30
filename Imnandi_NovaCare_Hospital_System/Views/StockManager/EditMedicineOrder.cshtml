@@ -1,0 +1,865 @@
+﻿@model MedicineOrder
+
+@{
+    ViewData["Title"] = "Edit Medicine Order";
+
+    var medications = ViewBag.Medications as List<Medication>
+        ?? new List<Medication>();
+
+    var medicationQuantities = ViewBag.MedicationQuantities
+        as Dictionary<int, int>
+        ?? new Dictionary<int, int>();
+
+    var suppliers = ViewBag.Suppliers as List<Supplier>
+        ?? new List<Supplier>();
+
+    var hospitalStores = ViewBag.HospitalStores as List<HospitalStore>
+        ?? new List<HospitalStore>();
+}
+
+<div class="container-fluid py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-pencil-square text-primary me-2"></i>
+                Edit Medicine Order
+            </h2>
+
+            <p class="text-muted mb-0">
+                Update the medicine order details and quantities.
+            </p>
+        </div>
+
+        <a asp-controller="StockManager"
+           asp-action="ManageMedicineOrders"
+           class="btn btn-outline-secondary rounded-pill px-4">
+
+            <i class="bi bi-arrow-left me-1"></i>
+            Back to Medicine Orders
+
+        </a>
+
+    </div>
+
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm"
+             role="alert">
+
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
+            @TempData["Error"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+    }
+
+
+    <form asp-action="EditMedicineOrder"
+          asp-controller="StockManager"
+          method="post">
+
+        @Html.AntiForgeryToken()
+
+        <input type="hidden"
+               asp-for="MedicineOrderId" />
+
+        <input type="hidden"
+               asp-for="OrderNumber" />
+
+
+        <div asp-validation-summary="ModelOnly"
+             class="alert alert-danger"
+             role="alert">
+        </div>
+
+
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+
+            <div class="card-header bg-white border-0 px-4 pt-4">
+
+                <h5 class="fw-bold mb-1">
+                    <i class="bi bi-file-earmark-medical text-primary me-2"></i>
+                    Order Information
+                </h5>
+
+                <p class="text-muted small mb-0">
+                    Basic information about this medicine order.
+                </p>
+
+            </div>
+
+
+            <div class="card-body p-4">
+
+                <div class="row g-4">
+
+                    <div class="col-md-4">
+
+                        <label class="form-label fw-semibold">
+                            Order Number
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text bg-light border-end-0">
+                                <i class="bi bi-hash"></i>
+                            </span>
+
+                            <input asp-for="OrderNumber"
+                                   class="form-control bg-light border-start-0"
+                                   readonly />
+
+                        </div>
+
+                        <small class="text-muted">
+                            The order number cannot be changed.
+                        </small>
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <label asp-for="OrderName"
+                               class="form-label fw-semibold">
+                            Order Name
+                        </label>
+
+                        <input asp-for="OrderName"
+                               class="form-control rounded-pill"
+                               placeholder="Enter order name" />
+
+                        <span asp-validation-for="OrderName"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <label asp-for="Date"
+                               class="form-label fw-semibold">
+                            Order Date
+                        </label>
+
+                        <input asp-for="Date"
+                               class="form-control rounded-pill bg-light"
+                               readonly />
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <label asp-for="SupplierId"
+                               class="form-label fw-semibold">
+                            Supplier
+                        </label>
+
+                        <select asp-for="SupplierId"
+                                class="form-select rounded-pill">
+
+                            <option value="">
+                                Select Supplier
+                            </option>
+
+                            @foreach (var supplier in suppliers)
+                            {
+                                <option value="@supplier.SupplierId">
+                                    @supplier.SupplierName
+                                </option>
+                            }
+
+                        </select>
+
+                        <span asp-validation-for="SupplierId"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <label asp-for="HospitalStoreId"
+                               class="form-label fw-semibold">
+                            Hospital Store
+                        </label>
+
+                        <select asp-for="HospitalStoreId"
+                                class="form-select rounded-pill">
+
+                            <option value="">
+                                Select Hospital Store
+                            </option>
+
+                            @foreach (var store in hospitalStores)
+                            {
+                                <option value="@store.HospitalStoreId">
+                                    @store.HospitalStoreName
+                                </option>
+                            }
+
+                        </select>
+
+                        <span asp-validation-for="HospitalStoreId"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+
+                    <div class="col-12">
+
+                        <label asp-for="Description"
+                               class="form-label fw-semibold">
+                            Description
+                        </label>
+
+                        <textarea asp-for="Description"
+                                  class="form-control rounded-4"
+                                  rows="3"
+                                  placeholder="Enter any additional information about this order..."></textarea>
+
+                        <span asp-validation-for="Description"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+
+            <div class="card-header bg-white border-0 px-4 pt-4">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <h5 class="fw-bold mb-1">
+                            <i class="bi bi-capsule text-primary me-2"></i>
+                            Medicines
+                        </h5>
+
+                        <p class="text-muted small mb-0">
+                            Select the medicines required for this order and enter the requested quantities.
+                        </p>
+
+                    </div>
+
+                    <button type="button"
+                            id="addMedicineBtn"
+                            class="btn btn-primary rounded-pill px-4">
+
+                        <i class="bi bi-plus-lg me-1"></i>
+                        Add Medicine
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="card-body p-4">
+
+                <div class="table-responsive">
+
+                    <table class="table align-middle"
+                           id="medicineTable">
+
+                        <thead class="table-light">
+
+                            <tr>
+
+                                <th style="width: 55%;">
+                                    Medicine
+                                </th>
+
+                                <th style="width: 25%;">
+                                    Quantity Requested
+                                </th>
+
+                                <th class="text-center"
+                                    style="width: 20%;">
+                                    Action
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="medicineTableBody">
+
+                            @{
+                                var existingItems = Model.MedicineOrderItems?
+                                .Where(x => !x.IsDeleted)
+                                .ToList()
+                                ?? new List<MedicineOrderItem>();
+                            }
+
+                            @if (existingItems.Any())
+                            {
+                                foreach (var item in existingItems)
+                                {
+                                    var quantity = medicationQuantities.ContainsKey(item.MedicationId)
+                                    ? medicationQuantities[item.MedicationId]
+                                    : item.QuantityRequested;
+
+                                    <tr class="medicine-row">
+
+                                        <td>
+
+                                            <select name="medicationIds"
+                                                    class="form-select rounded-pill medicine-select"
+                                                    required>
+
+                                                <option value="">
+                                                    Select Medicine
+                                                </option>
+
+                                                @foreach (var medication in medications)
+                                                {
+                                                    if (medication.MedicationId == item.MedicationId)
+                                                    {
+                                                        <option value="@medication.MedicationId"
+                                                                selected>
+
+                                                            @medication.MedicationName
+
+                                                            @if (!string.IsNullOrWhiteSpace(medication.DosageForm))
+                                                            {
+                                                                <text>
+                                                                    (@medication.DosageForm)
+                                                                </text>
+                                                            }
+
+                                                        </option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@medication.MedicationId">
+
+                                                            @medication.MedicationName
+
+                                                            @if (!string.IsNullOrWhiteSpace(medication.DosageForm))
+                                                            {
+                                                                <text>
+                                                                    (@medication.DosageForm)
+                                                                </text>
+                                                            }
+
+                                                        </option>
+                                                    }
+                                                }
+
+                                            </select>
+
+                                        </td>
+
+
+                                        <td>
+
+                                            <input type="number"
+                                                   name="quantities"
+                                                   value="@quantity"
+                                                   min="1"
+                                                   class="form-control rounded-pill"
+                                                   required />
+
+                                        </td>
+
+
+                                        <td class="text-center">
+
+                                            <button type="button"
+                                                    class="btn btn-outline-danger btn-sm rounded-pill remove-medicine">
+
+                                                <i class="bi bi-trash me-1"></i>
+                                                Remove
+
+                                            </button>
+
+                                        </td>
+
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr id="emptyMedicineRow">
+
+                                    <td colspan="3"
+                                        class="text-center py-5">
+
+                                        <i class="bi bi-capsule fs-1 text-muted"></i>
+
+                                        <p class="text-muted mt-2 mb-0">
+                                            No medicines have been added.
+                                        </p>
+
+                                        <small class="text-muted">
+                                            Click "Add Medicine" to add a medicine to this order.
+                                        </small>
+
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+
+            <div class="card-body p-4">
+
+                <div class="row align-items-center">
+
+                    <div class="col-md-8">
+
+                        <h6 class="fw-bold mb-1">
+                            <i class="bi bi-info-circle text-primary me-2"></i>
+                            Order Summary
+                        </h6>
+
+                        <p class="text-muted mb-0 small">
+                            Review the medicines and quantities before saving your changes.
+                        </p>
+
+                    </div>
+
+
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+
+                        <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2">
+
+                            <i class="bi bi-capsule me-1"></i>
+
+                            <span id="medicineCount">0</span>
+                            Medicine(s)
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="d-flex justify-content-end gap-2 mb-5">
+
+            <a asp-controller="StockManager"
+               asp-action="ManageMedicineOrders"
+               class="btn btn-outline-secondary rounded-pill px-4">
+
+                <i class="bi bi-x-lg me-1"></i>
+                Cancel
+
+            </a>
+
+
+            <button type="submit"
+                    class="btn btn-primary rounded-pill px-4">
+
+                <i class="bi bi-check2-circle me-1"></i>
+                Save Changes
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        const medicineTableBody =
+            document.getElementById("medicineTableBody");
+
+        const addMedicineBtn =
+            document.getElementById("addMedicineBtn");
+
+        const medicineCount =
+            document.getElementById("medicineCount");
+
+
+        function updateMedicineCount()
+        {
+            const rows =
+                medicineTableBody.querySelectorAll(".medicine-row");
+
+            medicineCount.textContent = rows.length;
+        }
+
+
+        function updateEmptyMessage()
+        {
+            const rows =
+                medicineTableBody.querySelectorAll(".medicine-row");
+
+            const emptyRow =
+                document.getElementById("emptyMedicineRow");
+
+            if (rows.length === 0)
+            {
+                if (!emptyRow)
+                {
+                    const row =
+                        document.createElement("tr");
+
+                    row.id = "emptyMedicineRow";
+
+                    row.innerHTML = `
+                        <td colspan="3" class="text-center py-5">
+
+                            <i class="bi bi-capsule fs-1 text-muted"></i>
+
+                            <p class="text-muted mt-2 mb-0">
+                                No medicines have been added.
+                            </p>
+
+                            <small class="text-muted">
+                                Click "Add Medicine" to add a medicine to this order.
+                            </small>
+
+                        </td>
+                    `;
+
+                    medicineTableBody.appendChild(row);
+                }
+            }
+            else
+            {
+                if (emptyRow)
+                {
+                    emptyRow.remove();
+                }
+            }
+        }
+
+
+        function getSelectedMedicineIds()
+        {
+            return Array.from(
+                medicineTableBody.querySelectorAll(".medicine-select")
+            )
+            .map(select => select.value)
+            .filter(value => value !== "");
+        }
+
+
+        function populateMedicineOptions(select)
+        {
+            select.innerHTML = `
+                <option value="">
+                    Select Medicine
+                </option>
+            `;
+
+            @foreach (var medication in medications)
+            {
+                    <text>
+                        {
+                            const option =
+                                document.createElement("option");
+
+                            option.value =
+                                "@medication.MedicationId";
+
+                            option.textContent =
+                                "@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(medication.MedicationName))" +
+                                "@(string.IsNullOrWhiteSpace(medication.DosageForm) ? "" : " (" + medication.DosageForm + ")")";
+
+                            select.appendChild(option);
+                        }
+                    </text>
+            }
+        }
+
+
+        function addMedicineRow()
+        {
+            const existingIds =
+                getSelectedMedicineIds();
+
+            const row =
+                document.createElement("tr");
+
+            row.className =
+                "medicine-row";
+
+
+            const medicineCell =
+                document.createElement("td");
+
+            const medicineSelect =
+                document.createElement("select");
+
+            medicineSelect.name =
+                "medicationIds";
+
+            medicineSelect.className =
+                "form-select rounded-pill medicine-select";
+
+            medicineSelect.required =
+                true;
+
+            populateMedicineOptions(
+                medicineSelect
+            );
+
+            medicineCell.appendChild(
+                medicineSelect
+            );
+
+
+            const quantityCell =
+                document.createElement("td");
+
+            const quantityInput =
+                document.createElement("input");
+
+            quantityInput.type =
+                "number";
+
+            quantityInput.name =
+                "quantities";
+
+            quantityInput.value =
+                "1";
+
+            quantityInput.min =
+                "1";
+
+            quantityInput.className =
+                "form-control rounded-pill";
+
+            quantityInput.required =
+                true;
+
+            quantityCell.appendChild(
+                quantityInput
+            );
+
+
+            const actionCell =
+                document.createElement("td");
+
+            actionCell.className =
+                "text-center";
+
+
+            const removeButton =
+                document.createElement("button");
+
+            removeButton.type =
+                "button";
+
+            removeButton.className =
+                "btn btn-outline-danger btn-sm rounded-pill remove-medicine";
+
+            removeButton.innerHTML =
+                '<i class="bi bi-trash me-1"></i> Remove';
+
+
+            actionCell.appendChild(
+                removeButton
+            );
+
+
+            row.appendChild(
+                medicineCell
+            );
+
+            row.appendChild(
+                quantityCell
+            );
+
+            row.appendChild(
+                actionCell
+            );
+
+
+            medicineTableBody.appendChild(
+                row
+            );
+
+
+            updateMedicineCount();
+
+            updateEmptyMessage();
+        }
+
+
+        addMedicineBtn.addEventListener(
+            "click",
+            function ()
+            {
+                addMedicineRow();
+            }
+        );
+
+
+        medicineTableBody.addEventListener(
+            "click",
+            function (event)
+            {
+                const removeButton =
+                    event.target.closest(
+                        ".remove-medicine"
+                    );
+
+                if (!removeButton)
+                {
+                    return;
+                }
+
+                const row =
+                    removeButton.closest(
+                        ".medicine-row"
+                    );
+
+                if (row)
+                {
+                    row.remove();
+
+                    updateMedicineCount();
+
+                    updateEmptyMessage();
+                }
+            }
+        );
+
+
+        medicineTableBody.addEventListener(
+            "change",
+            function (event)
+            {
+                if (
+                    event.target.classList.contains(
+                        "medicine-select"
+                    )
+                )
+                {
+                    const selectedValue =
+                        event.target.value;
+
+                    const selects =
+                        medicineTableBody.querySelectorAll(
+                            ".medicine-select"
+                        );
+
+                    let duplicate =
+                        false;
+
+                    selects.forEach(function (select)
+                    {
+                        if (
+                            select !== event.target &&
+                            select.value === selectedValue &&
+                            selectedValue !== ""
+                        )
+                        {
+                            duplicate = true;
+                        }
+                    });
+
+
+                    if (duplicate)
+                    {
+                        alert(
+                            "This medicine has already been selected."
+                        );
+
+                        event.target.value = "";
+                    }
+                }
+            }
+        );
+
+
+        updateMedicineCount();
+
+        updateEmptyMessage();
+
+    </script>
+
+    <style>
+
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .card {
+            transition: box-shadow 0.2s ease;
+        }
+
+            .card:hover {
+                box-shadow: 0 .5rem 1rem rgba(0,0,0,.08) !important;
+            }
+
+        .form-control,
+        .form-select {
+            min-height: 42px;
+        }
+
+        .table > :not(caption) > * > * {
+            padding: 14px 12px;
+        }
+
+        .table thead th {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: #6c757d;
+        }
+
+        .medicine-row {
+            transition: background-color 0.15s ease;
+        }
+
+            .medicine-row:hover {
+                background-color: #f8f9fa;
+            }
+
+        .btn {
+            font-weight: 500;
+        }
+
+    </style>
+}

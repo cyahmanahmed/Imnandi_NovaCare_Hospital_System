@@ -1,0 +1,179 @@
+﻿@using Imnandi_NovaCare_Hospital_System.Models
+@model Schedule
+@{
+    ViewData["Title"] = "Schedule Patient Visit";
+    var schedules = ViewBag.Schedule as List<dynamic> ?? new List<dynamic>();
+    var allSlots = Enumerable.Range(8, 10).ToList();
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - Ward Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .container-fluid {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+
+        .card {
+            border-radius: 0.75rem;
+            box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,.1);
+            border: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            background-color: #e9ecef;
+            border-bottom: 1px solid #dee2e6;
+            font-weight: 600;
+            padding: 1rem 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #212529;
+        }
+
+        .form-control, .form-select {
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+
+        .alert {
+            border-radius: 0.5rem;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: #0d6efd;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            padding: 0.35rem 1rem;
+            border-radius: 80px;
+            background-color: #f8f9fa;
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+        }
+
+            .back-btn i {
+                margin-right: 0.5rem;
+            }
+    </style>
+</head>
+<body>
+
+    <div class="d-flex align-items-center bg-light border border-primary rounded-5 shadow-sm px-4 py-2 mb-4">
+        <i class="bi bi-house-door-fill me-3 text-primary fs-5"></i>
+        <a asp-action="DoctorDashboard" asp-controller="Doctor" class="text-decoration-none text-primary fw-semibold fs-6 btn-sm px-3 d-flex align-items-center shadow-sm"
+           style="border-radius: 80px;">Back to Dashboard</a>
+    </div>
+
+    <div class="container-fluid">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h4 class="mb-0">Schedule Patient Visit</h4>
+            </div>
+            <div class="card-body">
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger">
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <p>@error.ErrorMessage</p>
+                        }
+                    </div>
+                }
+                <form asp-action="ScheduleVisit" method="post">
+                    <input type="hidden" asp-for="DoctorId" />
+                    <input type="hidden" asp-for="PatientId" />
+
+                    <div class="mb-3">
+                        <label asp-for="ScheduledDate" class="form-label">Select Date</label>
+                        <input type="date"
+                               asp-for="ScheduledDate"
+                               class="form-control"
+                               value="@Model.ScheduledDate.ToString("yyyy-MM-dd")" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Select Time Slot</label>
+                        <select name="selectedHour" class="form-select" required>
+                            <option value="">-- Select Slot --</option>
+                            @foreach (var slot in allSlots)
+                            {
+                                var isBooked = schedules.Any(s =>
+                                {
+                                    if (s?.ScheduledDate == null) return false;
+                                    var bookedDate = (DateTime)s.ScheduledDate;
+                                    return bookedDate.Date == Model.ScheduledDate.Date &&
+                                                            bookedDate.Hour == slot;
+                                });
+
+                                if (!isBooked)
+                                {
+                                    <option value="@slot">@slot:00</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="VisitType" class="form-label">Visit Type</label>
+                        <select asp-for="VisitType" class="form-select" required>
+                            <option value="">-- Select Visit Type --</option>
+                            <option value="Consultation">Consultation</option>
+                            <option value="Follow-up">Follow-up</option>
+                            <option value="Treatment">Treatment</option>
+                            <option value="Emergency Review">Emergency Review</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Location" class="form-label">Location</label>
+                        <select asp-for="Location" class="form-select" required>
+                            <option value="">-- Select Room --</option>
+                            @if (ViewBag.Rooms != null)
+                            {
+                                foreach (var room in ViewBag.Rooms as List<SelectListItem>)
+                                {
+                                    var isSelected = Model.Location != null && Model.Location == room.Value;
+                                    <option value="@room.Value" selected="@(isSelected ? "selected" : null)">
+                                        @room.Text
+                                    </option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-success me-2">Schedule Visit</button>
+                    <a asp-action="PatientsFolder" asp-controller="Doctor" asp-route-id="@Model.PatientId" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

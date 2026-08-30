@@ -1,0 +1,56 @@
+﻿@model IEnumerable<Visit>
+
+@{
+    ViewBag.Title = "History of Visits";
+}
+
+
+<div  class="row mt-4">
+    <div class="card-header bg-gradient-primary text-white d-flex justify-content-between align-items-center">
+    <h5 class="mb-0"><i class="bi bi-calendar2-week me-2"></i> Visits</h5>
+    <a asp-action="NurseDashboard" class="btn btn-light btn-sm">
+        <i class="bi bi-arrow-left"></i> Back to Dashboard
+    </a>
+</div>
+</div>
+
+<h2>History of Visits</h2>
+
+
+<form method="get" action="@Url.Action("History")" class="mb-3">
+    <input type="text" name="search" placeholder="Search by location or type" class="form-control d-inline-block w-50" />
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>
+                @Html.ActionLink("Date", "History", new { sortOrder = ViewBag.DateSortParam })
+            </th>
+            <th>Purpose</th>
+            <th>Patient FullName</th>
+            <th>Doctor FullName</th>
+            
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var visit in Model)
+        {
+            <tr>
+                <td>@visit.VisitDateTime.ToString("MMM dd, yyyy")</td>
+                <td>@visit.Purpose</td>
+                <td>@visit.Patient.LastName @visit.Patient.FirstName</td>
+                <td>@visit.Doctor.LastName @visit.Doctor.FirstName</td>
+               
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info mt-3">
+        <i class="bi bi-clock-history"></i> No any visits History yet.
+    </div>
+}

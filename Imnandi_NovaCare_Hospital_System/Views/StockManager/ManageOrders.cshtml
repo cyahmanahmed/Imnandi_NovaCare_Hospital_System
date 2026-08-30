@@ -1,0 +1,155 @@
+﻿@model IEnumerable<Order>
+
+@{
+    ViewData["Title"] = "Manage Consumables";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Manage Consumables</h2>
+        <div>
+            <a asp-action="CreateOrder" class="btn btn-success me-2">
+                <i class="bi bi-plus-circle"></i> Create New Order
+            </a>
+            <a asp-action="ManageNotification" class="btn btn-warning">
+                <i class="bi bi-exclamation-triangle"></i> View Low-Stock Alerts
+            </a>
+            <a asp-controller="StockManager"
+               asp-action="StockManagerDashboard"
+               class="btn btn-outline-primary btn-sm px-3 d-inline-flex align-items-center shadow-sm"
+               style="border-radius: 80px;">
+                <i class="bi bi-house-door-fill me-2"></i>
+                Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <form method="get" asp-action="ManageOrders" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="search" class="form-control" placeholder="Search by order name or description..." value="@Context.Request.Query["search"]" />
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">No orders found.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered align-middle">
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th>Order Name</th>
+                        <th>Description</th>
+                        <th>Consumables</th>
+                        <th>Received</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model)
+                    {
+                        <tr>
+                            <td>@order.OrderName</td>
+                            <td>@order.Description</td>
+                            <td>
+                                @if (order.OrderItems != null && order.OrderItems.Any())
+                                {
+                                    <form asp-action="ReceiveOrder" asp-controller="StockManager" method="post" class="d-flex flex-column gap-1">
+                                        <input type="hidden" name="orderId" value="@order.OrderId" />
+                                        <table class="table table-sm table-borderless mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Item</th>
+                                                    <th>Qty Requested</th>
+                                                    <th>Qty Received</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @for (int i = 0; i < order.OrderItems.Count; i++)
+                                                {
+                                                    var item = order.OrderItems.ElementAt(i);
+                                                    <tr>
+                                                        <td>@item.Consumable.ConsumableName</td>
+                                                        <td>
+                                                            <input type="number" min="0" name="requestedQuantities"
+                                                                   value="@item.QuantityRequested" class="form-control form-control-sm rounded-pill" />
+                                                        </td>
+                                                        <td>
+                                                            <input type="number" min="0" name="receivedQuantities"
+                                                                   value="@(item.QuantityReceived ?? 0)"
+                                                                   class="form-control form-control-sm rounded-pill" />
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                        @if (!order.IsReceived)
+                                        {
+                                            <button type="submit" class="btn btn-sm btn-success mt-1">
+                                                <i class="bi bi-check-circle"></i> Receive
+                                            </button>
+                                        }
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No consumables</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                @if (order.IsReceived)
+                                {
+                                    <span class="badge bg-success">Yes</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">No</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <a asp-action="EditOrder" asp-route-id="@order.OrderId" class="btn btn-sm btn-primary me-1">
+                                    <i class="bi bi-pencil-square"></i> Edit
+                                </a>
+
+                                @if (!order.IsDeleted)
+                                {
+                                    <form asp-action="DeleteOrder" asp-route-id="@order.OrderId" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-danger me-1">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </button>
+                                    </form>
+
+                                }
+                                else
+                                {
+                                    <form asp-action="RestoreOrder" asp-route-id="@order.OrderId" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-success">
+                                            <i class="bi bi-arrow-counterclockwise"></i> Restore
+                                        </button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<style>
+    .btn-outline-primary {
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    input[type=number] {
+        max-width: 100px;
+    }
+</style>

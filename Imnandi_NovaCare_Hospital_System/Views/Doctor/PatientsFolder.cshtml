@@ -1,0 +1,354 @@
+﻿@model AdmissionFolder
+
+@{
+    ViewData["Title"] = "Patient Folder";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - Ward Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .container-fluid {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .card {
+            border-radius: 0.75rem;
+            box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,.1);
+            border: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            background-color: #e9ecef;
+            border-bottom: 1px solid #dee2e6;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            color: #212529;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #007bff;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .profile-info h5 {
+            margin: 0;
+            color: #212529;
+        }
+
+        .profile-info p {
+            margin: 0.25rem 0;
+            color: #6c757d;
+        }
+
+        .btn-group {
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            border-color: #ffc107;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        .status-badge {
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+        }
+
+        .status-admitted {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-discharged {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .section-title {
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #212529;
+        }
+
+        .form-control {
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="d-flex align-items-center bg-light border border-primary rounded-5 shadow-sm px-4 py-2 mb-4">
+        <i class="bi bi-house-door-fill me-3 text-primary fs-5"></i>
+        <a href="/Doctor/DoctorDashboard" class="text-decoration-none text-primary fw-semibold fs-6 btn-sm px-3 d-flex align-items-center shadow-sm"
+           style="border-radius: 80px;">Back to Dashboard</a>
+    </div>
+
+    <div class="container-fluid">
+
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <h1 class="mb-0">@Model.Patient.FirstName @Model.Patient.LastName</h1>
+                <p class="text-muted">
+                    ID: @Model.Patient.IdNumber | Status:
+                    <span class="badge status-badge @(Model.Patient.IsDischarged ? "status-discharged" : "status-admitted")">
+                        @(Model.Patient.IsDischarged ? "Discharged" : "Admitted")
+                    </span>
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="profile-header">
+                            <div class="profile-avatar">@($"{Model.Patient.FirstName[0]}{Model.Patient.LastName[0]}")</div>
+                            <div class="profile-info">
+                                <h5>@Model.Patient.FirstName @Model.Patient.LastName</h5>
+                                <p><strong>DOB:</strong> @Model.Patient.DateOfBirth.ToString("dd MMM yyyy")</p>
+                                <p><strong>Gender:</strong> @Model.Patient.Gender</p>
+                                <p><strong>Room:</strong> @Model.Bed?.Room?.RoomName</p>
+                                <p><strong>Bed:</strong> @Model.Bed?.BedNumber</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">Bank & Insurance</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Bank Name:</strong> @Model.Patient.BankName</p>
+                                <p><strong>Account No:</strong> @Model.Patient.BankAccountNumber</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Insured:</strong> @(Model.Patient.IsInsured ? "Yes" : "No")</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="btn-group" role="group">
+                    <a asp-controller="Doctor" asp-action="TrackMovement" asp-route-id="@Model.Patient.Id" class="btn btn-success">
+                        <i class="bi bi-map"></i> Track Movement
+                    </a>
+                    <a asp-controller="Doctor" asp-action="ScheduleVisit" asp-route-id="@Model.Patient.Id" class="btn btn-primary">
+                        <i class="bi bi-calendar-plus"></i> Schedule Visit
+                    </a>
+                    <a asp-controller="Doctor" asp-action="TreatPatient" asp-route-id="@Model.Patient.Id" class="btn btn-warning">
+                        <i class="bi bi-heart-pulse"></i> Treat Patient
+                    </a>
+                    <a asp-controller="Doctor" asp-action="PrescribeMedication" asp-route-id="@Model.Patient.Id" class="btn btn-info">
+                        <i class="bi bi-capsule"></i> Prescribe Medication
+                    </a>
+                    <a asp-controller="Doctor" asp-action="GiveInstruction" asp-route-id="@Model.Patient.Id" class="btn btn-secondary">
+                        <i class="bi bi-journal-text"></i> Create Instruction
+                    </a>
+                    <a asp-controller="Doctor" asp-action="IssueDischarge" asp-route-id="@Model.Patient.Id" class="btn btn-danger">
+                        <i class="bi bi-door-open"></i> Issue Discharge
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">Medical History</div>
+                    <div class="card-body">
+                        @if (Model.Patient.MedicalHistory.Any())
+                        {
+                            <ul>
+                                @foreach (var mh in Model.Patient.MedicalHistory)
+                                {
+                                    <li>@mh.Description</li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p>No medical history recorded.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">Allergies</div>
+                    <div class="card-body">
+                        @if (Model.Patient.Allergies.Any())
+                        {
+                            <ul>
+                                @foreach (var a in Model.Patient.Allergies)
+                                {
+                                    <li>@a.Allergen</li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p>No allergies recorded.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <h3 class="section-title">Vital Signs</h3>
+                @if (Model.Patient.VitalSigns.Any())
+                {
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Temperature (°C)</th>
+                                <th>Heart Rate (bpm)</th>
+                                <th>Recorded By</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var vs in Model.Patient.VitalSigns.OrderByDescending(v => v.RecordedAt))
+                            {
+                                <tr>
+                                    <td>@vs.RecordedAt.ToString("dd MMM yyyy HH:mm")</td>
+                                    <td>@vs.BodyTemperature.ToString("F2")</td>
+                                    <td>@vs.HeartRate</td>
+                                    <td>@vs.Nurse?.Employee?.FirstName @vs.Nurse?.Employee?.LastName</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p>No vital signs recorded yet.</p>
+                }
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">Treatments</div>
+                    <div class="card-body">
+                        @if (Model.Patient.Treatments.Any())
+                        {
+                            <ul>
+                                @foreach (var t in Model.Patient.Treatments)
+                                {
+                                    <li>@t.TreatmentType - @t.Description</li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p>No treatments recorded.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">Instructions</div>
+                    <div class="card-body">
+                        @if (Model.Patient.Instructions.Any())
+                        {
+                            <ul>
+                                @foreach (var i in Model.Patient.Instructions)
+                                {
+                                    <li>
+                                        <strong>@i.Title:</strong> @i.Description
+                                        @if (i.Doctor != null)
+                                        {
+                                            <span> | Doctor: @i.Doctor.Employee.FirstName @i.Doctor.Employee.LastName</span>
+                                        }
+                                        <span> | Created: @i.CreatedAt.ToString("dd MMM yyyy HH:mm")</span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p>No instructions recorded.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

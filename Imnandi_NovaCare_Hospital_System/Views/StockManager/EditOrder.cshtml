@@ -1,0 +1,168 @@
+﻿@model Order
+@{
+    ViewData["Title"] = "Edit Order";
+    var wards = ViewBag.Wards as List<Ward> ?? new List<Ward>();
+    var hospitalStores = ViewBag.HospitalStores as List<HospitalStore> ?? new List<HospitalStore>();
+    var consumables = ViewBag.Consumables as List<Consumable> ?? new List<Consumable>();
+    var consumableQuantities = ViewBag.ConsumableQuantities as Dictionary<int, int> ?? new Dictionary<int, int>();
+}
+
+<div class="container-fluid p-0">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-9 col-lg-7">
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+
+                <div class="bg-success text-white py-4 px-5 d-flex align-items-center justify-content-between">
+                    <div>
+                        <h3 class="mb-0"><i class="bi bi-pencil-square me-2"></i> Edit Order</h3>
+                        <p class="mb-0 small opacity-90">Update order details and consumables</p>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <form asp-action="EditOrder" asp-controller="StockManager" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger alert-dismissible fade show mb-4"></div>
+                        <input type="hidden" asp-for="OrderId" />
+
+                        <div class="mb-3">
+                            <label asp-for="OrderNumber" class="form-label small fw-semibold">Order Number</label>
+                            <input asp-for="OrderNumber" class="form-control form-control-sm rounded-pill" readonly />
+                            <span asp-validation-for="OrderNumber" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="OrderName" class="form-label small fw-semibold">Order Name</label>
+                            <input asp-for="OrderName" class="form-control form-control-sm rounded-pill" />
+                            <span asp-validation-for="OrderName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Date" class="form-label small fw-semibold">Date</label>
+                            <input asp-for="Date" class="form-control form-control-sm rounded-pill" readonly />
+                            <span asp-validation-for="Date" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label small fw-semibold">Description</label>
+                            <textarea asp-for="Description" class="form-control form-control-sm rounded-3" rows="3"></textarea>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold">Ward</label>
+                                <select asp-for="WardId" class="form-select form-select-sm rounded-pill">
+                                    <option value="">-- Select Ward --</option>
+                                    @foreach (var w in wards)
+                                    {
+                                        <option value="@w.WardId" selected="@(Model.WardId == w.WardId)">@w.WardName</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold">Hospital Store</label>
+                                <select asp-for="HospitalStoreId" class="form-select form-select-sm rounded-pill" required>
+                                    <option value="">-- Select Store --</option>
+                                    @foreach (var store in hospitalStores)
+                                    {
+                                        <option value="@store.HospitalStoreId" selected="@(Model.HospitalStoreId == store.HospitalStoreId)">@store.HospitalStoreName</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Consumables</label>
+                            <table class="table table-sm table-hover table-bordered align-middle">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Item</th>
+                                        <th class="text-center">Quantity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < consumables.Count; i++)
+                                    {
+                                        var cons = consumables[i];
+                                        <tr>
+                                            <td>
+                                                <input type="hidden" name="consumableIds" value="@cons.ConsumableId" />
+                                                @cons.ConsumableName
+                                            </td>
+                                            <td class="text-center">
+                                                <input type="number" name="quantities" min="0"
+                                                       value="@(consumableQuantities.ContainsKey(cons.ConsumableId) ? consumableQuantities[cons.ConsumableId] : 0)"
+                                                       class="form-control form-control-sm rounded-pill" />
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="d-flex gap-3 pt-4">
+                            <button type="submit" class="btn btn-success btn-sm px-4">
+                                <i class="bi bi-save me-1"></i> Save Changes
+                            </button>
+
+                            <a asp-action="ManageOrders" class="btn btn-outline-secondary btn-sm px-4">
+                                <i class="bi bi-arrow-left me-1"></i> Cancel
+                            </a>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .card {
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        background: #fff;
+    }
+
+    .bg-success {
+        background: linear-gradient(135deg, #28a745, #218838);
+    }
+
+    .rounded-pill {
+        border-radius: 50px !important;
+    }
+
+    .form-label {
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, #28a745, #218838);
+        border: none;
+        color: white;
+    }
+
+    .btn-outline-secondary {
+        border: 1px solid #6c757d;
+        color: #6c757d;
+    }
+
+    table th, table td {
+        vertical-align: middle;
+    }
+
+    table tbody tr:hover {
+        background-color: rgba(40, 167, 69, 0.05);
+    }
+</style>

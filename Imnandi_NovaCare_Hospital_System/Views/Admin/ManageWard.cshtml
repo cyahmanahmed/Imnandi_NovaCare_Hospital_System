@@ -1,0 +1,174 @@
+﻿@model IEnumerable<Ward>
+
+@{
+    ViewData["Title"] = "Ward Management";
+    var search = ViewData["Search"]?.ToString() ?? "";
+    var filter = ViewData["Filter"]?.ToString() ?? "All";
+    var ascending = (bool)(ViewData["Ascending"] ?? true);
+
+    var filterOptions = new List<SelectListItem>
+    {
+        new SelectListItem { Value = "All", Text = "All", Selected = filter=="All" },
+        new SelectListItem { Value = "Active", Text = "Active", Selected = filter=="Active" },
+        new SelectListItem { Value = "LowCapacity", Text = "Low Capacity", Selected = filter=="LowCapacity" }
+    };
+}
+
+<div class="container-fluid py-5">
+
+    <div class="col-12">
+        <a asp-controller="Admin" asp-action="AdminDashBoard"
+           class="btn btn-outline-primary btn-sm px-3 d-flex align-items-center shadow-sm"
+           style="border-radius: 80px;">
+            <i class="bi bi-house-door-fill me-2"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-8">
+            <h1 class="display-6 fw-bold text-primary">
+                <i class="bi bi-hospital me-2"></i> Ward Management
+            </h1>
+            <p class="text-muted mb-0">Manage wards, rooms, capacity, and assigned Nurse Sisters.</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-action="CreateWard" class="btn btn-primary btn-lg shadow-sm"
+               style="border-radius: 50px;">
+                <i class="bi bi-plus-circle me-2"></i> Add New Ward
+            </a>
+        </div>
+    </div>
+
+    <div class="col-12">
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                @TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                @TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-10 col-lg-8">
+            <form method="get" class="input-group input-group-lg shadow-sm rounded">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="bi bi-search text-muted"></i>
+                </span>
+                <input type="text" name="search" class="form-control border-start-0 ps-0"
+                       placeholder="Search by ward name, location" value="@search" />
+
+                <select class="form-select" name="filter">
+                    @foreach (var opt in filterOptions)
+                    {
+                        <option value="@opt.Value" selected="@(opt.Selected ? "selected" : null)">@opt.Text</option>
+                    }
+                </select>
+
+                <button type="submit" class="btn btn-primary">Search</button>
+                @if (!string.IsNullOrEmpty(search))
+                {
+                    <a asp-action="ManageWard" class="btn btn-outline-secondary">Clear</a>
+                }
+            </form>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        @if (!Model.Any())
+        {
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-hospital text-muted" style="font-size: 4rem;"></i>
+                <h4 class="text-muted mt-3">No wards found</h4>
+                <p class="text-secondary">Adjust your search or filters to see results.</p>
+            </div>
+        }
+        else
+        {
+            foreach (var ward in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm border-0 hover-lift" style="border-radius: 16px;">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h5 class="mb-0 text-dark">
+                                    <i class="bi bi-hospital text-primary me-2"></i>@ward.WardName
+                                </h5>
+                            </div>
+
+                            <ul class="list-unstyled small mb-3">
+                                <li><strong>Location:</strong> @ward.Location</li>
+                                <li><strong>Capacity:</strong> @ward.Capacity rooms</li>
+                                <li><strong>Assigned Nurse Sister:</strong> @(ward.NurseSister != null ? ward.NurseSister.FirstName + " " + ward.NurseSister.LastName : "N/A")</li>
+                                <li><strong>Rooms:</strong> @(ward.Rooms?.Count(r => !r.IsDeleted) ?? 0)</li>
+                            </ul>
+
+                            <p class="text-muted small">@ward.Description</p>
+
+                            <div class="d-flex justify-content-between mt-3 flex-wrap gap-2">
+                                @if (!ward.IsDeleted)
+                                {
+                                    <a asp-action="EditWard" asp-route-wardId="@ward.WardId" class="btn btn-outline-warning btn-sm">
+                                        <i class="bi bi-pencil-fill me-1"></i> Edit
+                                    </a>
+                                    <form asp-action="DeleteWard" asp-route-wardId="@ward.WardId" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                            <i class="bi bi-trash-fill me-1"></i> Delete
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <a asp-action="RestoreWards" asp-route-WardId="@ward.WardId" class="btn btn-info">Restore</a>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+</div>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+    body {
+        background: linear-gradient(135deg, #f9fbfd 0%, #f0f4f8 100%);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .hover-lift {
+        transition: all 0.3s ease;
+        border: 1px solid #e0e7ff;
+    }
+
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-color: #a5b4fc;
+        }
+
+    .btn-outline-primary, .btn-outline-warning, .btn-outline-danger, .btn-outline-success {
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .display-6 {
+        font-size: 2rem;
+        font-weight: 700;
+    }
+</style>

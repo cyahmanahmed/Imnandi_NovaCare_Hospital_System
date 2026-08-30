@@ -1,0 +1,162 @@
+﻿@model AdmissionFolderDetailsViewModel
+
+@{
+    ViewData["Title"] = "Admission Folder";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Admission Folder for @Model.PatientName</h4>
+        </div>
+        <div class="card-body">
+            @if (Model.HasPendingDischarge)
+            {
+                <div class="alert alert-warning border border-warning rounded mb-4">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <strong>Doctor has issued a discharge instruction for this patient!</strong>
+                    <ul class="mb-0 mt-2">
+                        @foreach (var d in Model.DischargeInstructions.Where(di => di.Status == "Pending"))
+                        {
+                            <li>
+                                <strong>Reason:</strong> @d.Reason <br />
+                                <strong>Issued By:</strong> @(d.Doctor?.Employee != null ? d.Doctor.Employee.FirstName + " " + d.Doctor.Employee.LastName : "N/A") <br />
+                                <strong>Date:</strong> @d.IssuedDate.ToString("dd/MM/yyyy")
+                            </li>
+                        }
+                    </ul>
+                    <a asp-controller="WardAdmin" asp-action="DischargePatient" asp-route-id="@Model.PatientId" class="btn btn-danger ms-2">
+                        <i class="bi bi-check-circle"></i> Approve & Discharge
+                    </a>
+                </div>
+            }
+
+
+            @if (Model.HasPendingMove)
+            {
+                <div class="alert alert-info border border-info rounded mb-4">
+                    <i class="bi bi-arrow-repeat"></i>
+                    <strong>Doctor has requested a ward move for this patient!</strong>
+                    <ul class="mb-0 mt-2">
+                        @foreach (var r in Model.PendingMoveRequests.Where(pr => pr.Status == "Pending"))
+                        {
+                            <li>
+                                <strong>Target Ward:</strong> @(r.TargetWard?.WardName ?? "N/A") <br />
+                                <strong>Reason:</strong> @r.Reason <br />
+                                <strong>Requested By:</strong> @(r.Doctor?.Employee != null ? r.Doctor.Employee.FirstName + " " + r.Doctor.Employee.LastName : "N/A") <br />
+                                <strong>Date:</strong> @r.RequestDate.ToString("dd/MM/yyyy")
+                            </li>
+                        }
+                    </ul>
+                    <a asp-controller="WardAdmin" asp-action="ManagePatientMovement" asp-route-patientId="@Model.PatientId" class="btn btn-primary ms-2">
+                        <i class="bi bi-check-circle"></i> Approve Move
+                    </a>
+                </div>
+            }
+
+            <div class="mb-3 d-flex gap-2">
+                <a asp-controller="WardAdmin"
+                   asp-action="ManagePatientMovement"
+                   asp-route-patientId="@Model.PatientId"
+                   class="btn btn-success shadow-sm">
+                    <i class="bi bi-arrow-left-right me-1"></i> Manage Patient Movement
+                </a>
+            </div>
+
+            <form asp-action="AdmissionPatientFolder" method="post">
+                <input type="hidden" asp-for="PatientId" />
+
+                <div class="mb-3 row">
+                    <label class="col-sm-2 col-form-label">Date of Birth:</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-plaintext">@Model.DateOfBirth</p>
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
+                    <label class="col-sm-2 col-form-label">Gender:</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-plaintext">@Model.Gender</p>
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
+                    <label class="col-sm-2 col-form-label">Doctor:</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-plaintext">@Model.DoctorName</p>
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
+                    <label class="col-sm-2 col-form-label">Nurse:</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-plaintext">@Model.NurseName</p>
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
+                    <label class="col-sm-2 col-form-label">Ward:</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-plaintext">@Model.WardName</p>
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
+                    <label class="col-sm-2 col-form-label">Room:</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-plaintext">@Model.RoomNumber</p>
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
+                    <label class="col-sm-2 col-form-label">Bed:</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-plaintext">@Model.BedNumber</p>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ReasonForAdmission" class="form-label">Reason for Admission</label>
+                    <textarea asp-for="ReasonForAdmission" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="ReasonForAdmission" class="text-danger"></span>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                    <label asp-for="IsActive" class="form-check-label">
+                        Active Folder
+                    </label>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Date Created:</label>
+                    <p class="form-control-plaintext">@Model.DateCreated</p>
+                </div>
+
+                @if (Model.DateClosed != null)
+                {
+                    <div class="mb-3">
+                        <label class="form-label">Date Closed:</label>
+                        <p class="form-control-plaintext">@Model.DateClosed</p>
+                    </div>
+                }
+
+                <button type="submit" class="btn btn-success">Save Changes</button>
+                <a asp-action="WardAdminDashboard" class="btn btn-secondary ms-2">Back to Patients</a>
+
+                <a asp-controller="Reports"
+                   asp-action="GeneratePatientAdmissionReport"
+                   asp-route-patientId="@Model.PatientId"
+                   class="btn btn-outline-primary shadow-sm float-end ms-2">
+                    <i class="bi bi-file-earmark-pdf"></i> Generate Admission History Report
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+}
