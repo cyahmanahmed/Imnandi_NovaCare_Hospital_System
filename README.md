@@ -20,6 +20,18 @@ The **Imnandi NovaCare Hospital System** is a modern, web-based hospital managem
 
 ---
 
+## 🛠️ Technology Stack
+
+| Category | Technologies |
+| :--- | :--- |
+| **Backend Framework** | C#, .NET, ASP.NET Core MVC, ASP.NET Core Identity |
+| **Database & ORM** | Microsoft SQL Server, Entity Framework Core, EF Core Migrations |
+| **Frontend Architecture** | HTML5, CSS3, JavaScript, Razor Views, Bootstrap |
+| **Core Capabilities** | PDF Generation Engine, Role-Based Access Control (RBAC), AI Integration |
+| **Tooling & Version Control** | Git, GitHub |
+
+---
+
 ## ⚡ Key Features
 
 ### 👤 Patient Management
@@ -128,18 +140,6 @@ The system supports multiple user roles, each assigned tailored permissions to e
 | **Hospital Stores** | Inventory intake, stock receiving, central storage, and inter-departmental distribution. |
 | **Hospital Pharmacy** | Comprehensive medication stock management, script processing, and direct dispensing. |
 | **Other Departments** | Specialized department-specific operational workflows and modular access. |
-
----
-
-## 🛠️ Technology Stack
-
-| Category | Technologies |
-| :--- | :--- |
-| **Backend Framework** | C#, .NET, ASP.NET Core MVC, ASP.NET Core Identity |
-| **Database & ORM** | Microsoft SQL Server, Entity Framework Core, EF Core Migrations |
-| **Frontend Architecture** | HTML5, CSS3, JavaScript, Razor Views, Bootstrap |
-| **Core Capabilities** | PDF Generation Engine, Role-Based Access Control (RBAC), AI Integration |
-| **Tooling & Version Control** | Git, GitHub |
 
 ---
 
