@@ -6,6 +6,14 @@ An integrated hospital management platform designed to streamline patient care, 
 
 ---
 
+## 👤 Author
+
+**Cyahman Ahmed**
+
+Developed as an integrated hospital management platform demonstrating practical application of web development, database management, authentication, role-based access control, healthcare workflows, inventory management, reporting, and system administration.
+
+---
+
 ## 📌 Overview
 
 The **Imnandi NovaCare Hospital System** is a modern, web-based hospital management platform developed to centralize and optimize key healthcare workflows within a single, secure environment.
@@ -235,12 +243,11 @@ The system is designed to provide a centralized platform that connects hospital 
 
 ## 📄 License
 
+## License
+
 This project is licensed under the **MIT License**.
 
----
+```text 
+MIT License
 
-## 👤 Author
-
-**Cyahman Ahmed**
-
-Developed as an integrated hospital management platform demonstrating practical application of web development, database management, authentication, role-based access control, healthcare workflows, inventory management, reporting, and system administration.
+Copyright (c) 2026 Cyahman Ahmed
