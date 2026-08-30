@@ -379,3 +379,7 @@ FodyWeavers.xsd
 # Environment variables and secrets
 .env
 .env.*
+
+# NovaCare application secrets
+/Imnandi_NovaCare_Hospital_System/appsettings.json
+/Imnandi_NovaCare_Hospital_System/appsettings.Development.json
