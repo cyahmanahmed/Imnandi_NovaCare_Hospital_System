@@ -136,7 +136,9 @@ The system supports multiple user roles, each assigned tailored permissions to e
 ---
 
 ## 📂 Project Structure
+## System Workflow
 
+![Imnandi NovaCare Hospital System Workflow](Imnandi_NovaCare_Hospital_System/wwwroot/images/hospital-workflow.png)
 
 ---
 
