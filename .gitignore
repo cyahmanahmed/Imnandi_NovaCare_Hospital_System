@@ -370,3 +370,12 @@ appsettings.*.json
 .env
 .env.*
 FodyWeavers.xsd
+
+# Application configuration and secrets
+**/appsettings.json
+**/appsettings.Development.json
+**/appsettings.*.json
+
+# Environment variables and secrets
+.env
+.env.*
