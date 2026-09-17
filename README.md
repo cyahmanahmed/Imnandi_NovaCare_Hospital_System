@@ -4,6 +4,8 @@
 
 An integrated hospital management platform designed to streamline patient care, clinical operations, ward administration, medication management, inventory control, and hospital-wide resource management.
 
+![Home Page](Imnandi_NovaCare_Hospital_System/wwwroot/images/Home_Page.png)
+
 ---
 
 ## 👤 Author
@@ -121,6 +123,8 @@ The **Imnandi NovaCare Hospital System** is a modern, web-based hospital managem
 ### 🤖 AI Assistant
 * **Conversational Homepage Assistant:** Embedded AI tool on the landing page providing an interactive, conversational interface for users to query the system and navigate features.
 
+![AI Assistant](Imnandi_NovaCare_Hospital_System/wwwroot/images/AI_Assistant.png)
+
 ---
 
 ## 👥 User Roles and Departments
@@ -208,7 +212,15 @@ On the first installation, the system creates the initial administrator accordin
 * The primary administrator is responsible for creating the initial user structure, including additional administrators and other authorized hospital users.
 * After the initial setup, authorized administrators can create and manage users according to their permissions.
 
+![Initial Admin Setup](Imnandi_NovaCare_Hospital_System/wwwroot/images/Initial_Admin_Setup.png)
+
 > **⚠️ Important Security Note:** The initial administrator login details are critical. Store them securely and **never** commit them to GitHub or place them inside source code. If the administrator password is forgotten, use the application's password reset/recovery process where available.
+
+
+
+
+![Login Page](Imnandi_NovaCare_Hospital_System/wwwroot/images/Login_Page.png)
+
 
 ---
 
