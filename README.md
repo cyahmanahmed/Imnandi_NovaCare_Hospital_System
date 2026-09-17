@@ -120,6 +120,10 @@ The **Imnandi NovaCare Hospital System** is a modern, web-based hospital managem
 * **System Activity Tracking:** Comprehensive event logging across critical system operations and data modifications.
 * **Accountability & Governance:** Audit logs provide total transparency, helping administrators inspect system usage and historical changes.
 
+![Audit Logs](Imnandi_NovaCare_Hospital_System/wwwroot/images/Audit_Logs.png)
+
+
+
 ### 🤖 AI Assistant
 * **Conversational Homepage Assistant:** Embedded AI tool on the landing page providing an interactive, conversational interface for users to query the system and navigate features.
 
@@ -255,8 +259,6 @@ The system is designed to provide a centralized platform that connects hospital 
 ---
 
 ## 📄 License
-
-## License
 
 This project is licensed under the **MIT License**.
 
